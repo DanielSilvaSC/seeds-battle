@@ -249,6 +249,15 @@ let S=null, view='groups', editingId=null, logged=null;
 let DB=null, AUTH=null, currentUser=null, fbError=null;
 let cfg=null, entriesMap={};
 
+/* E-mail do líder → nome que aparece no histórico.
+   Quando um desses e-mails loga, o "Lançando como" já vem fixo (sem escolher). */
+const LEADER_BY_EMAIL = {
+  'daniel.seeds@gmail.com':'Daniel',
+  'mayara.sedds@gmail.com':'Mayara',
+  'vanessa.seeds@gmail.com':'Vanessa'
+};
+function leaderForEmail(email){ return email ? (LEADER_BY_EMAIL[email.trim().toLowerCase()]||null) : null; }
+
 function defaultConfig(){return {
   groups:[{id:'g1',name:'Grupo 1',color:'#8bd450',seed:'🌿'},
           {id:'g2',name:'Grupo 2',color:'#f2a93b',seed:'🌾'}],
@@ -511,11 +520,17 @@ function vPanel(R){
   if(!a){ selAct='culto_sem'; a=ACT[selAct]; }
   const needMember = a.s!=='group';
   const leaderNames=(S.leaders||[]).map(l=>l.name).filter(Boolean);
-  if(!logged || !leaderNames.includes(logged)) logged = leaderNames[0] || (currentUser&&currentUser.email) || 'Líder';
+  const mappedLeader = leaderForEmail(currentUser&&currentUser.email);
+  if(mappedLeader) logged = mappedLeader;
+  else if(!logged || !leaderNames.includes(logged)) logged = leaderNames[0] || (currentUser&&currentUser.email) || 'Líder';
   let h='<div class="card"><div class="who"><span class="wn">🛡️ '+esc(currentUser?currentUser.email:'líder')+'</span>'+
     '<button class="btn ghost sm" id="btnLogout">Sair</button></div>';
-  if(leaderNames.length) h+='<div class="field"><label>Lançando como (aparece no histórico)</label><select id="fWho">'+
-    leaderNames.map(n=>'<option'+(n===logged?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></div>';
+  if(mappedLeader){
+    h+='<div class="field"><label>Lançando como</label><div class="preview" style="color:var(--leaf)">🛡️ '+esc(mappedLeader)+'</div></div>';
+  } else if(leaderNames.length){
+    h+='<div class="field"><label>Lançando como (aparece no histórico)</label><select id="fWho">'+
+      leaderNames.map(n=>'<option'+(n===logged?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></div>';
+  }
   h+='<h2>'+(e?'Corrigir lançamento':'Lançar pontos')+'</h2>';
   h+='<div class="field"><label>Atividade</label><select id="fAct">'+actOptions()+'</select></div>';
   if(needMember){
