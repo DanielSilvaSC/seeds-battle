@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seeds Battle · Edição 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<style>
+:root{
+  --soil:#171310; --soil2:#211a13; --card:#261e15; --card2:#2e2419;
+  --line:#3d3122; --leaf:#8bd450; --leaf-dim:#5c9938; --gold:#f5c542;
+  --cream:#f5eedf; --muted:#a4957e; --danger:#e5604c;
+  --g1:#8bd450; --g2:#f2a93b;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--soil);color:var(--cream);font-family:'Nunito',system-ui,sans-serif;min-height:100vh;
+  background-image:radial-gradient(1200px 500px at 50% -200px,#2a2115 0%,var(--soil) 60%)}
+.wrap{max-width:640px;margin:0 auto;padding:16px 14px 90px}
+.display{font-family:'Bungee',system-ui,sans-serif;font-weight:400;letter-spacing:.5px}
+
+/* header */
+header{text-align:center;padding:18px 0 10px}
+.logo{font-size:clamp(30px,8vw,44px);line-height:1;color:var(--cream)}
+.logo .b{color:var(--leaf)}
+.tagline{color:var(--gold);font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.dates{color:var(--muted);font-size:12px;margin-top:4px;font-weight:700}
+
+/* tabs */
+nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710f2;border-top:1px solid var(--line);
+  backdrop-filter:blur(8px);z-index:50}
+.tabs{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tab{appearance:none;background:none;border:none;color:var(--muted);font-family:'Nunito';font-weight:800;
+  font-size:11px;padding:10px 4px 12px;cursor:pointer;display:flex;flex-direction:column;gap:3px;align-items:center}
+.tab .ic{font-size:20px;line-height:1}
+.tab.on{color:var(--leaf)}
+.tab:focus-visible{outline:2px solid var(--gold);outline-offset:-2px;border-radius:8px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px}
+.card h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.hint{color:var(--muted);font-size:12.5px;line-height:1.5}
+
+/* battle hero */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:14px}
+.gcard{border-radius:var(--r);padding:14px 12px;text-align:center;border:1px solid var(--line);background:var(--card)}
+.gcard.lead{box-shadow:0 0 0 1px var(--gold),0 6px 24px -8px rgba(245,197,66,.35)}
+.gseed{font-size:34px;line-height:1}
+.gname{font-weight:900;font-size:15px;margin-top:6px;word-break:break-word}
+.gpts{font-family:'Bungee';font-size:26px;margin-top:4px}
+.gsub{color:var(--muted);font-size:11px;font-weight:700;margin-top:2px}
+.vsmid{display:flex;align-items:center;justify-content:center}
+.vsbadge{font-family:'Bungee';color:var(--soil);background:var(--gold);border-radius:10px;padding:8px 9px;font-size:15px}
+.duel{margin-top:14px;background:var(--soil2);border:1px solid var(--line);border-radius:999px;height:22px;
+  overflow:hidden;display:flex}
+.duel>div{height:100%;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.duel .d1{background:linear-gradient(90deg,var(--g1),#a8e878)}
+.duel .d2{background:linear-gradient(90deg,#ffc86b,var(--g2));margin-left:auto}
+.legend{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:800;margin-top:6px}
+
+/* individual ranking */
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;margin-top:14px}
+.pod{background:var(--card);border:1px solid var(--line);border-radius:var(--r);text-align:center;padding:12px 6px}
+.pod .medal{font-size:26px}
+.pod .pn{font-weight:900;font-size:13px;margin-top:4px;word-break:break-word}
+.pod .pp{font-family:'Bungee';font-size:16px;color:var(--gold);margin-top:2px}
+.pod.p1{padding-top:20px;box-shadow:0 0 0 1px var(--gold) inset}
+.rlist{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.rrow{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:grid;
+  grid-template-columns:28px 34px 1fr auto;gap:10px;align-items:center}
+.rrow .pos{font-family:'Bungee';color:var(--muted);font-size:14px}
+.rrow .plant{font-size:24px;text-align:center}
+.rrow .nm{font-weight:900;font-size:14px}
+.rrow .lvl{color:var(--muted);font-size:11px;font-weight:800}
+.rrow .pts{font-family:'Bungee';color:var(--gold);font-size:15px;text-align:right}
+.xp{height:7px;border-radius:99px;background:var(--soil2);border:1px solid var(--line);margin-top:5px;overflow:hidden}
+.xp>i{display:block;height:100%;background:linear-gradient(90deg,var(--leaf-dim),var(--leaf));transition:width .6s}
+.gdot{display:inline-block;width:9px;height:9px;border-radius:99px;margin-right:5px;vertical-align:1px}
+
+/* table tab */
+.ptable{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.ptable th{color:var(--gold);text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  padding:8px 6px;border-bottom:1px solid var(--line)}
+.ptable td{padding:7px 6px;border-bottom:1px solid #2c2318;font-weight:700}
+.ptable td:last-child{text-align:right;font-family:'Bungee';font-size:12px;color:var(--cream);white-space:nowrap}
+.neg td:last-child{color:var(--danger)}
+
+/* leader panel */
+.field{margin-top:12px}
+label{display:block;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+input,select,textarea{width:100%;background:var(--soil2);border:1px solid var(--line);border-radius:10px;color:var(--cream);
+  font-family:'Nunito';font-weight:700;font-size:15px;padding:11px 12px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-offset:-1px}
+.btn{appearance:none;border:none;border-radius:12px;font-family:'Nunito';font-weight:900;font-size:15px;
+  padding:13px 16px;cursor:pointer;width:100%;margin-top:14px}
+.btn.go{background:var(--leaf);color:#14200b}
+.btn.gold{background:var(--gold);color:#241c06}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.btn.red{background:transparent;color:var(--danger);border:1px solid #5a3029}
+.btn.sm{width:auto;padding:8px 12px;font-size:12.5px;margin-top:0;border-radius:9px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.preview{margin-top:12px;background:var(--soil2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;
+  font-size:13px;font-weight:800;color:var(--gold)}
+.hrow{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:13px}
+.hrow .t1{font-weight:900}
+.hrow .t2{color:var(--muted);font-size:11.5px;font-weight:700;margin-top:2px}
+.hrow .hp{font-family:'Bungee';font-size:14px}
+.hrow .hp.plus{color:var(--leaf)} .hrow .hp.minus{color:var(--danger)}
+.hact{display:flex;gap:8px;margin-top:8px}
+.capnote{margin-top:8px;font-size:12px;font-weight:800;color:var(--gold)}
+.pill{display:inline-block;background:var(--soil2);border:1px solid var(--line);border-radius:99px;
+  padding:3px 10px;font-size:11px;font-weight:800;color:var(--muted);margin:3px 3px 0 0}
+.who{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.who .wn{font-weight:900;color:var(--leaf);font-size:13px}
+
+/* toast + misc */
+#toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--gold);color:#241c06;font-weight:900;font-size:14px;padding:11px 18px;border-radius:12px;
+  transition:.25s;z-index:99;max-width:90vw;text-align:center;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading{text-align:center;padding:60px 0;color:var(--muted);font-weight:800}
+.seedspin{font-size:40px;display:inline-block;animation:grow 1.2s ease-in-out infinite alternate}
+@keyframes grow{from{transform:scale(.85) rotate(-6deg)}to{transform:scale(1.1) rotate(6deg)}}
+.view{display:none}.view.on{display:block}
+details{margin-top:10px}
+summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding:6px 0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:380px){.gpts{font-size:21px}.vsbadge{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo display">SEEDS <span class="b">BATTLE</span></div>
+    <div class="tagline">Ouvi · Entendi · Vivi</div>
+    <div class="dates">Edição 1 · Parábolas de Jesus · 01/07 → 01/08</div>
+  </header>
+
+  <div id="app"><div class="loading"><span class="seedspin">🌱</span><br><br>Preparando o solo...</div></div>
+</div>
+
+<nav aria-label="Navegação principal"><div class="tabs">
+  <button class="tab on" data-v="groups"><span class="ic">⚔️</span>Grupos</button>
+  <button class="tab" data-v="ind"><span class="ic">🌱</span>Seeds</button>
+  <button class="tab" data-v="table"><span class="ic">📖</span>Tabela</button>
+  <button class="tab" data-v="leader"><span class="ic">🛡️</span>Líder</button>
+</div></nav>
+
+<div id="toast" role="status"></div>
+<script>
+/* ============ CATÁLOGO (do regulamento oficial) ============ */
+/* scope: both = adolescente + grupo · group = só grupo · ind = só adolescente */
+const CATS = [
+ {id:'presenca', name:'Presença e participação', acts:[
+   {id:'culto_sem', n:'Presença em culto da semana', v:10, s:'both'},
+   {id:'culto_dom', n:'Presença em culto de domingo', v:20, s:'both'},
+   {id:'ebd', n:'Presença na EBD', v:30, s:'both'},
+   {id:'biblia_ebd', n:'Levar Bíblia na EBD', v:10, s:'both'},
+   {id:'biblia_culto', n:'Levar Bíblia no culto', v:10, s:'both'}]},
+ {id:'visit', name:'Visitantes', acts:[
+   {id:'vis_crente', n:'Levar visitante crente', v:30, s:'both'},
+   {id:'vis_nc', n:'Levar visitante não crente', v:70, s:'both'}]},
+ {id:'oferta', name:'Ofertas (teto 500 por Seed)', acts:[
+   {id:'oferta', n:'Oferta (R$ 1 = 10 pts)', v:10, s:'both', unit:'R$', cap:'oferta'}]},
+ {id:'oport', name:'Oportunidade no culto', acts:[
+   {id:'louvor_sem', n:'Louvor no tema · culto da semana', v:300, s:'both'},
+   {id:'louvor_dom', n:'Louvor no tema · domingo', v:500, s:'both'},
+   {id:'louvor_ceia', n:'Louvor no tema · culto de ceia', v:700, s:'both'},
+   {id:'saud_sem', n:'Saudação no tema · culto da semana', v:400, s:'both'},
+   {id:'saud_dom', n:'Saudação no tema · domingo', v:700, s:'both'},
+   {id:'saud_ceia', n:'Saudação no tema · culto de ceia', v:900, s:'both'}]},
+ {id:'ebd_res', name:'EBD e tema', acts:[
+   {id:'resumo', n:'Apresentar resumo da aula (EBD)', v:100, s:'both'},
+   {id:'sinalizar', n:'1º a sinalizar tema citado no culto', v:150, s:'both'}]},
+ {id:'perg_sem', name:'Perguntas da semana (grupo)', acts:[
+   {id:'psem_tent', n:'Tentativa de resposta', v:100, s:'group'},
+   {id:'psem_ok', n:'Resposta correta', v:400, s:'group'}]},
+ {id:'alim', name:'Arrecadação de alimentos (teto 1000/grupo)', acts:[
+   {id:'alim_me', n:'Alimento muito escasso (un/kg)', v:60, s:'group', cap:'alim'},
+   {id:'alim_e', n:'Alimento escasso (un/kg)', v:40, s:'group', cap:'alim'},
+   {id:'alim_n', n:'Alimento necessário (un/kg)', v:20, s:'group', cap:'alim'}]},
+ {id:'agas', name:'Arrecadação de agasalhos (teto 1000/grupo)', acts:[
+   {id:'ag_bom', n:'Agasalho em bom estado (peça)', v:30, s:'group', cap:'agas'},
+   {id:'ag_casaco', n:'Casaco grosso (peça)', v:50, s:'group', cap:'agas'},
+   {id:'ag_cob', n:'Cobertor (peça)', v:100, s:'group', cap:'agas'}]},
+ {id:'oficial', name:'⭐ Dia oficial', acts:[
+   {id:'pf', n:'Pergunta fácil correta', v:250, s:'both'},
+   {id:'pm', n:'Pergunta média correta', v:350, s:'both'},
+   {id:'pd', n:'Pergunta difícil correta', v:450, s:'both'},
+   {id:'prac', n:'Tentativa incorreta c/ raciocínio bíblico', v:100, s:'group'},
+   {id:'bandeira', n:'Melhor bandeira no tema', v:2500, s:'group'},
+   {id:'nome', n:'Nome do grupo', v:1500, s:'group'},
+   {id:'grito', n:'Grito de guerra', v:2000, s:'group'},
+   {id:'torcida', n:'Maior torcida organizada', v:2000, s:'group'}]},
+ {id:'pen', name:'⚠️ Penalidades', acts:[
+   {id:'pen_cel', n:'Mexer no celular sem autorização na EBD', v:-20, s:'both'},
+   {id:'pen_atrap', n:'Atrapalhar explicação, oração ou leitura', v:-20, s:'ind'},
+   {id:'pen_desr', n:'Desrespeito verbal, zombaria', v:-30, s:'both'},
+   {id:'pen_sab', n:'Sabotar outro grupo ou pessoa', v:-100, s:'group'},
+   {id:'pen_fraude', n:'Fraude (presença, visitante, oferta, arrecadação)', v:-150, s:'group'},
+   {id:'pen_item', n:'Alimento vencido / agasalho sem condição', v:-30, s:'group'},
+   {id:'pen_disc', n:'Discussão com liderança / recusa de orientação', v:-50, s:'ind'},
+   {id:'pen_torc', n:'Torcida ofensiva no dia oficial', v:-80, s:'group'}]}
+];
+const ACT = {}; let CATS_ALL = CATS.slice();
+function rebuildCatalog(){
+  for(const k in ACT) delete ACT[k];
+  CATS.forEach(c=>c.acts.forEach(a=>{a.cat=c.id; ACT[a.id]=a;}));
+  const custom = (typeof S!=='undefined' && S && Array.isArray(S.customActs)) ? S.customActs : [];
+  if(custom.length){
+    const cc={id:'custom', name:'✨ Atividades personalizadas', acts:custom.map(a=>({...a,cat:'custom'}))};
+    cc.acts.forEach(a=>{ ACT[a.id]=a; });
+    CATS_ALL = CATS.concat([cc]);
+  } else { CATS_ALL = CATS.slice(); }
+}
+rebuildCatalog();
+const CAPS = {oferta:500, alim:1000, agas:1000};
+const LEVELS = [
+  {min:0,    e:'🌰', n:'Semente'},
+  {min:300,  e:'🌱', n:'Broto'},
+  {min:800,  e:'🌿', n:'Muda'},
+  {min:1500, e:'🌳', n:'Árvore'},
+  {min:3000, e:'🍎', n:'Frutífera'},
+  {min:5000, e:'👑', n:'Colheita Lendária'}
+];
+</script>
+<script>
+/* ============ CONFIGURAÇÃO DO FIREBASE ============ */
+/* ↓↓↓ COLE AQUI os dados do SEU projeto Firebase (Configurações do projeto → Seus apps → Web). ↓↓↓ */
+const FIREBASE_CONFIG =  {
+  apiKey: "AIzaSyA4NmiDfU7NOhWCzr_TbV7FUnuwoTUhCOc",
+  authDomain: "seeds-battle.firebaseapp.com",
+  databaseURL: "https://seeds-battle-default-rtdb.firebaseio.com",
+  projectId: "seeds-battle",
+  storageBucket: "seeds-battle.firebasestorage.app",
+  messagingSenderId: "666253040014",
+  appId: "1:666253040014:web:0750d685dabebd79492cdf"
+};;
+/* ↑↑↑ Enquanto estiver "COLE_AQUI", o app roda em modo demonstração (sem salvar). ↑↑↑ */
+
+/* ============ ESTADO ============ */
+let S=null, view='groups', editingId=null, logged=null;
+let DB=null, AUTH=null, currentUser=null, fbError=null;
+let cfg=null, entriesMap={};
+
+function defaultConfig(){return {
+  groups:[{id:'g1',name:'Grupo 1',color:'#8bd450',seed:'🌿'},
+          {id:'g2',name:'Grupo 2',color:'#f2a93b',seed:'🌾'}],
+  members:[
+    {id:'m1',n:'Lucas',g:'g1'},{id:'m2',n:'Luiz',g:'g1'},{id:'m3',n:'Melissa',g:'g1'},
+    {id:'m4',n:'Sophia',g:'g1'},{id:'m5',n:'Esther',g:'g1'},
+    {id:'m10',n:'Bruninho',g:'g1'},{id:'m11',n:'Maria Eduarda',g:'g1'},
+    {id:'m12',n:'Luiza',g:'g1'},{id:'m13',n:'Andrej',g:'g1'},
+    {id:'m6',n:'Ana Clara',g:'g2'},{id:'m7',n:'Eduardo',g:'g2'},
+    {id:'m8',n:'Paulo C.',g:'g2'},{id:'m9',n:'Miguel',g:'g2'},
+    {id:'m14',n:'Anna Clara',g:'g2'},{id:'m15',n:'Enzo',g:'g2'},
+    {id:'m16',n:'Mariah',g:'g2'},{id:'m17',n:'Pedro',g:'g2'},{id:'m18',n:'Nathanael',g:'g2'}],
+  leaders:[{id:'l1',name:'Coordenação'}],
+  customActs:[],
+  rosterSeeded:'ed1-18'
+};}
+function defaultData(){ const c=defaultConfig(); c.entries=[]; return c; } /* usado no export/backup */
+
+function ensureLeaderIds(){ let ch=false; (S.leaders||[]).forEach(l=>{ if(!l.id){ l.id='l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); ch=true; } }); return ch; }
+function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, rosterSeeded:S.rosterSeeded||'ed1-18' }; }
+
+/* Monta S a partir de config + entradas vindas do Firebase */
+function rebuildS(){
+  const c = cfg || defaultConfig();
+  const entries = Object.entries(entriesMap||{}).map(([k,v])=>({...v, id:k}))
+    .sort((a,b)=>(a.ts||0)-(b.ts||0));
+  S = { groups:c.groups||[], members:c.members||[], leaders:c.leaders||[],
+        customActs:Array.isArray(c.customActs)?c.customActs:[],
+        rosterSeeded:c.rosterSeeded||null, entries };
+}
+
+/* ============ FIREBASE ============ */
+function fbConfigured(){ return FIREBASE_CONFIG.databaseURL && FIREBASE_CONFIG.databaseURL!=='COLE_AQUI'; }
+function initFirebase(){
+  if(!fbConfigured()){ fbError='config'; cfg=defaultConfig(); rebuildS(); render(); return; }
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    DB=firebase.database(); AUTH=firebase.auth();
+    AUTH.onAuthStateChanged(u=>{ currentUser=u; if(!u) logged=null; render(); });
+    DB.ref('config').on('value', s=>{ cfg=s.val(); rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
+    DB.ref('entries').on('value', s=>{ entriesMap=s.val()||{}; rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
+  }catch(e){ fbError='init'; cfg=defaultConfig(); rebuildS(); render(); }
+}
+async function fbSaveConfig(c){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('config').set(c); }catch(e){ toast('Falha ao salvar: '+(e.code||e.message)); } }
+async function fbAddEntry(obj){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('entries').push(obj); }catch(e){ toast('Falha ao lançar: '+(e.code||e.message)); } }
+async function fbSetEntry(key,obj){ try{ await DB.ref('entries/'+key).set(obj); }catch(e){ toast('Falha ao corrigir: '+(e.code||e.message)); } }
+async function fbDelEntry(key){ try{ await DB.ref('entries/'+key).remove(); }catch(e){ toast('Falha ao excluir: '+(e.code||e.message)); } }
+
+function load(){ initFirebase(); }
+
+/* ============ CÁLCULO (com tetos do regulamento) ============ */
+function calc(){
+  const ind={}, grp={}, capUse={}, stats={}, mstats={};
+  S.members.forEach(m=>{ind[m.id]=0; mstats[m.id]={oficialCount:0,ebd:0,vis:0,pen:0};});
+  S.groups.forEach(g=>{grp[g.id]=0; capUse[g.id]={alim:0,agas:0};
+    stats[g.id]={oficial:0,ebd:0,visnc:0,pen:0};});
+  const ofertaRaw={}; S.members.forEach(m=>ofertaRaw[m.id]=0);
+  const ofertaMemG={};
+  for(const e of S.entries){
+    const a=ACT[e.act]; if(!a) continue;
+    const pts=a.v*e.qty;
+    if(a.cap==='oferta'){ ofertaRaw[e.mid]=(ofertaRaw[e.mid]||0)+pts; ofertaMemG[e.mid]=e.gid; continue; }
+    if(a.cap==='alim'||a.cap==='agas'){ if(capUse[e.gid]) capUse[e.gid][a.cap]+=pts; continue; }
+    if((a.s==='both'||a.s==='ind') && e.mid && ind[e.mid]!==undefined) ind[e.mid]+=pts;
+    if((a.s==='both'||a.s==='group') && grp[e.gid]!==undefined) grp[e.gid]+=pts;
+    const st=stats[e.gid];
+    if(st){
+      if(['pf','pm','pd','prac'].includes(e.act)&&pts>0) st.oficial+=pts;
+      if(e.act==='ebd') st.ebd+=e.qty;
+      if(e.act==='vis_nc') st.visnc+=e.qty;
+      if(pts<0) st.pen+=Math.abs(pts);
+    }
+    const ms=e.mid?mstats[e.mid]:null;
+    if(ms){
+      if(['pf','pm','pd'].includes(e.act)) ms.oficialCount+=e.qty;
+      if(e.act==='ebd') ms.ebd+=e.qty;
+      if(e.act==='vis_crente'||e.act==='vis_nc') ms.vis+=e.qty;
+      if(pts<0) ms.pen+=Math.abs(pts);
+    }
+  }
+  const capNotes=[];
+  for(const m of S.members){
+    const raw=ofertaRaw[m.id]||0, eff=Math.min(raw,CAPS.oferta);
+    if(eff>0){ ind[m.id]+=eff; const g=ofertaMemG[m.id]||m.g; if(grp[g]!==undefined) grp[g]+=eff; }
+    if(raw>CAPS.oferta) capNotes.push(m.n+': ofertas '+raw+' → limitado a '+CAPS.oferta);
+  }
+  for(const g of S.groups){
+    const u=capUse[g.id];
+    const alim=Math.min(u.alim,CAPS.alim), agas=Math.min(u.agas,CAPS.agas);
+    grp[g.id]+=alim+agas;
+    if(u.alim>CAPS.alim) capNotes.push(g.name+': alimentos '+u.alim+' → teto '+CAPS.alim);
+    if(u.agas>CAPS.agas) capNotes.push(g.name+': agasalhos '+u.agas+' → teto '+CAPS.agas);
+  }
+  return {ind,grp,stats,mstats,capNotes};
+}
+
+/* ===== Desempate (item 11 do regulamento). Retorna {n, by}:
+   n<0 => a fica à frente de b · by = critério que decidiu (null se foi pelo total). ===== */
+function tieGroup(aId,bId,R){
+  let d=R.grp[bId]-R.grp[aId]; if(d) return {n:d,by:null};
+  const A=R.stats[aId],B=R.stats[bId];
+  d=B.oficial-A.oficial; if(d) return {n:d,by:'Perguntas no dia oficial'};
+  d=B.ebd-A.ebd;         if(d) return {n:d,by:'Presença na EBD'};
+  d=B.visnc-A.visnc;     if(d) return {n:d,by:'Visitantes não crentes'};
+  d=A.pen-B.pen;         if(d) return {n:d,by:'Menos penalidades'};
+  return {n:0,by:'EXTRA'};
+}
+function tieInd(aId,bId,R){
+  let d=R.ind[bId]-R.ind[aId]; if(d) return {n:d,by:null};
+  const A=R.mstats[aId],B=R.mstats[bId];
+  d=B.oficialCount-A.oficialCount; if(d) return {n:d,by:'Acertos no dia oficial'};
+  d=B.ebd-A.ebd;                   if(d) return {n:d,by:'Presença na EBD'};
+  d=B.vis-A.vis;                   if(d) return {n:d,by:'Visitantes levados'};
+  d=A.pen-B.pen;                   if(d) return {n:d,by:'Menos penalidades'};
+  return {n:0,by:'EXTRA'};
+}
+function lvlOf(p){let L=LEVELS[0];for(const l of LEVELS)if(p>=l.min)L=l;return L;}
+function nextLvl(p){for(const l of LEVELS)if(p<l.min)return l;return null;}
+const fmt=n=>n.toLocaleString('pt-BR');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ============ RENDER ============ */
+function render(){
+  if(!S) rebuildS();
+  rebuildCatalog();
+  const app=document.getElementById('app');
+  const R=calc();
+  if(view==='groups') app.innerHTML=vGroups(R);
+  else if(view==='ind') app.innerHTML=vInd(R);
+  else if(view==='table') app.innerHTML=vTable();
+  else app.innerHTML = currentUser ? vPanel(R) : vLogin();
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
+  bind();
+}
+
+function vGroups(R){
+  const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const top=Math.max(1,...S.groups.map(g=>R.grp[g.id]));
+  const g1=S.groups[0],g2=S.groups[1];
+  const tie01=(gs.length>1)?tieGroup(gs[0].id,gs[1].id,R):{n:0,by:'EXTRA'};
+  const leadId=tie01.n!==0?gs[0].id:null;
+  let h='<div class="vs">';
+  [g1,g2].forEach((g,i)=>{
+    const leadCls=g.id===leadId?' lead':'';
+    const mem=S.members.filter(m=>m.g===g.id).length;
+    h+='<div class="gcard'+leadCls+'"><div class="gseed">'+g.seed+'</div>'+
+       '<div class="gname" style="color:'+g.color+'">'+esc(g.name)+'</div>'+
+       '<div class="gpts display">'+fmt(R.grp[g.id])+'</div>'+
+       '<div class="gsub">'+mem+' seeds</div></div>';
+    if(i===0)h+='<div class="vsmid"><div class="vsbadge">VS</div></div>';
+  });
+  h+='</div>';
+  const w1=Math.round(R.grp[g1.id]/(R.grp[g1.id]+R.grp[g2.id]||1)*100);
+  h+='<div class="duel"><div class="d1" style="width:'+w1+'%"></div><div class="d2" style="width:'+(100-w1)+'%"></div></div>';
+  h+='<div class="legend"><span><span class="gdot" style="background:'+g1.color+'"></span>'+esc(g1.name)+'</span>'+
+     '<span>'+esc(g2.name)+'<span class="gdot" style="background:'+g2.color+';margin:0 0 0 5px"></span></span></div>';
+  if(tie01.by!==null){
+    const leadG=gs[0], msg = tie01.by==='EXTRA'
+      ? '🟰 Empate total entre os grupos, inclusive nos critérios 1 a 4 — a decisão vai para <b>pergunta bíblica extra</b> no dia oficial.'
+      : '⚖️ Empate no total de pontos. <b>'+esc(leadG.name)+'</b> fica à frente pelo critério de desempate: <b>'+tie01.by+'</b>.';
+    h+='<div class="card" style="border-color:var(--gold)"><h2>Desempate aplicado</h2><p class="hint" style="color:var(--cream)">'+msg+'</p></div>';
+  }
+  h+='<div class="card"><h2>Integrantes dos grupos</h2>';
+  for(const g of S.groups){
+    const mem=S.members.filter(m=>m.g===g.id).sort((a,b)=>R.ind[b.id]-R.ind[a.id]);
+    h+='<div style="margin-bottom:12px"><b style="color:'+g.color+'">'+g.seed+' '+esc(g.name)+'</b> <span class="gsub">('+mem.length+' seeds)</span><br>';
+    h+= mem.length ? mem.map(m=>'<span class="pill">'+esc(m.n)+' · '+fmt(R.ind[m.id])+'</span>').join('')
+                   : '<span class="hint">Sem integrantes ainda.</span>';
+    h+='</div>';
+  }
+  h+='</div>';
+  h+='<div class="card"><h2>Critérios de desempate</h2>';
+  for(const g of gs){const st=R.stats[g.id];
+    h+='<div style="margin-bottom:10px"><b style="color:'+g.color+'">'+g.seed+' '+esc(g.name)+'</b><br>'+
+    '<span class="pill">⭐ Dia oficial: '+fmt(st.oficial)+' pts</span>'+
+    '<span class="pill">📖 EBD: '+st.ebd+' presenças</span>'+
+    '<span class="pill">🕊️ Visit. não crentes: '+st.visnc+'</span>'+
+    '<span class="pill">⚠️ Penalidades: −'+fmt(st.pen)+'</span></div>';}
+  h+='<p class="hint">O app aplica automaticamente os critérios 1 a 4, nesta ordem: pontos em perguntas do dia oficial → presença na EBD → visitantes não crentes → menos penalidades. Se ainda assim persistir empate, o critério 5 (pergunta bíblica extra) é decidido ao vivo.</p></div>';
+  if(R.capNotes.length) h+='<div class="card"><h2>Tetos aplicados</h2>'+R.capNotes.map(c=>'<div class="capnote">• '+esc(c)+'</div>').join('')+'</div>';
+  return h;
+}
+
+function vInd(R){
+  const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
+  const med=['🥇','🥈','🥉'];
+  let h='';
+  if(ms.length>=3){
+    const order=[ms[1],ms[0],ms[2]];
+    h+='<div class="podium">';
+    order.forEach((m,i)=>{const rank=i===1?0:(i===0?1:2);
+      h+='<div class="pod'+(rank===0?' p1':'')+'"><div class="medal">'+med[rank]+'</div>'+
+      '<div class="pn">'+esc(m.n)+'</div><div class="pp">'+fmt(R.ind[m.id])+'</div></div>';});
+    h+='</div>';
+  }
+  h+='<div class="rlist">';
+  ms.forEach((m,i)=>{
+    const p=R.ind[m.id], L=lvlOf(p), N=nextLvl(p), g=S.groups.find(x=>x.id===m.g);
+    const pct=N?Math.min(100,Math.round((p-L.min)/(N.min-L.min)*100)):100;
+    let tieNote='';
+    if(i>0 && R.ind[ms[i-1].id]===p){
+      const t=tieInd(ms[i-1].id,m.id,R);
+      tieNote = t.by==='EXTRA'
+        ? '<div class="lvl" style="color:var(--gold)">🟰 Empate com '+esc(ms[i-1].n)+' — pergunta bíblica extra</div>'
+        : (t.by ? '<div class="lvl" style="color:var(--gold)">⚖️ Atrás de '+esc(ms[i-1].n)+' por: '+t.by+'</div>' : '');
+    }
+    h+='<div class="rrow"><div class="pos">'+(i+1)+'º</div><div class="plant">'+L.e+'</div>'+
+    '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+'</div>'+
+    '<div class="lvl">'+L.n+(N?' · faltam '+fmt(N.min-p)+' p/ '+N.e:' · nível máximo!')+'</div>'+
+    '<div class="xp"><i style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
+    '<div class="pts">'+fmt(p)+'</div></div>';
+  });
+  h+='</div>';
+  h+='<div class="card"><h2>Desempate individual</h2><p class="hint">Em empate de pontos, o app aplica: acertos no dia oficial → presença na EBD → visitantes levados → menos penalidades. Persistindo, vai para pergunta bíblica extra.</p></div>';
+  h+='<div class="card"><h2>Níveis</h2>'+LEVELS.map(l=>'<span class="pill">'+l.e+' '+l.n+' · '+fmt(l.min)+'+</span>').join('')+'</div>';
+  return h;
+}
+
+function vTable(){
+  let h='<div class="card"><h2>Guia rápido de pontos</h2>';
+  for(const c of CATS_ALL){
+    h+='<details'+(c.id==='presenca'?' open':'')+'><summary>'+esc(c.name)+'</summary><table class="ptable">';
+    for(const a of c.acts){
+      const scope=a.s==='both'?'Seed + Grupo':(a.s==='group'?'Grupo':'Seed');
+      h+='<tr'+(a.v<0?' class="neg"':'')+'><td>'+esc(a.n)+'<br><span class="hint">'+scope+'</span></td>'+
+         '<td>'+(a.v<0?'−':'+')+fmt(Math.abs(a.v))+(a.unit?'/'+a.unit:'')+'</td></tr>';
+    }
+    h+='</table></details>';
+  }
+  h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Tetos: ofertas até 500 por Seed · alimentos até 1000 por grupo · agasalhos até 1000 por grupo.</p></div>';
+  return h;
+}
+</script>
+<script>
+/* ============ PAINEL DO LÍDER ============ */
+function vLogin(){
+  if(fbError==='config'){
+    return '<div class="card" style="border-color:var(--gold)"><h2>Configuração pendente</h2>'+
+    '<p class="hint">Este app precisa das credenciais do Firebase para funcionar em rede. Cole os dados do seu projeto no bloco <b>FIREBASE_CONFIG</b>, no topo do código, e recarregue. Enquanto isso, o ranking mostra o estado padrão (sem salvar).</p></div>';
+  }
+  return '<div class="card"><h2>Área da liderança</h2>'+
+  '<p class="hint">Entre com o e-mail e a senha de líder (conta do Firebase). Os Seeds acompanham o ranking <b>sem precisar de login</b>.</p>'+
+  '<div class="field"><label>E-mail</label><input id="lgEmail" type="email" autocomplete="username" placeholder="lider@exemplo.com"></div>'+
+  '<div class="field"><label>Senha</label><input id="lgPass" type="password" autocomplete="current-password" placeholder="••••••"></div>'+
+  '<button class="btn go" id="btnLogin">Entrar no painel</button>'+
+  (fbError==='read'?'<p class="hint" style="color:var(--danger);margin-top:10px">Não foi possível ler os dados. Confira as regras do Realtime Database.</p>':'')+
+  '</div>';
+}
+
+function actOptions(){
+  return CATS_ALL.map(c=>'<optgroup label="'+esc(c.name)+'">'+
+    c.acts.map(a=>'<option value="'+a.id+'">'+esc(a.n)+' ('+(a.v<0?'−':'+')+Math.abs(a.v)+(a.unit?'/'+a.unit:'')+')</option>').join('')+
+  '</optgroup>').join('');
+}
+
+function vPanel(R){
+  const e=editingId?S.entries.find(x=>x.id===editingId):null;
+  let selAct=e?e.act:(document.getElementById('fAct')?.value||'culto_sem');
+  let a=ACT[selAct];
+  if(!a){ selAct='culto_sem'; a=ACT[selAct]; }
+  const needMember = a.s!=='group';
+  const leaderNames=(S.leaders||[]).map(l=>l.name).filter(Boolean);
+  if(!logged || !leaderNames.includes(logged)) logged = leaderNames[0] || (currentUser&&currentUser.email) || 'Líder';
+  let h='<div class="card"><div class="who"><span class="wn">🛡️ '+esc(currentUser?currentUser.email:'líder')+'</span>'+
+    '<button class="btn ghost sm" id="btnLogout">Sair</button></div>';
+  if(leaderNames.length) h+='<div class="field"><label>Lançando como (aparece no histórico)</label><select id="fWho">'+
+    leaderNames.map(n=>'<option'+(n===logged?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></div>';
+  h+='<h2>'+(e?'Corrigir lançamento':'Lançar pontos')+'</h2>';
+  h+='<div class="field"><label>Atividade</label><select id="fAct">'+actOptions()+'</select></div>';
+  if(needMember){
+    h+='<div class="field"><label>Seed (adolescente)</label><select id="fMem">'+
+      S.members.map(m=>{const g=S.groups.find(x=>x.id===m.g);
+        return '<option value="'+m.id+'">'+esc(m.n)+' · '+esc(g?g.name:'?')+'</option>';}).join('')+'</select></div>';
+  }else{
+    h+='<div class="field"><label>Grupo</label><select id="fGrp">'+
+      S.groups.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select></div>';
+  }
+  h+='<div class="row2"><div class="field"><label>'+(a.unit?(a.unit==='R$'?'Valor (R$)':'Quantidade ('+esc(a.unit)+')'):'Quantidade')+'</label>'+
+     '<input id="fQty" type="number" min="1" value="'+(e?e.qty:1)+'"></div>'+
+     '<div class="field"><label>Data</label><input id="fDate" type="date" value="'+(e?e.d:new Date().toISOString().slice(0,10))+'"></div></div>';
+  h+='<div class="field"><label>Observação (opcional)</label><input id="fNote" maxlength="120" value="'+(e?esc(e.note||''):'')+'" placeholder="Ex.: nome do visitante, motivo da penalidade..."></div>';
+  h+='<div class="preview" id="fPrev"></div>';
+  h+='<button class="btn go" id="btnSave">'+(e?'Salvar correção':'Confirmar pontos')+'</button>';
+  if(e)h+='<button class="btn ghost" id="btnCancelEdit">Cancelar edição</button>';
+  h+='</div>';
+
+  /* histórico */
+  h+='<div class="card"><h2>Histórico ('+S.entries.length+')</h2>';
+  if(!S.entries.length)h+='<p class="hint">Nenhum lançamento ainda. O primeiro ponto planta a primeira semente!</p>';
+  [...S.entries].sort((x,y)=>y.ts-x.ts).slice(0,40).forEach(en=>{
+    const ac=ACT[en.act]; if(!ac)return;
+    const pts=ac.v*en.qty;
+    const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):(S.groups.find(g=>g.id===en.gid)?.name||'?');
+    h+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
+    '<div><div class="t1">'+esc(who)+' · '+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+    '<div class="t2">'+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
+    '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div>'+
+    '<div class="hact"><button class="btn ghost sm" data-edit="'+en.id+'">✏️ Corrigir</button>'+
+    '<button class="btn red sm" data-del="'+en.id+'">Excluir</button></div></div>';
+  });
+  if(S.entries.length>40)h+='<p class="hint" style="margin-top:8px">Mostrando os 40 mais recentes.</p>';
+  h+='</div>';
+
+  /* gestão */
+  h+='<div class="card"><h2>Gerenciar</h2>';
+  h+='<details><summary>🎯 Atividades personalizadas ('+S.customActs.length+')</summary>';
+  if(!S.customActs.length) h+='<p class="hint" style="margin-top:6px">As atividades do regulamento já estão no catálogo. Aqui você cria as extras — elas entram no seletor de lançamento e na Tabela na hora.</p>';
+  h+=S.customActs.map(a=>{const cnt=S.entries.filter(en=>en.act===a.id).length;
+    const sc=a.s==='both'?'Seed + grupo':a.s==='group'?'Só grupo':'Só Seed';
+    return '<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+      '<div><span class="t1">'+esc(a.n)+'</span><div class="t2">'+sc+' · '+(a.v<0?'−':'+')+fmt(Math.abs(a.v))+(a.unit?'/'+esc(a.unit):'')+(cnt?' · '+cnt+' lançamento(s)':'')+'</div></div>'+
+      '<button class="btn red sm" data-delact="'+a.id+'">Remover</button></div></div>';}).join('');
+  h+='<div class="field" style="margin-top:10px"><label>Nome da atividade</label><input id="naName" maxlength="60" placeholder="Ex.: Decorar o versículo da semana"></div>'+
+    '<div class="row2"><div class="field"><label>Pontos</label><input id="naVal" type="number" placeholder="Ex.: 50 (ou -30)"></div>'+
+    '<div class="field"><label>Quem recebe</label><select id="naScope"><option value="both">Seed + grupo</option><option value="group">Só grupo</option><option value="ind">Só o Seed</option></select></div></div>'+
+    '<div class="field"><label>Unidade (opcional)</label><input id="naUnit" maxlength="10" placeholder="Ex.: kg, peça, R$"></div>'+
+    '<button class="btn gold" id="btnAddAct">Cadastrar atividade</button>'+
+    '<p class="hint" style="margin-top:8px">Pontos negativos viram penalidade. Ao definir uma unidade, o líder informa a quantidade no lançamento. Remover uma atividade que já tem lançamentos faz esses pontos deixarem de contar.</p></details>';
+  h+='<details open><summary>💾 Backup / Migração</summary>'+
+    '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
+    '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
+    '<button class="btn gold" id="btnJson" style="margin-top:0">⬇️ Backup (.json)</button></div>'+
+    '<details style="margin-top:10px" open><summary>⬆️ Importar backup para o Firebase</summary>'+
+    '<p class="hint" style="margin-top:6px">Cole o conteúdo de um backup .json (o do app antigo serve). Isso <b>substitui</b> os dados no Firebase — use na migração inicial ou em recuperação.</p>'+
+    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:11px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
+    '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
+    '<button class="btn ghost" id="btnInit" style="margin-top:10px">Inicializar com os 18 participantes padrão</button>'+
+    '<p class="hint" style="margin-top:8px">💡 Como os dados ficam no Firebase, o ranking já é público e ao vivo — os Seeds veem sem login.</p></details>';
+  h+='<details><summary>👥 Líderes ('+S.leaders.length+')</summary>'+
+    '<p class="hint" style="margin-top:6px">Estes nomes aparecem no histórico (quem lançou). O <b>acesso</b> em si é controlado pelo e-mail/senha do Firebase — para dar ou tirar acesso, use a aba Authentication no console do Firebase.</p>'+
+    S.leaders.map((l,i)=>'<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center">'+
+      '<span class="t1">'+esc(l.name)+'</span>'+
+      (S.leaders.length>1?'<button class="btn red sm" data-delleader="'+l.id+'">Remover</button>':'')+'</div></div>').join('')+
+    '<div class="field" style="margin-top:10px"><input id="nlName" placeholder="Nome do líder (para o histórico)"></div>'+
+    '<button class="btn gold" id="btnAddLeader">Adicionar nome de líder</button></details>';
+  h+='<details><summary>🌱 Seeds e grupos</summary>'+
+    S.groups.map(g=>'<div style="margin-top:8px"><b style="color:'+g.color+'">'+esc(g.name)+'</b> '+
+      S.members.filter(m=>m.g===g.id).map(m=>'<span class="pill">'+esc(m.n)+' <a href="#" data-delmem="'+m.id+'" style="color:var(--danger);text-decoration:none">✕</a></span>').join('')+'</div>').join('')+
+    '<div class="row2" style="margin-top:10px"><input id="nmName" placeholder="Nome do Seed">'+
+    '<select id="nmGrp">'+S.groups.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select></div>'+
+    '<button class="btn gold" id="btnAddMem">Adicionar Seed</button>'+
+    '<div class="row2" style="margin-top:14px"><input id="rg1" value="'+esc(S.groups[0]?S.groups[0].name:'')+'"><input id="rg2" value="'+esc(S.groups[1]?S.groups[1].name:'')+'"></div>'+
+    '<button class="btn ghost" id="btnRenameG">Renomear grupos</button></details>';
+  h+='<p class="hint" style="margin-top:12px">⚠️ Os dados são públicos para leitura: todos que abrirem o link veem o ranking ao vivo. Só quem está logado consegue lançar e corrigir. Excluir um lançamento não pode ser desfeito.</p></div>';
+  return h;
+}
+
+/* ============ AÇÕES ============ */
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2600);}
+const uid=()=> 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* confirmação interna (o confirm() nativo é bloqueado no iframe do artifact) */
+function askConfirm(msg){
+  return new Promise(res=>{
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(10,8,5,.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px';
+    ov.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:340px;width:100%;padding:20px">'+
+      '<div style="font-weight:800;font-size:14px;line-height:1.5;color:var(--cream)">'+esc(msg)+'</div>'+
+      '<div style="display:flex;gap:10px;margin-top:18px">'+
+      '<button class="btn ghost" data-cf="0" style="margin-top:0;flex:1">Cancelar</button>'+
+      '<button class="btn red" data-cf="1" style="margin-top:0;flex:1">Confirmar</button></div></div>';
+    document.body.appendChild(ov);
+    const done=v=>{ov.remove();res(v);};
+    ov.querySelector('[data-cf="1"]').onclick=()=>done(true);
+    ov.querySelector('[data-cf="0"]').onclick=()=>done(false);
+    ov.onclick=e=>{ if(e.target===ov) done(false); };
+  });
+}
+
+/* ============ EXPORTAÇÃO / BACKUP ============ */
+const gName=id=>{const g=S.groups.find(x=>x.id===id);return g?g.name:'';};
+function stamp(){return new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');}
+
+function tryDownload(filename, blob){
+  try{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=filename; a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1500);
+    return true;
+  }catch(e){ return false; }
+}
+/* caixa de cópia manual: garantia caso o download seja bloqueado no iframe */
+function showCopyBox(title, text){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(10,8,5,.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:420px;width:100%;padding:18px">'+
+    '<div style="font-weight:900;font-size:14px;color:var(--gold);margin-bottom:6px">'+esc(title)+'</div>'+
+    '<p class="hint" style="margin-bottom:8px">Se o download não abrir, copie o conteúdo abaixo e cole num arquivo/e-mail.</p>'+
+    '<textarea readonly style="height:180px;font-family:monospace;font-size:11px">'+esc(text)+'</textarea>'+
+    '<div style="display:flex;gap:10px;margin-top:12px">'+
+    '<button class="btn gold" data-cp style="margin-top:0;flex:1">Copiar</button>'+
+    '<button class="btn ghost" data-cl style="margin-top:0;flex:1">Fechar</button></div></div>';
+  document.body.appendChild(ov);
+  const ta=ov.querySelector('textarea');
+  ov.querySelector('[data-cp]').onclick=()=>{ta.select();try{document.execCommand('copy');}catch(e){} toast('Copiado');};
+  ov.querySelector('[data-cl]').onclick=()=>ov.remove();
+  ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+}
+
+function buildSheets(){
+  const R=calc();
+  const indS=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
+  const ind=indS.map((m,i)=>{
+    let dz=''; if(i>0 && R.ind[indS[i-1].id]===R.ind[m.id]){ const t=tieInd(indS[i-1].id,m.id,R);
+      dz = t.by==='EXTRA'?'Empate — pergunta extra':(t.by?'Atrás por: '+t.by:''); }
+    return [i+1, m.n, gName(m.g), R.ind[m.id], dz];
+  });
+  const grpS=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const grp=grpS.map((g,i)=>{
+    let dz=''; if(i>0 && R.grp[grpS[i-1].id]===R.grp[g.id]){ const t=tieGroup(grpS[i-1].id,g.id,R);
+      dz = t.by==='EXTRA'?'Empate — pergunta extra':(t.by?'Atrás por: '+t.by:''); }
+    return [i+1, g.name, R.grp[g.id], S.members.filter(m=>m.g===g.id).length, dz];
+  });
+  const lanc=[...S.entries].sort((x,y)=>x.ts-y.ts).map(en=>{
+    const a=ACT[en.act]; if(!a) return null;
+    const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||''):'';
+    const scope=a.s==='both'?'Individual+Grupo':(a.s==='group'?'Grupo':'Individual');
+    return [en.d, en.leader||'', a.n, who, gName(en.gid), en.qty, scope, a.v, a.v*en.qty, en.note||''];
+  }).filter(Boolean);
+  const parts=[...S.members].sort((a,b)=>a.g.localeCompare(b.g)||a.n.localeCompare(b.n))
+    .map(m=>[m.n, gName(m.g), R.ind[m.id]]);
+  const ats=[]; CATS_ALL.forEach(c=>c.acts.forEach(a=>{
+    ats.push([a.n, c.name, a.s==='both'?'Individual+Grupo':(a.s==='group'?'Grupo':'Individual'), a.v, a.unit||'']);}));
+  return {
+    ind:[['Posição','Participante','Grupo','TOTAL','Desempate'], ...ind],
+    grp:[['Posição','Grupo','TOTAL','Seeds','Desempate'], ...grp],
+    lanc:[['Data','Líder','Atividade','Participante','Grupo','Qtd','Escopo','Pts base','Pts (base×qtd)','Observação'], ...lanc],
+    parts:[['Participante','Grupo','TOTAL'], ...parts],
+    ats:[['Atividade','Categoria','Escopo','Pontos','Unidade'], ...ats]
+  };
+}
+
+function exportXlsx(){
+  const S3=buildSheets();
+  if(typeof XLSX==='undefined'){ toast('Biblioteca não carregou — exportando CSV'); return exportCsv(); }
+  try{
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(S3.ind),   'Ranking Individual');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(S3.grp),   'Ranking Grupos');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(S3.lanc),  'Lançamentos');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(S3.parts), 'Participantes');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(S3.ats),   'Atividades');
+    const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    const ok=tryDownload('SeedsBattle_pontos_'+stamp()+'.xlsx', new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    toast(ok?'Excel exportado ✅':'Não foi possível baixar — veja a cópia');
+    if(!ok) exportCsv();
+  }catch(e){ toast('Erro no Excel — exportando CSV'); exportCsv(); }
+}
+
+function exportCsv(){
+  const S3=buildSheets();
+  const toCsv=rows=>rows.map(r=>r.map(c=>{const s=String(c??'');return /[",;\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\n');
+  const txt='RANKING INDIVIDUAL\n'+toCsv(S3.ind)+'\n\nRANKING GRUPOS\n'+toCsv(S3.grp)+'\n\nLANÇAMENTOS\n'+toCsv(S3.lanc);
+  const ok=tryDownload('SeedsBattle_pontos_'+stamp()+'.csv', new Blob(['\ufeff'+txt],{type:'text/csv;charset=utf-8'}));
+  if(!ok) showCopyBox('Pontos (CSV)', txt);
+}
+
+function backupObject(){
+  return {
+    app:'seeds-battle', edition:'ed1', key:KEY,
+    exportedAt:new Date().toISOString(),
+    counts:{
+      grupos:S.groups.length, participantes:S.members.length,
+      lideres:S.leaders.length, atividadesPersonalizadas:(S.customActs||[]).length,
+      lancamentos:S.entries.length
+    },
+    groups:S.groups,
+    members:S.members,
+    leaders:S.leaders,               /* nome + PIN de cada líder */
+    customActs:S.customActs||[],     /* atividades personalizadas */
+    entries:S.entries,
+    rosterSeeded:S.rosterSeeded||null
+  };
+}
+function exportJson(){
+  const txt=JSON.stringify(backupObject(),null,2);
+  const ok=tryDownload('SeedsBattle_backup_'+stamp()+'.json', new Blob([txt],{type:'application/json'}));
+  toast(ok?'Backup .json baixado ✅ (inclui líderes e atividades)':'Veja a cópia do backup');
+  if(!ok) showCopyBox('Backup completo (.json)', txt);
+}
+
+async function importJson(text){
+  if(!DB) return toast('Configure o Firebase antes de importar');
+  let data; try{ data=JSON.parse(text); }catch(e){ return toast('JSON inválido'); }
+  if(!data || !Array.isArray(data.members) || !Array.isArray(data.groups) || !Array.isArray(data.entries))
+    return toast('Backup não reconhecido');
+  const nLead=Array.isArray(data.leaders)?data.leaders.length:0;
+  const nAct=Array.isArray(data.customActs)?data.customActs.length:0;
+  if(!(await askConfirm('Importar para o Firebase? SUBSTITUI os dados atuais.\n\nVai gravar: '+data.members.length+' participantes, '+nLead+' líderes, '+nAct+' atividades e '+data.entries.length+' lançamentos.'))) return;
+  const leaders=(Array.isArray(data.leaders)&&data.leaders.length)
+    ? data.leaders.map(l=>({id:l.id||('l'+Math.random().toString(36).slice(2,8)), name:l.name}))
+    : [{id:'l1',name:'Coordenação'}];
+  const newCfg={ groups:data.groups, members:data.members, leaders,
+    customActs:Array.isArray(data.customActs)?data.customActs:[], rosterSeeded:data.rosterSeeded||'ed1-18' };
+  const eObj={};
+  for(const e of data.entries){
+    const k=DB.ref('entries').push().key;
+    const {id, ...rest}=e; eObj[k]=rest;
+  }
+  try{
+    await DB.ref('entries').set(eObj);
+    await DB.ref('config').set(newCfg);
+    toast('Importado ✅ '+leaders.length+' líderes · '+newCfg.customActs.length+' atividades · '+data.entries.length+' lançamentos');
+  }catch(err){ toast('Falha ao importar: '+(err.code||err.message)); }
+}
+
+async function initDefaults(){
+  if(!DB) return toast('Configure o Firebase antes');
+  if(!(await askConfirm('Inicializar com os 18 participantes padrão? Isso grava a configuração inicial (não apaga lançamentos existentes).'))) return;
+  try{ await DB.ref('config').set(defaultConfig()); toast('Configuração inicial gravada ✅'); }
+  catch(e){ toast('Falha: '+(e.code||e.message)); }
+}
+
+function updatePrev(){
+  const sel=document.getElementById('fAct'); if(!sel)return;
+  const a=ACT[sel.value], q=Math.max(1,parseInt(document.getElementById('fQty').value||'1',10));
+  const pts=a.v*q;
+  const scope=a.s==='both'?'Seed + grupo recebem':(a.s==='group'?'Só o grupo recebe':'Só o Seed recebe');
+  document.getElementById('fPrev').textContent=(pts<0?'−':'+')+fmt(Math.abs(pts))+' pts · '+scope+
+    (a.cap?' · sujeito a teto':'');
+}
+
+function bind(){
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{view=t.dataset.v;editingId=null;render();});
+  const q=id=>document.getElementById(id);
+  if(q('btnLogin'))q('btnLogin').onclick=async()=>{
+    if(!AUTH) return toast('Firebase não configurado');
+    const email=q('lgEmail').value.trim(), pass=q('lgPass').value;
+    if(!email||!pass) return toast('Preencha e-mail e senha');
+    try{ await AUTH.signInWithEmailAndPassword(email,pass); toast('Bem-vindo(a)!'); }
+    catch(err){ toast('Falha no login: '+(err.code||err.message)); }
+  };
+  if(q('btnLogout'))q('btnLogout').onclick=async()=>{ editingId=null; try{ await AUTH.signOut(); }catch(e){} };
+  if(q('fWho'))q('fWho').onchange=()=>{ logged=q('fWho').value; };
+  if(q('fAct')){
+    q('fAct').onchange=()=>{const keep=q('fAct').value;render();
+      const s=document.getElementById('fAct');if(s){s.value=keep;updatePrev();}};
+    q('fQty').oninput=updatePrev; updatePrev();
+    if(editingId){const e=S.entries.find(x=>x.id===editingId);
+      if(e){q('fAct').value=e.act;
+        if(q('fMem')&&e.mid)q('fMem').value=e.mid;
+        if(q('fGrp'))q('fGrp').value=e.gid; updatePrev();}}
+  }
+  if(q('btnSave'))q('btnSave').onclick=async()=>{
+    const act=q('fAct').value, a=ACT[act];
+    const qty=Math.max(1,parseInt(q('fQty').value||'1',10));
+    const d=q('fDate').value||new Date().toISOString().slice(0,10);
+    const note=q('fNote').value.trim();
+    let mid=null,gid;
+    if(a.s!=='group'){mid=q('fMem').value;gid=S.members.find(m=>m.id===mid).g;}
+    else gid=q('fGrp').value;
+    if(editingId){
+      const e=S.entries.find(x=>x.id===editingId);
+      const obj={ts:e.ts||Date.now(),act,qty,d,note,mid,gid,leader:(e.leader||'')+' (corr. '+logged+')'};
+      const key=editingId; editingId=null; await fbSetEntry(key,obj); toast('Lançamento corrigido ✏️');
+    }else{
+      await fbAddEntry({ts:Date.now(),act,qty,d,note,mid,gid,leader:logged});
+      toast((a.v<0?'Penalidade registrada':'+'+fmt(a.v*qty)+' pts lançados! 🌱'));
+    }
+  };
+  if(q('btnCancelEdit'))q('btnCancelEdit').onclick=()=>{editingId=null;render();};
+  document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editingId=b.dataset.edit;render();window.scrollTo({top:0,behavior:'smooth'});});
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+    if(!(await askConfirm('Excluir este lançamento? Não pode ser desfeito.')))return;
+    await fbDelEntry(b.dataset.del); toast('Lançamento excluído');});
+  if(q('btnAddLeader'))q('btnAddLeader').onclick=async()=>{
+    const n=q('nlName').value.trim();
+    if(n.length<2)return toast('Digite o nome do líder');
+    if(S.leaders.some(l=>l.name.toLowerCase()===n.toLowerCase()))return toast('Já existe líder com esse nome');
+    const c=currentConfig(); c.leaders=[...c.leaders,{id:'l'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:n}];
+    await fbSaveConfig(c); toast('Líder '+n+' adicionado 🛡️');};
+  document.querySelectorAll('[data-delleader]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.delleader;
+    if(S.leaders.length<=1)return toast('Mantenha ao menos 1 nome de líder');
+    const leader=S.leaders.find(l=>l.id===id); if(!leader)return toast('Não encontrado');
+    if(!(await askConfirm('Remover o nome "'+leader.name+'" do histórico? (Isso não remove o acesso — faça isso no Firebase Authentication.)')))return;
+    if(leader.name===logged) logged=null;
+    const c=currentConfig(); c.leaders=c.leaders.filter(l=>l.id!==id);
+    await fbSaveConfig(c); toast('Nome removido'); });
+  if(q('btnAddMem'))q('btnAddMem').onclick=async()=>{
+    const n=q('nmName').value.trim();if(n.length<2)return toast('Digite o nome');
+    const c=currentConfig(); c.members=[...c.members,{id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,4),n,g:q('nmGrp').value}];
+    await fbSaveConfig(c); toast(n+' entrou na batalha! 🌱');};
+  document.querySelectorAll('[data-delmem]').forEach(b=>b.onclick=async ev=>{
+    ev.preventDefault();
+    const m=S.members.find(x=>x.id===b.dataset.delmem);
+    if(!(await askConfirm('Remover '+m.n+'? Os lançamentos dele(a) continuam no histórico do grupo.')))return;
+    const c=currentConfig(); c.members=c.members.filter(x=>x.id!==m.id);
+    await fbSaveConfig(c);});
+  if(q('btnRenameG'))q('btnRenameG').onclick=async()=>{
+    const c=currentConfig();
+    if(c.groups[0])c.groups[0].name=q('rg1').value.trim()||c.groups[0].name;
+    if(c.groups[1])c.groups[1].name=q('rg2').value.trim()||c.groups[1].name;
+    await fbSaveConfig(c);toast('Grupos atualizados');};
+  if(q('btnInit'))q('btnInit').onclick=()=>initDefaults();
+  if(q('btnXlsx'))q('btnXlsx').onclick=()=>exportXlsx();
+  if(q('btnJson'))q('btnJson').onclick=()=>exportJson();
+  if(q('btnRestore'))q('btnRestore').onclick=()=>importJson(q('restoreTxt').value.trim());
+  if(q('btnAddAct'))q('btnAddAct').onclick=async()=>{
+    const n=q('naName').value.trim(), v=parseInt(q('naVal').value,10), s=q('naScope').value, unit=q('naUnit').value.trim();
+    if(n.length<2)return toast('Digite o nome da atividade');
+    if(!Number.isFinite(v)||v===0)return toast('Informe os pontos (diferente de 0)');
+    const act={id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), n, v, s};
+    if(unit)act.unit=unit;
+    const c=currentConfig(); c.customActs=[...(c.customActs||[]),act];
+    await fbSaveConfig(c); toast('Atividade "'+n+'" cadastrada 🎯');};
+  document.querySelectorAll('[data-delact]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.delact, used=S.entries.filter(e=>e.act===id).length;
+    const msg=used?('Essa atividade tem '+used+' lançamento(s). Se remover, esses pontos deixam de contar. Remover mesmo assim?'):'Remover esta atividade personalizada?';
+    if(!(await askConfirm(msg)))return;
+    const c=currentConfig(); c.customActs=(c.customActs||[]).filter(a=>a.id!==id);
+    await fbSaveConfig(c); toast('Atividade removida');});
+}
+load();
+</script>
+</body>
+</html>
