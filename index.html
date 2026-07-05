@@ -49,19 +49,131 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710f2;border-top:1px s
 
 /* battle hero */
 .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:14px}
-.gcard{border-radius:var(--r);padding:14px 12px;text-align:center;border:1px solid var(--line);background:var(--card)}
-.gcard.lead{box-shadow:0 0 0 1px var(--gold),0 6px 24px -8px rgba(245,197,66,.35)}
+.gcard{position:relative;border-radius:var(--r);padding:14px 12px;text-align:center;border:1px solid var(--line);background:var(--card)}
+.gcard.lead{box-shadow:0 0 0 1px var(--gold),0 6px 24px -8px rgba(245,197,66,.35);animation:leadPulse 2.4s ease-in-out infinite}
 .gseed{font-size:34px;line-height:1}
 .gname{font-weight:900;font-size:15px;margin-top:6px;word-break:break-word}
 .gpts{font-family:'Bungee';font-size:26px;margin-top:4px}
 .gsub{color:var(--muted);font-size:11px;font-weight:700;margin-top:2px}
 .vsmid{display:flex;align-items:center;justify-content:center}
 .vsbadge{font-family:'Bungee';color:var(--soil);background:var(--gold);border-radius:10px;padding:8px 9px;font-size:15px}
-.duel{margin-top:14px;background:var(--soil2);border:1px solid var(--line);border-radius:999px;height:22px;
+.duel{position:relative;margin-top:14px;background:var(--soil2);border:1px solid var(--line);border-radius:999px;height:22px;
   overflow:hidden;display:flex}
 .duel>div{height:100%;transition:width .8s cubic-bezier(.2,.8,.2,1)}
 .duel .d1{background:linear-gradient(90deg,var(--g1),#a8e878)}
 .duel .d2{background:linear-gradient(90deg,#ffc86b,var(--g2));margin-left:auto}
+.duel .seam{position:absolute;top:0;bottom:0;left:var(--w1,50%);width:2px;transform:translateX(-1px);
+  background:rgba(255,255,255,.92);box-shadow:0 0 8px 2px var(--gold);opacity:.7;
+  transition:left .8s cubic-bezier(.2,.8,.2,1);animation:seamGlow 2s ease-in-out infinite}
+@keyframes seamGlow{0%,100%{opacity:.45}50%{opacity:.9}}
+/* aba Grupos — pulso do líder, entrada em cascata e partículas */
+@keyframes leadPulse{
+  0%,100%{box-shadow:0 0 0 1px var(--gold),0 6px 20px -10px rgba(245,197,66,.4)}
+  50%{box-shadow:0 0 0 1px var(--gold),0 10px 30px -6px rgba(245,197,66,.7)}}
+@keyframes gPop{0%{opacity:0;transform:translateY(24px) scale(.8)}60%{opacity:1;transform:translateY(-5px) scale(1.05)}100%{opacity:1;transform:none}}
+@keyframes gFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.gEnter .gcard,.gEnter .vsmid{animation:gPop .5s cubic-bezier(.2,1.25,.4,1) both}
+.gEnter .vs .gcard:nth-child(1){animation-delay:.04s}
+.gEnter .vs .vsmid{animation-delay:.16s}
+.gEnter .vs .gcard:nth-child(3){animation-delay:.28s}
+.gEnter .duel{animation:gFade .5s ease .34s both}
+.gEnter .pill{animation:gFade .4s ease both;animation-delay:calc(var(--i,0)*28ms + .12s)}
+/* aba Seeds — entrada em cascata + brilho da medalha */
+.iEnter .pod{animation:gPop .5s cubic-bezier(.2,1.25,.4,1) both}
+.iEnter .podium .pod:nth-child(1){animation-delay:.1s}
+.iEnter .podium .pod:nth-child(2){animation-delay:0s}
+.iEnter .podium .pod:nth-child(3){animation-delay:.16s}
+.iEnter .rrow{animation:gFade .4s ease both;animation-delay:calc(var(--i,0)*45ms + .1s)}
+.pod.p1 .medal{display:inline-block;animation:medalShine 2.6s ease-in-out infinite}
+@keyframes medalShine{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.12) rotate(4deg)}}
+.leadfx{position:absolute;inset:0;pointer-events:none;z-index:3}
+.leadfx span{position:absolute;left:50%;top:40%;width:7px;height:7px;border-radius:99px;
+  background:var(--gold);box-shadow:0 0 6px var(--gold);opacity:0;animation:leadSpark .8s ease-out forwards}
+@keyframes leadSpark{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+  15%{opacity:1}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1)}}
+/* fundos temáticos por aba */
+.gwrap,.iwrap,.twrap,.lwrap{position:relative}
+.gwrap>*,.iwrap>*,.twrap>*,.lwrap>*{position:relative;z-index:1}
+.tabbg{position:absolute;top:-14px;left:-14px;right:-14px;height:300px;z-index:0;pointer-events:none;
+  opacity:.5;-webkit-mask-image:linear-gradient(#000 52%,transparent);mask-image:linear-gradient(#000 52%,transparent)}
+.gbg .bg-sun circle{fill:var(--gold);opacity:.9}
+.gbg .bg-rays line{stroke:var(--gold);stroke-width:3;stroke-linecap:round}
+.gbg .bg-rays{transform-box:fill-box;transform-origin:center;animation:bgSpin 26s linear infinite}
+.gbg .bg-path{fill:none;stroke:var(--line);stroke-width:6;stroke-dasharray:2 12;stroke-linecap:round}
+.gbg .bg-soil{fill:var(--soil2)}
+.gbg .bg-furrow path{fill:none;stroke:var(--line);stroke-width:3;stroke-linecap:round}
+.gbg .bg-sprout path{fill:none;stroke:var(--leaf);stroke-width:3;stroke-linecap:round}
+.gbg .bg-sprout>g{transform-box:fill-box;transform-origin:bottom center;animation:bgSway 6s ease-in-out infinite}
+.gbg .bg-sprout>g:nth-child(2){animation-duration:7.5s;animation-delay:-2s}
+.gbg .bg-sprout>g:nth-child(3){animation-duration:5.5s;animation-delay:-1s}
+.gbg .bg-seeds circle{fill:var(--leaf-dim);animation:bgFloat 7s ease-in-out infinite}
+.gbg .bg-seeds circle:nth-child(2n){animation-duration:9s}
+.gbg .bg-seeds circle:nth-child(3n){animation-duration:6s;animation-delay:-2s}
+@keyframes bgSpin{to{transform:rotate(360deg)}}
+@keyframes bgSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes bgFloat{0%,100%{transform:translateY(0);opacity:.7}50%{transform:translateY(-6px);opacity:1}}
+/* fundo aba Seeds */
+.seedsbg .sb-leaf{fill:var(--leaf);opacity:.16}
+.seedsbg .sb-vein{fill:none;stroke:var(--leaf-dim);stroke-width:2;opacity:.4}
+.seedsbg .stalk{fill:none;stroke:var(--leaf-dim);stroke-width:3;stroke-linecap:round}
+.seedsbg .lf{fill:none;stroke:var(--leaf);stroke-width:3;stroke-linecap:round}
+.seedsbg .sb-plants>g{transform-box:fill-box;transform-origin:bottom center;animation:bgSway 6s ease-in-out infinite}
+.seedsbg .sb-plants>g:nth-child(2){animation-duration:7s;animation-delay:-1s}
+.seedsbg .sb-plants>g:nth-child(3){animation-duration:5.5s;animation-delay:-2s}
+.seedsbg .sb-plants>g:nth-child(4){animation-duration:6.5s;animation-delay:-.5s}
+.seedsbg .sb-plants>g:nth-child(5){animation-duration:7.5s;animation-delay:-3s}
+/* fundo aba Tabela */
+.tablebg .tb-rays path{fill:var(--gold);opacity:.1}
+.tablebg .tb-rays{animation:tbGlow 5s ease-in-out infinite}
+.tablebg .pg{fill:var(--card2);stroke:var(--line);stroke-width:2}
+.tablebg .spine{fill:none;stroke:var(--gold);stroke-width:2}
+.tablebg .tb-lines path{stroke:var(--muted);stroke-width:2;stroke-linecap:round;opacity:.5}
+.tablebg .tb-spark{fill:var(--gold);animation:bgFloat 4s ease-in-out infinite}
+/* fundo aba Líder */
+.leaderbg .lb-rays path{fill:var(--gold);opacity:.1}
+.leaderbg .lb-rays{animation:tbGlow 5s ease-in-out infinite}
+.leaderbg .sh{fill:none;stroke:var(--gold);stroke-width:3;opacity:.6}
+.leaderbg .sh-in{fill:var(--card2);stroke:var(--line);stroke-width:2}
+.leaderbg .sh-leaf{fill:var(--leaf);opacity:.7}
+.leaderbg .lb-shield{transform-box:fill-box;transform-origin:center;animation:shieldPulse 3.5s ease-in-out infinite}
+@keyframes tbGlow{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes shieldPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+/* ===== backdrop global animado (todas as abas) ===== */
+#fx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.wrap{position:relative;z-index:1}
+.fx-glow{position:absolute;border-radius:50%;filter:blur(64px);opacity:.2}
+.fx-glow.g-leaf{width:340px;height:340px;background:var(--leaf);left:-90px;top:8%;animation:fxDrift1 18s ease-in-out infinite}
+.fx-glow.g-gold{width:300px;height:300px;background:var(--gold);right:-80px;top:42%;animation:fxDrift2 22s ease-in-out infinite}
+.fx-glow.g-leaf2{width:260px;height:260px;background:var(--leaf-dim);left:30%;bottom:-100px;animation:fxDrift1 26s ease-in-out infinite reverse}
+@keyframes fxDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,30px) scale(1.15)}}
+@keyframes fxDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-40px,-30px) scale(1.12)}}
+.fx-p{position:absolute;bottom:-40px;opacity:0;will-change:transform,opacity;animation:fxRise linear infinite}
+@keyframes fxRise{
+  0%{transform:translateY(0) translateX(0) rotate(0);opacity:0}
+  10%{opacity:.55}
+  90%{opacity:.55}
+  100%{transform:translateY(-118vh) translateX(var(--sx,0)) rotate(var(--rot,180deg));opacity:0}}
+/* ===== entrada em cascata Tabela / Líder ===== */
+.tEnter .card{animation:gPop .5s cubic-bezier(.2,1.25,.4,1) both}
+.tEnter details{animation:gFade .4s ease both;animation-delay:calc(var(--i,0)*55ms + .12s)}
+.lEnter .card{animation:gPop .5s cubic-bezier(.2,1.25,.4,1) both}
+.lEnter .card:nth-child(2){animation-delay:.06s}
+.lEnter .card:nth-child(3){animation-delay:.16s}
+.lEnter .card:nth-child(4){animation-delay:.26s}
+/* ===== brilho de varredura (shimmer) — cara de game ===== */
+.vsbadge,.pod.p1{position:relative;overflow:hidden}
+.vsbadge::after,.pod.p1::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-20deg);
+  animation:sweep 3.2s ease-in-out infinite}
+.pod.p1::after{animation-duration:3.8s}
+@keyframes sweep{0%{left:-70%}35%{left:130%}100%{left:130%}}
+/* ===== nav com feedback de game ===== */
+.tab{transition:transform .12s ease}
+.tab:active{transform:scale(.88)}
+.tab.on .ic{animation:tabBounce 1.8s ease-in-out infinite}
+@keyframes tabBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.12)}}
 .legend{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:800;margin-top:6px}
 
 /* individual ranking */
@@ -135,6 +247,12 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 </style>
 </head>
 <body>
+<div id="fx" aria-hidden="true">
+  <div class="fx-glow g-leaf"></div>
+  <div class="fx-glow g-gold"></div>
+  <div class="fx-glow g-leaf2"></div>
+  <div class="fx-parts"></div>
+</div>
 <div class="wrap">
   <header>
     <div class="logo display">SEEDS <span class="b">BATTLE</span></div>
@@ -380,17 +498,193 @@ const fmt=n=>n.toLocaleString('pt-BR');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ============ RENDER ============ */
+let renderPrevView=null;
 function render(){
   if(!S) rebuildS();
   rebuildCatalog();
   const app=document.getElementById('app');
   const R=calc();
-  if(view==='groups') app.innerHTML=vGroups(R);
-  else if(view==='ind') app.innerHTML=vInd(R);
-  else if(view==='table') app.innerHTML=vTable();
-  else app.innerHTML = currentUser ? vPanel(R) : vLogin();
+  if(view==='groups'){ app.innerHTML=vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
+  else if(view==='ind'){ app.innerHTML=vInd(R); animateInd(R, renderPrevView!=='ind'); }
+  else if(view==='table'){ app.innerHTML='<div class="twrap">'+TABLE_BG+vTable()+'</div>'; animateSimple('.twrap','tEnter', renderPrevView!=='table'); }
+  else { app.innerHTML='<div class="lwrap">'+LEADER_BG+(currentUser?vPanel(R):vLogin())+'</div>'; animateSimple('.lwrap','lEnter', renderPrevView!=='leader'); }
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
+  renderPrevView=view;
   bind();
+}
+
+/* ===== Animações da aba Grupos — estado persiste FORA do #app (innerHTML) ===== */
+let gAnim={shown:{}, w1:null, lastLead:undefined}, gCountRAF={};
+function prefersReduced(){ return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+function animCount(gid, el, from, to, dur){
+  cancelAnimationFrame(gCountRAF[gid]);
+  if(from===to){ el.textContent=fmt(to); return; }
+  const t0=performance.now();
+  const step=t=>{
+    const p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.round(from+(to-from)*e));
+    if(p<1) gCountRAF[gid]=requestAnimationFrame(step); else el.textContent=fmt(to);
+  };
+  gCountRAF[gid]=requestAnimationFrame(step);
+}
+function spawnLeadFx(card){
+  const box=document.createElement('div'); box.className='leadfx';
+  for(let i=0;i<10;i++){
+    const s=document.createElement('span');
+    const ang=(Math.PI*2)*(i/10)+Math.random()*.5, dist=26+Math.random()*22;
+    s.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(1)+'px');
+    s.style.setProperty('--dy',(Math.sin(ang)*dist).toFixed(1)+'px');
+    s.style.animationDelay=(Math.random()*80|0)+'ms';
+    box.appendChild(s);
+  }
+  card.appendChild(box);
+  setTimeout(()=>box.remove(),900);
+}
+function animateGroups(R, isEntry){
+  const RM=prefersReduced();
+  const wrap=document.querySelector('.gwrap');
+  if(wrap && isEntry && !RM) wrap.classList.add('gEnter');
+  /* contagem dos pontos: só do 0 na entrada; senão só anima se o valor mudou */
+  document.querySelectorAll('.gpts[data-gid]').forEach(el=>{
+    const gid=el.dataset.gid, to=R.grp[gid]||0;
+    if(RM){ el.textContent=fmt(to); gAnim.shown[gid]=to; return; }
+    const prev=gAnim.shown[gid];
+    const from=isEntry?0:(prev===undefined?to:prev);
+    animCount(gid, el, from, to, 900);
+    gAnim.shown[gid]=to;
+  });
+  /* barra de duelo + seam luminoso */
+  const duel=document.querySelector('.gwrap .duel'), d1=duel&&duel.querySelector('.d1'), d2=duel&&duel.querySelector('.d2');
+  if(d1&&d2){
+    const g1=S.groups[0], g2=S.groups[1];
+    const target=Math.round((R.grp[g1.id]||0)/(((R.grp[g1.id]||0)+(R.grp[g2.id]||0))||1)*100);
+    const setW=v=>{ d1.style.width=v+'%'; d2.style.width=(100-v)+'%'; duel.style.setProperty('--w1',v+'%'); };
+    if(RM){ setW(target); gAnim.w1=target; }
+    else{
+      const start=isEntry?0:(gAnim.w1==null?target:gAnim.w1);
+      setW(start);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>setW(target)));
+      gAnim.w1=target;
+    }
+  }
+  /* partículas quando um grupo ASSUME a liderança (mudança real, não 1ª pintura) */
+  const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const t01=gs.length>1?tieGroup(gs[0].id,gs[1].id,R):{n:0};
+  const leadId=t01.n!==0?gs[0].id:null;
+  if(!RM && leadId && gAnim.lastLead!==undefined && gAnim.lastLead!==leadId){
+    const card=document.querySelector('.gcard[data-gid="'+leadId+'"]');
+    if(card) spawnLeadFx(card);
+  }
+  gAnim.lastLead=leadId;
+}
+
+/* ===== Animações da aba Seeds (mesma lógica de estado fora do #app) ===== */
+let iAnim={pts:{}, xp:{}};
+function animateInd(R, isEntry){
+  const RM=prefersReduced();
+  const wrap=document.querySelector('.iwrap');
+  if(wrap && isEntry && !RM) wrap.classList.add('iEnter');
+  /* contagem dos pontos (pódio + linhas). Lê o valor anterior ANTES de atualizar. */
+  document.querySelectorAll('[data-ptsmid]').forEach(el=>{
+    const mid=el.dataset.ptsmid, to=R.ind[mid]||0;
+    if(RM){ el.textContent=fmt(to); return; }
+    const prev=iAnim.pts[mid];
+    const from=isEntry?0:(prev===undefined?to:prev);
+    animCount('i'+el.dataset.k, el, from, to, 900);
+  });
+  S.members.forEach(m=>{ iAnim.pts[m.id]=R.ind[m.id]||0; });
+  /* barras de XP */
+  document.querySelectorAll('.xp>i[data-xpmid]').forEach(el=>{
+    const mid=el.dataset.xpmid, target=parseFloat(el.dataset.pct)||0;
+    if(RM){ el.style.width=target+'%'; iAnim.xp[mid]=target; return; }
+    const prev=iAnim.xp[mid];
+    const start=isEntry?0:(prev===undefined?target:prev);
+    el.style.width=start+'%';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.width=target+'%'; }));
+    iAnim.xp[mid]=target;
+  });
+}
+
+/* Fundo temático "Parábola do Semeador" (aba Grupos) — só transform/opacity animam */
+const GROUPS_BG =
+ '<svg class="gbg tabbg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true">'+
+ '<g class="bg-sun"><circle cx="352" cy="46" r="24"/>'+
+   '<g class="bg-rays"><line x1="352" y1="4" x2="352" y2="16"/><line x1="352" y1="76" x2="352" y2="88"/>'+
+   '<line x1="310" y1="46" x2="322" y2="46"/><line x1="382" y1="46" x2="394" y2="46"/>'+
+   '<line x1="322" y1="16" x2="330" y2="24"/><line x1="374" y1="68" x2="382" y2="76"/>'+
+   '<line x1="382" y1="16" x2="374" y2="24"/><line x1="330" y1="68" x2="322" y2="76"/></g></g>'+
+ '<path class="bg-path" d="M-20 250 Q120 220 200 248 T420 240"/>'+
+ '<path class="bg-soil" d="M-20 262 Q90 236 200 260 T420 252 V320 H-20 Z"/>'+
+ '<g class="bg-furrow"><path d="M20 280 Q120 264 210 282"/><path d="M60 294 Q160 278 260 296"/></g>'+
+ '<g class="bg-sprout">'+
+   '<g><path d="M150 262 V236"/><path d="M150 248 q-13 -6 -17 -18 q13 2 17 14"/><path d="M150 242 q13 -6 17 -18 q-13 2 -17 14"/></g>'+
+   '<g><path d="M250 260 V242"/><path d="M250 250 q-9 -4 -12 -13 q9 1 12 10"/></g>'+
+   '<g><path d="M96 270 V250"/><path d="M96 258 q10 -5 13 -15 q-10 2 -13 12"/></g></g>'+
+ '<g class="bg-seeds"><circle cx="120" cy="150" r="3"/><circle cx="180" cy="118" r="2.5"/>'+
+   '<circle cx="230" cy="160" r="3"/><circle cx="90" cy="186" r="2.5"/><circle cx="286" cy="134" r="2.5"/>'+
+   '<circle cx="150" cy="202" r="2"/><circle cx="320" cy="182" r="2.5"/><circle cx="60" cy="140" r="2"/></g>'+
+ '</svg>';
+
+/* Fundo aba Seeds — brotos crescendo (progressão de níveis) + folha */
+const SEEDS_BG =
+ '<svg class="seedsbg tabbg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true">'+
+ '<path class="sb-leaf" d="M298 24 q78 8 86 86 q-78 -8 -86 -86 Z"/>'+
+ '<path class="sb-vein" d="M305 31 q44 40 72 72"/>'+
+ '<g class="sb-plants">'+
+  '<g><path class="stalk" d="M60 292 V252"/><path class="lf" d="M60 268 q-14 -6 -18 -19 q14 2 18 15"/><path class="lf" d="M60 262 q14 -6 18 -19 q-14 2 -18 15"/></g>'+
+  '<g><path class="stalk" d="M130 292 V228"/><path class="lf" d="M130 250 q-15 -7 -19 -21 q15 2 19 16"/><path class="lf" d="M130 244 q15 -7 19 -21 q-15 2 -19 16"/></g>'+
+  '<g><path class="stalk" d="M200 292 V202"/><path class="lf" d="M200 230 q-16 -7 -21 -22 q16 3 21 17"/><path class="lf" d="M200 224 q16 -7 21 -22 q-16 3 -21 17"/></g>'+
+  '<g><path class="stalk" d="M270 292 V180"/><path class="lf" d="M270 210 q-16 -8 -22 -24 q17 3 22 18"/><path class="lf" d="M270 204 q16 -8 22 -24 q-17 3 -22 18"/></g>'+
+  '<g><path class="stalk" d="M340 292 V150"/><path class="lf" d="M340 188 q-18 -8 -24 -26 q18 3 24 20"/><path class="lf" d="M340 182 q18 -8 24 -26 q-18 3 -24 20"/></g>'+
+ '</g></svg>';
+
+/* Fundo aba Tabela — livro aberto (Parábolas / estudo) + raios */
+const TABLE_BG =
+ '<svg class="tablebg tabbg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true">'+
+ '<g class="tb-rays"><path d="M200 120 L120 -20 L162 -20 Z"/><path d="M200 120 L198 -30 L242 -22 Z"/><path d="M200 120 L280 -20 L322 -20 Z"/></g>'+
+ '<g class="tb-book">'+
+  '<path class="pg" d="M200 96 C160 78 120 78 96 92 V196 C120 182 160 182 200 200 Z"/>'+
+  '<path class="pg" d="M200 96 C240 78 280 78 304 92 V196 C280 182 240 182 200 200 Z"/>'+
+  '<path class="spine" d="M200 96 V200"/>'+
+  '<g class="tb-lines"><path d="M118 116 H182"/><path d="M118 132 H182"/><path d="M118 148 H176"/>'+
+   '<path d="M218 116 H282"/><path d="M218 132 H282"/><path d="M218 148 H276"/></g>'+
+ '</g>'+
+ '<circle class="tb-spark" cx="200" cy="72" r="5"/></svg>';
+
+/* Fundo aba Líder — escudo (guardião) + raios */
+const LEADER_BG =
+ '<svg class="leaderbg tabbg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true">'+
+ '<g class="lb-rays"><path d="M200 130 L110 -10 L152 -10 Z"/><path d="M200 130 L198 -20 L246 -12 Z"/><path d="M200 130 L290 -10 L332 -10 Z"/></g>'+
+ '<g class="lb-shield">'+
+  '<path class="sh" d="M200 60 L256 78 V132 C256 172 232 196 200 210 C168 196 144 172 144 132 V78 Z"/>'+
+  '<path class="sh-in" d="M200 78 L240 92 V132 C240 162 222 182 200 192 C178 182 160 162 160 132 V92 Z"/>'+
+  '<path class="sh-leaf" d="M200 110 q-13 11 -13 28 q13 -4 13 -15 q0 11 13 15 q0 -17 -13 -28 Z"/>'+
+ '</g></svg>';
+
+/* backdrop global animado (partículas subindo) — criado 1x, vive fora do #app */
+function buildFx(){
+  const host=document.querySelector('.fx-parts');
+  if(!host || host.childElementCount || prefersReduced()) return;
+  const emo=['🌱','🍃','🌿','✨','🌰','⭐'];
+  for(let i=0;i<16;i++){
+    const s=document.createElement('span'); s.className='fx-p';
+    s.textContent=emo[i%emo.length];
+    s.style.left=(Math.random()*100).toFixed(1)+'%';
+    s.style.fontSize=(12+Math.random()*18).toFixed(0)+'px';
+    s.style.setProperty('--sx',(Math.random()*90-45).toFixed(0)+'px');
+    s.style.setProperty('--rot',(Math.random()*360-180).toFixed(0)+'deg');
+    const dur=(11+Math.random()*13).toFixed(1);
+    s.style.animationDuration=dur+'s';
+    s.style.animationDelay=(-Math.random()*dur).toFixed(1)+'s';
+    host.appendChild(s);
+  }
+}
+
+/* entrada genérica em cascata (Tabela / Líder) — só na entrada da aba */
+function animateSimple(sel, cls, isEntry){
+  if(prefersReduced() || !isEntry) return;
+  const el=document.querySelector(sel);
+  if(el) el.classList.add(cls);
 }
 
 function vGroups(R){
@@ -399,19 +693,19 @@ function vGroups(R){
   const g1=S.groups[0],g2=S.groups[1];
   const tie01=(gs.length>1)?tieGroup(gs[0].id,gs[1].id,R):{n:0,by:'EXTRA'};
   const leadId=tie01.n!==0?gs[0].id:null;
-  let h='<div class="vs">';
+  let h='<div class="gwrap">'+GROUPS_BG+'<div class="vs">';
   [g1,g2].forEach((g,i)=>{
     const leadCls=g.id===leadId?' lead':'';
     const mem=S.members.filter(m=>m.g===g.id).length;
-    h+='<div class="gcard'+leadCls+'"><div class="gseed">'+g.seed+'</div>'+
+    h+='<div class="gcard'+leadCls+'" data-gid="'+g.id+'"><div class="gseed">'+g.seed+'</div>'+
        '<div class="gname" style="color:'+g.color+'">'+esc(g.name)+'</div>'+
-       '<div class="gpts display">'+fmt(R.grp[g.id])+'</div>'+
+       '<div class="gpts display" data-gid="'+g.id+'">'+fmt(R.grp[g.id])+'</div>'+
        '<div class="gsub">'+mem+' seeds</div></div>';
     if(i===0)h+='<div class="vsmid"><div class="vsbadge">VS</div></div>';
   });
   h+='</div>';
   const w1=Math.round(R.grp[g1.id]/(R.grp[g1.id]+R.grp[g2.id]||1)*100);
-  h+='<div class="duel"><div class="d1" style="width:'+w1+'%"></div><div class="d2" style="width:'+(100-w1)+'%"></div></div>';
+  h+='<div class="duel" style="--w1:'+w1+'%"><div class="d1" style="width:'+w1+'%"></div><div class="d2" style="width:'+(100-w1)+'%"></div><span class="seam"></span></div>';
   h+='<div class="legend"><span><span class="gdot" style="background:'+g1.color+'"></span>'+esc(g1.name)+'</span>'+
      '<span>'+esc(g2.name)+'<span class="gdot" style="background:'+g2.color+';margin:0 0 0 5px"></span></span></div>';
   if(tie01.by!==null){
@@ -424,7 +718,7 @@ function vGroups(R){
   for(const g of S.groups){
     const mem=S.members.filter(m=>m.g===g.id).sort((a,b)=>R.ind[b.id]-R.ind[a.id]);
     h+='<div style="margin-bottom:12px"><b style="color:'+g.color+'">'+g.seed+' '+esc(g.name)+'</b> <span class="gsub">('+mem.length+' seeds)</span><br>';
-    h+= mem.length ? mem.map(m=>'<span class="pill">'+esc(m.n)+' · '+fmt(R.ind[m.id])+'</span>').join('')
+    h+= mem.length ? mem.map((m,idx)=>'<span class="pill" style="--i:'+idx+'">'+esc(m.n)+' · '+fmt(R.ind[m.id])+'</span>').join('')
                    : '<span class="hint">Sem integrantes ainda.</span>';
     h+='</div>';
   }
@@ -438,19 +732,19 @@ function vGroups(R){
     '<span class="pill">⚠️ Penalidades: −'+fmt(st.pen)+'</span></div>';}
   h+='<p class="hint">O app aplica automaticamente os critérios 1 a 4, nesta ordem: pontos em perguntas do dia oficial → presença na EBD → visitantes não crentes → menos penalidades. Se ainda assim persistir empate, o critério 5 (pergunta bíblica extra) é decidido ao vivo.</p></div>';
   if(R.capNotes.length) h+='<div class="card"><h2>Tetos aplicados</h2>'+R.capNotes.map(c=>'<div class="capnote">• '+esc(c)+'</div>').join('')+'</div>';
-  return h;
+  return h+'</div>';
 }
 
 function vInd(R){
   const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
   const med=['🥇','🥈','🥉'];
-  let h='';
+  let h='<div class="iwrap">'+SEEDS_BG;
   if(ms.length>=3){
     const order=[ms[1],ms[0],ms[2]];
     h+='<div class="podium">';
     order.forEach((m,i)=>{const rank=i===1?0:(i===0?1:2);
       h+='<div class="pod'+(rank===0?' p1':'')+'"><div class="medal">'+med[rank]+'</div>'+
-      '<div class="pn">'+esc(m.n)+'</div><div class="pp">'+fmt(R.ind[m.id])+'</div></div>';});
+      '<div class="pn">'+esc(m.n)+'</div><div class="pp" data-ptsmid="'+m.id+'" data-k="pod'+m.id+'">'+fmt(R.ind[m.id])+'</div></div>';});
     h+='</div>';
   }
   h+='<div class="rlist">';
@@ -464,29 +758,29 @@ function vInd(R){
         ? '<div class="lvl" style="color:var(--gold)">🟰 Empate com '+esc(ms[i-1].n)+' — pergunta bíblica extra</div>'
         : (t.by ? '<div class="lvl" style="color:var(--gold)">⚖️ Atrás de '+esc(ms[i-1].n)+' por: '+t.by+'</div>' : '');
     }
-    h+='<div class="rrow"><div class="pos">'+(i+1)+'º</div><div class="plant">'+L.e+'</div>'+
+    h+='<div class="rrow" style="--i:'+i+'"><div class="pos">'+(i+1)+'º</div><div class="plant">'+L.e+'</div>'+
     '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+'</div>'+
     '<div class="lvl">'+L.n+(N?' · faltam '+fmt(N.min-p)+' p/ '+N.e:' · nível máximo!')+'</div>'+
-    '<div class="xp"><i style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
-    '<div class="pts">'+fmt(p)+'</div></div>';
+    '<div class="xp"><i data-xpmid="'+m.id+'" data-pct="'+pct+'" style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
+    '<div class="pts" data-ptsmid="'+m.id+'" data-k="row'+m.id+'">'+fmt(p)+'</div></div>';
   });
   h+='</div>';
   h+='<div class="card"><h2>Desempate individual</h2><p class="hint">Em empate de pontos, o app aplica: acertos no dia oficial → presença na EBD → visitantes levados → menos penalidades. Persistindo, vai para pergunta bíblica extra.</p></div>';
   h+='<div class="card"><h2>Níveis</h2>'+LEVELS.map(l=>'<span class="pill">'+l.e+' '+l.n+' · '+fmt(l.min)+'+</span>').join('')+'</div>';
-  return h;
+  return h+'</div>';
 }
 
 function vTable(){
   let h='<div class="card"><h2>Guia rápido de pontos</h2>';
-  for(const c of CATS_ALL){
-    h+='<details'+(c.id==='presenca'?' open':'')+'><summary>'+esc(c.name)+'</summary><table class="ptable">';
+  CATS_ALL.forEach((c,ci)=>{
+    h+='<details style="--i:'+ci+'"'+(c.id==='presenca'?' open':'')+'><summary>'+esc(c.name)+'</summary><table class="ptable">';
     for(const a of c.acts){
       const scope=a.s==='both'?'Seed + Grupo':(a.s==='group'?'Grupo':'Seed');
       h+='<tr'+(a.v<0?' class="neg"':'')+'><td>'+esc(a.n)+'<br><span class="hint">'+scope+'</span></td>'+
          '<td>'+(a.v<0?'−':'+')+fmt(Math.abs(a.v))+(a.unit?'/'+a.unit:'')+'</td></tr>';
     }
     h+='</table></details>';
-  }
+  });
   h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Tetos: ofertas até 500 por Seed · alimentos até 1000 por grupo · agasalhos até 1000 por grupo.</p></div>';
   return h;
 }
@@ -880,6 +1174,7 @@ function bind(){
     const c=currentConfig(); c.customActs=(c.customActs||[]).filter(a=>a.id!==id);
     await fbSaveConfig(c); toast('Atividade removida');});
 }
+buildFx();
 load();
 </script>
 </body>
