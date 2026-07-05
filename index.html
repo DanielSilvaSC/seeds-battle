@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Seeds Battle · Edição 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -33,9 +33,10 @@ header{text-align:center;padding:18px 0 10px}
 .dates{color:var(--muted);font-size:12px;margin-top:4px;font-weight:700}
 
 /* tabs */
-nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710f2;border-top:1px solid var(--line);
-  backdrop-filter:blur(8px);z-index:50}
+nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710;border-top:1px solid var(--line);
+  z-index:50;padding-bottom:env(safe-area-inset-bottom,0px)}
 .tabs{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.histscroll{max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px 2px;overscroll-behavior:contain}
 .tab{appearance:none;background:none;border:none;color:var(--muted);font-family:'Nunito';font-weight:800;
   font-size:11px;padding:10px 4px 12px;cursor:pointer;display:flex;flex-direction:column;gap:3px;align-items:center}
 .tab .ic{font-size:20px;line-height:1}
@@ -839,6 +840,7 @@ function vPanel(R){
   /* histórico */
   h+='<div class="card"><h2>Histórico ('+S.entries.length+')</h2>';
   if(!S.entries.length)h+='<p class="hint">Nenhum lançamento ainda. O primeiro ponto planta a primeira semente!</p>';
+  else h+='<div class="histscroll">';
   [...S.entries].sort((x,y)=>y.ts-x.ts).slice(0,40).forEach(en=>{
     const ac=ACT[en.act]; if(!ac)return;
     const pts=ac.v*en.qty;
@@ -850,6 +852,7 @@ function vPanel(R){
     '<div class="hact"><button class="btn ghost sm" data-edit="'+en.id+'">✏️ Corrigir</button>'+
     '<button class="btn red sm" data-del="'+en.id+'">Excluir</button></div></div>';
   });
+  if(S.entries.length)h+='</div>';
   if(S.entries.length>40)h+='<p class="hint" style="margin-top:8px">Mostrando os 40 mais recentes.</p>';
   h+='</div>';
 
