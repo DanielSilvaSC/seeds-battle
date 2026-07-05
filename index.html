@@ -98,9 +98,6 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710f2;border-top:1px s
 .gwrap>*,.iwrap>*,.twrap>*,.lwrap>*{position:relative;z-index:1}
 .tabbg{position:absolute;top:-14px;left:-14px;right:-14px;height:300px;z-index:0;pointer-events:none;
   opacity:.5;-webkit-mask-image:linear-gradient(#000 52%,transparent);mask-image:linear-gradient(#000 52%,transparent)}
-.gbg .bg-sun circle{fill:var(--gold);opacity:.9}
-.gbg .bg-rays line{stroke:var(--gold);stroke-width:3;stroke-linecap:round}
-.gbg .bg-rays{transform-box:fill-box;transform-origin:center;animation:bgSpin 26s linear infinite}
 .gbg .bg-path{fill:none;stroke:var(--line);stroke-width:6;stroke-dasharray:2 12;stroke-linecap:round}
 .gbg .bg-soil{fill:var(--soil2)}
 .gbg .bg-furrow path{fill:none;stroke:var(--line);stroke-width:3;stroke-linecap:round}
@@ -608,11 +605,6 @@ function animateInd(R, isEntry){
 /* Fundo temático "Parábola do Semeador" (aba Grupos) — só transform/opacity animam */
 const GROUPS_BG =
  '<svg class="gbg tabbg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true">'+
- '<g class="bg-sun"><circle cx="352" cy="46" r="24"/>'+
-   '<g class="bg-rays"><line x1="352" y1="4" x2="352" y2="16"/><line x1="352" y1="76" x2="352" y2="88"/>'+
-   '<line x1="310" y1="46" x2="322" y2="46"/><line x1="382" y1="46" x2="394" y2="46"/>'+
-   '<line x1="322" y1="16" x2="330" y2="24"/><line x1="374" y1="68" x2="382" y2="76"/>'+
-   '<line x1="382" y1="16" x2="374" y2="24"/><line x1="330" y1="68" x2="322" y2="76"/></g></g>'+
  '<path class="bg-path" d="M-20 250 Q120 220 200 248 T420 240"/>'+
  '<path class="bg-soil" d="M-20 262 Q90 236 200 260 T420 252 V320 H-20 Z"/>'+
  '<g class="bg-furrow"><path d="M20 280 Q120 264 210 282"/><path d="M60 294 Q160 278 260 296"/></g>'+
