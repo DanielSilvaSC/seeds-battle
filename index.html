@@ -368,78 +368,24 @@ const LEVELS = [
   {min:5000, e:'👑', n:'Colheita Lendária'}
 ];
 
-/* ============ BANCO DE PERGUNTAS — Edição 1 · Parábolas de Jesus ============ */
-/* Conteúdo restrito à liderança. Cada item tem código, pergunta, resposta e referência.
-   O estado "usada/enviada" é guardado em config.usedQuestions (sincroniza entre líderes). */
-const QUESTIONS = [
- {id:'week', name:'📅 Perguntas da semana', pts:'grupo · acerto 400 · tentativa 100', items:[
-   {id:'qw1', c:'S1', q:`Com suas palavras, o que é uma parábola e para que Jesus a usava?`, a:`É uma comparação tirada do dia a dia (a apostila explica: "colocar as coisas lado a lado") que Jesus usava para ensinar as verdades do Reino e levar as pessoas a tomar uma decisão.`, r:`Lição 1`},
-   {id:'qw2', c:'S2', q:`Na parábola do semeador, o que cada um dos quatro solos representa?`, a:`Beira do caminho = ouve e não entende (o Diabo tira a Palavra); solo com pedras = recebe com entusiasmo, mas sem raiz, e desiste na dificuldade; espinhos = a Palavra é sufocada pelas preocupações do mundo e pelas riquezas; boa terra = ouve, entende, pratica e dá fruto.`, r:`Lição 3`},
-   {id:'qw3', c:'S3', q:`Por que a parábola do servo mau nos ensina a perdoar?`, a:`Porque Deus nos perdoou uma dívida impagável (os nossos pecados); por isso devemos perdoar de coração quem nos deve pouco. Como diz a lição: "Você foi perdoado para ser um perdoador!"`, r:`Lição 4`},
-   {id:'qw4', c:'S4', q:`Qual a diferença entre a verdadeira e a falsa obediência (parábola dos dois filhos)?`, a:`A verdadeira obediência é fruto do arrependimento (fazer a vontade do pai, mesmo tendo dito "não"); a falsa obediência é fruto da hipocrisia (dizer "sim" e não fazer).`, r:`Lição 6`},
-   {id:'qw5', c:'S5', q:`O que a parábola da ovelha perdida mostra sobre o amor de Deus?`, a:`Que Deus valoriza, procura até encontrar e se alegra com o pecador que se arrepende. A lição destaca quatro verbos: perder, procurar, encontrar e se alegrar.`, r:`Lição 7`},
-   {id:'qw6', c:'S6', q:`O que fez a diferença entre as moças ajuizadas e as sem juízo, e qual a lição?`, a:`As ajuizadas levaram óleo de reserva e estavam preparadas; as sem juízo, não. A lição é vigiar e estar sempre pronto para a vinda de Jesus.`, r:`Lição 8`},
-   {id:'qw7', c:'S7', q:`Segundo a parábola do bom samaritano, quem é o nosso próximo e como devemos tratá-lo?`, a:`É qualquer pessoa que precisa de ajuda, sem distinção de cor, nacionalidade, religião ou condição social; devemos nos aproximar com compaixão e ajudar com atitudes concretas.`, r:`Lição 10`},
-   {id:'qw8', c:'S8', q:`Qual a diferença entre o construtor sábio e o sem juízo, e o que isso ensina?`, a:`Os dois ouvem a Palavra, mas só o sábio a coloca em prática; por isso a casa dele resiste à tempestade. Não basta ouvir: é preciso praticar.`, r:`Lição 11`}
- ]},
- {id:'easy', name:'🟢 Dia oficial · Fácil', pts:'250 pts', items:[
-   {id:'qf1', c:'F1', q:`A palavra "parábola" vem do grego. O que ela significa, segundo a apostila?`, a:`"Colocar as coisas lado a lado" — ou seja, uma comparação.`, r:`Lição 1`},
-   {id:'qf2', c:'F2', q:`Segundo a apostila, mais ou menos quanto do que Jesus falou nos Evangelhos foi dito em parábolas?`, a:`Cerca de um terço (1/3).`, r:`Lição 1`},
-   {id:'qf3', c:'F3', q:`Na parábola do semeador, o que a semente representa?`, a:`A Palavra de Deus.`, r:`Lição 3`},
-   {id:'qf4', c:'F4', q:`Em quantos tipos de solo a semente caiu?`, a:`Quatro.`, r:`Lição 3`},
-   {id:'qf5', c:'F5', q:`Qual foi o único solo que deu fruto?`, a:`O solo fértil (a boa terra).`, r:`Lição 3`},
-   {id:'qf6', c:'F6', q:`Na parábola do servo mau, quantas vezes Pedro perguntou se deveria perdoar?`, a:`Sete vezes.`, r:`Lição 4`},
-   {id:'qf7', c:'F7', q:`O pastor tinha cem ovelhas. Quantas ele deixou para buscar a que se perdeu?`, a:`Noventa e nove.`, r:`Lição 7`},
-   {id:'qf8', c:'F8', q:`Quantas moças eram "ajuizadas" e quantas eram "sem juízo"?`, a:`Cinco ajuizadas e cinco sem juízo.`, r:`Lição 8`},
-   {id:'qf9', c:'F9', q:`O que faltou às moças sem juízo?`, a:`Óleo de reserva para as lamparinas.`, r:`Lição 8`},
-   {id:'qf10', c:'F10', q:`Na parábola do bom samaritano, quais duas pessoas passaram pelo ferido e não ajudaram?`, a:`O sacerdote e o levita.`, r:`Lição 10`},
-   {id:'qf11', c:'F11', q:`Quem parou e socorreu o homem ferido?`, a:`O samaritano.`, r:`Lição 10`},
-   {id:'qf12', c:'F12', q:`Onde o construtor sábio edificou a casa? E o sem juízo?`, a:`O sábio, na rocha; o sem juízo, na areia.`, r:`Lição 11`},
-   {id:'qf13', c:'F13', q:`A casa construída na rocha caiu ou ficou firme na tempestade?`, a:`Ficou firme (permaneceu inabalável).`, r:`Lição 11`},
-   {id:'qf14', c:'F14', q:`Na parábola dos dois filhos, para onde o pai mandou os filhos trabalharem?`, a:`Na plantação de uvas (na lavoura/vinha).`, r:`Lição 6`},
-   {id:'qf15', c:'F15', q:`Qual dos dois filhos fez a vontade do pai?`, a:`O filho mais velho — que disse "não", mas no fim foi.`, r:`Lição 6`},
-   {id:'qf16', c:'F16', q:`Há quantos anos o dono buscava figos na figueira sem achar nenhum?`, a:`Três anos.`, r:`Lição 9`},
-   {id:'qf17', c:'F17', q:`Segundo a apostila, qual é o nosso papel em relação ao Reino, e de quem é o crescimento?`, a:`Nosso papel é semear; o crescimento é responsabilidade de Deus.`, r:`Lição 5`},
-   {id:'qf18', c:'F18', q:`Lucas recebe o apelido de "Evangelho de quê", por dar tanta ênfase a esse tema?`, a:`O Evangelho da Oração.`, r:`Lição 2`}
- ]},
- {id:'med', name:'🟡 Dia oficial · Média', pts:'350 pts', items:[
-   {id:'qm1', c:'M1', q:`Cite os três princípios que a apostila ensina para interpretar bem uma parábola.`, a:`(1) Considerar o contexto; (2) considerar o que está na parábola (não o que foi omitido); (3) evitar a alegorização excessiva.`, r:`Lição 1`},
-   {id:'qm2', c:'M2', q:`Na parábola do semeador, o que representa o solo à beira do caminho?`, a:`O coração que ouve a Palavra, mas não a entende; o Diabo vem e tira a semente, e não frutifica.`, r:`Lição 3`},
-   {id:'qm3', c:'M3', q:`O que representa o solo cheio de espinhos?`, a:`O coração seduzido pelas coisas desta vida — as preocupações do mundo e a ilusão das riquezas sufocam a Palavra.`, r:`Lição 3`},
-   {id:'qm4', c:'M4', q:`O que representa o solo fértil?`, a:`O coração que tem fome de Deus: ouve, aceita, entende e pratica a Palavra, dando fruto.`, r:`Lição 3`},
-   {id:'qm5', c:'M5', q:`A "oração do Pai Nosso" ensina três princípios, segundo a apostila. Quais são?`, a:`(a) Podemos chamar Deus de Pai; (b) reconhecer e exaltar a Deus; (c) entregar todas as nossas necessidades ao Pai.`, r:`Lição 2`},
-   {id:'qm6', c:'M6', q:`O que a parábola do amigo à meia-noite ensina sobre a oração?`, a:`Que a oração perseverante produz grandes resultados — se até um vizinho incomodado atende pela insistência, muito mais o nosso Pai amoroso atende os filhos que oram.`, r:`Lição 2`},
-   {id:'qm7', c:'M7', q:`As duas dívidas da parábola do servo mau (a enorme e a pequena) representam o quê?`, a:`A dívida enorme = a nossa dívida com Deus (o pecado), que Ele perdoou; a pequena = o que o próximo nos deve e devemos perdoar.`, r:`Lição 4`},
-   {id:'qm8', c:'M8', q:`Qual é a lição final da parábola do servo incompassivo?`, a:`Fomos perdoados para sermos perdoadores; devemos perdoar de todo o coração.`, r:`Lição 4`},
-   {id:'qm9', c:'M9', q:`Segundo a lição dos dois filhos, o que é a verdadeira obediência e o que é a falsa?`, a:`A verdadeira obediência é fruto do arrependimento; a falsa obediência é fruto da hipocrisia.`, r:`Lição 6`},
-   {id:'qm10', c:'M10', q:`Na parábola dos dois filhos, quem o filho mais velho representa e quem o mais novo representa?`, a:`O mais velho = os cobradores de impostos e as prostitutas, que se arrependeram; o mais novo = os líderes religiosos, que diziam "sim" mas não obedeciam.`, r:`Lição 6`},
-   {id:'qm11', c:'M11', q:`A diferença entre as moças ajuizadas e as sem juízo não estava na roupa nem na aparência. Estava em quê?`, a:`Na forma como se prepararam: as ajuizadas levaram óleo de reserva; as sem juízo, não.`, r:`Lição 8`},
-   {id:'qm12', c:'M12', q:`Na parábola das dez moças, quem o noivo representa e o que as moças representam?`, a:`O noivo é Jesus; as dez moças são duas classes de pessoas diante da promessa da Segunda Vinda.`, r:`Lição 8`},
-   {id:'qm13', c:'M13', q:`Quais são os quatro verbos presentes nas três histórias de Lucas 15?`, a:`Perder, procurar, encontrar e se alegrar.`, r:`Lição 7`},
-   {id:'qm14', c:'M14', q:`Segundo a apostila, quais são as três atitudes do samaritano que servem de exemplo para nós?`, a:`(1) Uma visão atenta e cuidadora (teve compaixão); (2) aproximação (chegou perto); (3) atitudes concretas (tratou as feridas com azeite e vinho e as enfaixou).`, r:`Lição 10`},
-   {id:'qm15', c:'M15', q:`Segundo a lição do bom samaritano, quem é o nosso "próximo"?`, a:`Qualquer ser humano, sem distinção de cor, nacionalidade, religião ou condição social, a quem devemos nos aproximar com compaixão.`, r:`Lição 10`},
-   {id:'qm16', c:'M16', q:`O que diferencia o construtor sábio do construtor sem juízo?`, a:`O sábio ouve os ensinamentos de Jesus e os pratica; o sem juízo ouve e não pratica.`, r:`Lição 11`},
-   {id:'qm17', c:'M17', q:`Segundo a apostila, o que é o Reino de Deus?`, a:`A intervenção divina na história da humanidade para cumprir os seus propósitos redentores.`, r:`Lição 5`}
- ]},
- {id:'hard', name:'🔴 Dia oficial · Difícil', pts:'450 pts', items:[
-   {id:'qd1', c:'D1', q:`Quando Pedro sugeriu perdoar sete vezes, o que Jesus respondeu?`, a:`"Setenta vezes sete."`, r:`Mt 18.22`},
-   {id:'qd2', c:'D2', q:`Além de "quem é o meu próximo?", qual foi a outra pergunta que o doutor da lei fez a Jesus?`, a:`"O que devo fazer para conseguir (herdar) a vida eterna?"`, r:`Lc 10.25`},
-   {id:'qd3', c:'D3', q:`A parábola da figueira estéril faz referência a qual povo, que rejeitou o Messias?`, a:`O povo de Israel.`, r:`Lição 9`},
-   {id:'qd4', c:'D4', q:`Segundo a apostila, em quantas fases se dará a Segunda Vinda de Jesus, e qual é a primeira?`, a:`Duas fases; a primeira é o Arrebatamento da Igreja (antes da Grande Tribulação).`, r:`Lição 8`},
-   {id:'qd5', c:'D5', q:`A parábola da semente que cresce sozinha aparece em qual Evangelho?`, a:`Somente no Evangelho de Marcos.`, r:`Mc 4.26-29`},
-   {id:'qd6', c:'D6', q:`Na parábola do semeador, em quais proporções a boa terra produziu fruto?`, a:`Cem, sessenta e trinta por um.`, r:`Mt 13.8`},
-   {id:'qd7', c:'D7', q:`Ao final do ensino sobre a oração, em Lucas 11, o que o Pai dá aos que pedem?`, a:`O Espírito Santo.`, r:`Lc 11.13`},
-   {id:'qd8', c:'D8', q:`Antes da parábola dos dois filhos, o capítulo 21 de Mateus tem três acontecimentos. Cite ao menos dois.`, a:`A entrada triunfal de Jesus, a purificação do templo e a maldição da figueira.`, r:`Lição 6 / Mt 21`},
-   {id:'qd9', c:'D9', q:`Qual era o trajeto do homem que foi assaltado na parábola do bom samaritano?`, a:`Ele descia de Jerusalém para Jericó.`, r:`Lc 10.30`},
-   {id:'qd10', c:'D10', q:`Além de Mateus, em qual outro Evangelho aparece a parábola das duas casas, em que o sábio "cavou bem fundo"?`, a:`No Evangelho de Lucas (6.46-49).`, r:`Lição 11`},
-   {id:'qd11', c:'D11', q:`Lucas 15 é chamado de "o capítulo dos perdidos". Quais são as três histórias que ele traz?`, a:`A ovelha perdida, a moeda (dracma) perdida e o filho perdido (pródigo).`, r:`Lição 7`},
-   {id:'qd12', c:'D12', q:`Os capítulos 24 e 25 de Mateus são conhecidos por qual nome?`, a:`O sermão profético do Monte das Oliveiras.`, r:`Lição 8`},
-   {id:'qd13', c:'D13', q:`Quais dois acontecimentos trágicos Jesus cita em Lucas 13, antes da parábola da figueira?`, a:`O massacre de galileus por Pilatos e a queda da torre de Siloé (que matou dezoito pessoas).`, r:`Lição 9 / Lc 13.1-4`},
-   {id:'qd14', c:'D14', q:`No fim da parábola do servo incompassivo, para onde o rei mandou o servo mau?`, a:`Para a prisão, para ser castigado até pagar toda a dívida.`, r:`Mt 18.34`},
-   {id:'qd15', c:'D15', q:`Segundo a apostila, a "tempestade" que atinge as casas pode ser entendida de duas maneiras. Quais?`, a:`A tempestade da vida (sofrimentos, crises, perdas) e a tempestade do juízo (o fim dos tempos).`, r:`Lição 11`}
- ]}
+/* ============ BANCO DE PERGUNTAS — carregado do Firebase ============ */
+/* As perguntas e respostas NÃO ficam mais no HTML. Elas moram no nó
+   protegido /questions do Firebase, que só líderes autenticados conseguem
+   ler (regra .read: "auth != null"). Assim, inspecionar a página sem
+   login não revela nenhuma resposta. Publique/atualize o banco pelo painel
+   do líder, em "⚙️ Publicar banco de perguntas".
+   O estado "usada/enviada" continua em config.usedQuestions. */
+let QUESTIONS = [];
+let questionsLoaded = false;
+function questionsTotal(){ return QUESTIONS.reduce((s,sec)=>s+((sec&&sec.items)?sec.items.length:0),0); }
+/* Metadados das seções padrão — usados pelo formulário de cadastro para
+   listar as seções e recriá-las caso o banco esteja vazio. */
+const QSECTIONS_META = [
+  {id:'week', name:'📅 Perguntas da semana', pts:'grupo · acerto 400 · tentativa 100', pref:'S'},
+  {id:'easy', name:'🟢 Dia oficial · Fácil', pts:'250 pts', pref:'F'},
+  {id:'med',  name:'🟡 Dia oficial · Média', pts:'350 pts', pref:'M'},
+  {id:'hard', name:'🔴 Dia oficial · Difícil', pts:'450 pts', pref:'D'}
 ];
-const QUESTIONS_TOTAL = QUESTIONS.reduce((s,sec)=>s+sec.items.length,0);
 </script>
 <script>
 /* ============ CONFIGURAÇÃO DO FIREBASE ============ */
@@ -509,10 +455,31 @@ function initFirebase(){
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
     DB=firebase.database(); AUTH=firebase.auth();
-    AUTH.onAuthStateChanged(u=>{ currentUser=u; if(!u) logged=null; render(); });
+    AUTH.onAuthStateChanged(u=>{ currentUser=u; if(!u) logged=null; watchQuestions(u); render(); });
     DB.ref('config').on('value', s=>{ cfg=s.val(); rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
     DB.ref('entries').on('value', s=>{ entriesMap=s.val()||{}; rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
   }catch(e){ fbError='init'; cfg=defaultConfig(); rebuildS(); render(); }
+}
+/* Banco de perguntas: só é lido quando há líder autenticado (regra .read: "auth != null").
+   Ao deslogar, descarrega da memória para não sobrar nada acessível. */
+function normalizeQuestions(v){
+  if(Array.isArray(v)) return v.filter(Boolean);
+  if(v && typeof v==='object') return Object.values(v).filter(Boolean);
+  return [];
+}
+function watchQuestions(u){
+  if(!DB) return;
+  DB.ref('questions').off();
+  if(!u){ QUESTIONS=[]; questionsLoaded=false; return; }
+  questionsLoaded=false;
+  DB.ref('questions').on('value',
+    s=>{ QUESTIONS=normalizeQuestions(s.val()); questionsLoaded=true; render(); },
+    ()=>{ QUESTIONS=[]; questionsLoaded=true; render(); });
+}
+async function fbPublishQuestions(arr){
+  if(!DB) return toast('Firebase não configurado');
+  try{ await DB.ref('questions').set(arr); toast('Banco de perguntas publicado ✓'); }
+  catch(e){ toast('Falha ao publicar: '+(e.code||e.message)); }
 }
 async function fbSaveConfig(c){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('config').set(c); }catch(e){ toast('Falha ao salvar: '+(e.code||e.message)); } }
 async function fbAddEntry(obj){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('entries').push(obj); }catch(e){ toast('Falha ao lançar: '+(e.code||e.message)); } }
@@ -935,10 +902,11 @@ function vInd(R){
     const order=[ms[1],ms[0],ms[2]];
     h+='<div class="podium">';
     order.forEach((m,i)=>{const rank=i===1?0:(i===0?1:2);
-      h+='<div class="pod'+(rank===0?' p1':'')+'"><div class="medal">'+med[rank]+'</div>'+
+      h+='<div class="pod'+(rank===0?' p1':'')+'" style="cursor:pointer" data-hist="'+m.id+'" role="button" tabindex="0" title="Ver histórico de '+esc(m.n)+'"><div class="medal">'+med[rank]+'</div>'+
       '<div class="pn">'+esc(m.n)+'</div><div class="pp" data-ptsmid="'+m.id+'" data-k="pod'+m.id+'">'+fmt(R.ind[m.id])+'</div></div>';});
     h+='</div>';
   }
+  h+='<p class="hint" style="text-align:center;margin:4px 0 10px">👆 Toque em um nome para ver o histórico de pontos.</p>';
   h+='<div class="rlist">';
   ms.forEach((m,i)=>{
     const p=R.ind[m.id], L=lvlOf(p), N=nextLvl(p), g=S.groups.find(x=>x.id===m.g);
@@ -950,7 +918,7 @@ function vInd(R){
         ? '<div class="lvl" style="color:var(--gold)">🟰 Empate com '+esc(ms[i-1].n)+' — pergunta bíblica extra</div>'
         : (t.by ? '<div class="lvl" style="color:var(--gold)">⚖️ Atrás de '+esc(ms[i-1].n)+' por: '+t.by+'</div>' : '');
     }
-    h+='<div class="rrow" style="--i:'+i+'"><div class="pos">'+(i+1)+'º</div><div class="plant">'+L.e+'</div>'+
+    h+='<div class="rrow" style="--i:'+i+';cursor:pointer" data-hist="'+m.id+'" role="button" tabindex="0" title="Ver histórico de '+esc(m.n)+'"><div class="pos">'+(i+1)+'º</div><div class="plant">'+L.e+'</div>'+
     '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+'</div>'+
     '<div class="lvl">'+L.n+(N?' · faltam '+fmt(N.min-p)+' p/ '+N.e:' · nível máximo!')+'</div>'+
     '<div class="xp"><i data-xpmid="'+m.id+'" data-pct="'+pct+'" style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
@@ -1002,13 +970,23 @@ function actOptions(){
 /* ===== Banco de perguntas (só aparece no painel do líder) ===== */
 function vQuestions(){
   const used=new Set(S.usedQuestions||[]);
-  const totalUsed=QUESTIONS.reduce((s,sec)=>s+sec.items.filter(it=>used.has(it.id)).length,0);
+  const total=questionsTotal();
+  const totalUsed=QUESTIONS.reduce((s,sec)=>s+((sec.items||[]).filter(it=>used.has(it.id)).length),0);
   let h='<div class="card"><h2>📖 Banco de Perguntas · Parábolas</h2>';
-  h+='<p class="hint">Só a liderança vê isto. Leia para os Seeds <b>apenas a pergunta</b> — a resposta fica escondida em "Ver resposta". Marque as que já foram <b>enviadas ou usadas</b>. <b>'+totalUsed+' de '+QUESTIONS_TOTAL+'</b> marcadas.</p>';
+  if(!questionsLoaded){
+    h+='<p class="hint">Carregando perguntas do Firebase…</p></div>';
+    return h;
+  }
+  if(!QUESTIONS.length){
+    h+='<p class="hint">Nenhuma pergunta publicada ainda. Use <b>➕ Cadastrar pergunta</b> ou <b>⚙️ Publicar banco de perguntas</b>, no card <b>Gerenciar</b>, para enviar o banco ao Firebase (fica protegido — só a liderança lê).</p></div>';
+    return h;
+  }
+  h+='<p class="hint">Só a liderança vê isto (as respostas ficam no Firebase protegido, não no código da página). Leia para os Seeds <b>apenas a pergunta</b> — a resposta fica escondida em "Ver resposta". Marque as que já foram <b>enviadas ou usadas</b>. <b>'+totalUsed+' de '+total+'</b> marcadas.</p>';
   QUESTIONS.forEach((sec,si)=>{
-    const uc=sec.items.filter(it=>used.has(it.id)).length;
-    h+='<details style="--i:'+si+'"><summary>'+esc(sec.name)+' <span class="qsecmeta">· '+esc(sec.pts)+' · '+uc+'/'+sec.items.length+'</span></summary>';
-    sec.items.forEach(it=>{
+    const items=sec.items||[];
+    const uc=items.filter(it=>used.has(it.id)).length;
+    h+='<details style="--i:'+si+'"><summary>'+esc(sec.name)+' <span class="qsecmeta">· '+esc(sec.pts)+' · '+uc+'/'+items.length+'</span></summary>';
+    items.forEach(it=>{
       const on=used.has(it.id);
       h+='<div class="hrow qrow'+(on?' used':'')+'">'+
         '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'+
@@ -1026,6 +1004,34 @@ function vQuestions(){
   h+='<button class="btn ghost sm" id="btnQClear" style="margin-top:12px">Desmarcar todas</button>';
   h+='</div>';
   return h;
+}
+/* Painel de administração do banco: cola o JSON das perguntas e publica no Firebase.
+   Como o líder está autenticado, a regra .write: "auth != null" permite o envio. */
+function vQuestionsPublish(){
+  return vQuestionsForm()+vQuestionsJson();
+}
+/* Cadastro de UMA pergunta por formulário. Ao publicar, a nova pergunta é
+   SOMADA ao banco atual (não substitui as demais). */
+function vQuestionsForm(){
+  const secs = QSECTIONS_META.map(m=>{ const ex=(QUESTIONS||[]).find(s=>s&&s.id===m.id); return {id:m.id, name:(ex&&ex.name)||m.name}; });
+  (QUESTIONS||[]).forEach(s=>{ if(s&&s.id&&!secs.find(x=>x.id===s.id)) secs.push({id:s.id, name:s.name||s.id}); });
+  const opts = secs.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>').join('');
+  return '<details><summary>➕ Cadastrar pergunta (formulário)</summary>'+
+    '<p class="hint" style="margin-top:8px">Preencha os campos para adicionar <b>uma</b> pergunta ao banco. Ao publicar, ela é <b>somada</b> às perguntas já existentes (não apaga as outras).</p>'+
+    '<div class="field"><label>Seção</label><select id="qfSec">'+opts+'</select></div>'+
+    '<div class="field"><label>Código (opcional, ex.: S9, F19)</label><input id="qfCod" placeholder="Em branco = gera automático"></div>'+
+    '<div class="field"><label>Pergunta</label><textarea id="qfQ" rows="2" style="width:100%;box-sizing:border-box"></textarea></div>'+
+    '<div class="field"><label>Resposta</label><textarea id="qfA" rows="3" style="width:100%;box-sizing:border-box"></textarea></div>'+
+    '<div class="field"><label>Referência (ex.: Lição 3, Mt 13.8)</label><input id="qfR"></div>'+
+    '<button class="btn go" id="btnQAdd" style="margin-top:4px">Adicionar e publicar</button>'+
+    '</details>';
+}
+function vQuestionsJson(){
+  return '<details><summary>⚙️ Publicar banco de perguntas (JSON)</summary>'+
+    '<p class="hint" style="margin-top:8px">Cole aqui o <b>JSON</b> das perguntas (array de seções) e clique em publicar. Isso <b>substitui</b> o banco no Firebase, que fica visível só para a liderança. Use na migração inicial ou para subir uma nova edição.</p>'+
+    '<textarea id="qJson" rows="6" placeholder=\'[ { "id":"week", "name":"...", "pts":"...", "items":[ {"id":"qw1","c":"S1","q":"...","a":"...","r":"..."} ] } ]\' style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px"></textarea>'+
+    '<button class="btn go" id="btnQPublish" style="margin-top:8px">Publicar no Firebase</button>'+
+    '</details>';
 }
 
 function vPanel(R){
@@ -1089,6 +1095,7 @@ function vPanel(R){
 
   /* gestão */
   h+='<div class="card"><h2>Gerenciar</h2>';
+  h+='<details><summary>📖 Banco de perguntas</summary><div style="margin-top:8px">'+vQuestionsPublish()+'</div></details>';
   h+='<details><summary>🎯 Atividades personalizadas ('+S.customActs.length+')</summary>';
   if(!S.customActs.length) h+='<p class="hint" style="margin-top:6px">As atividades do regulamento já estão no catálogo. Aqui você cria as extras — elas entram no seletor de lançamento e na Tabela na hora.</p>';
   h+=S.customActs.map(a=>{const cnt=S.entries.filter(en=>en.act===a.id).length;
@@ -1102,11 +1109,11 @@ function vPanel(R){
     '<div class="field"><label>Unidade (opcional)</label><input id="naUnit" maxlength="10" placeholder="Ex.: kg, peça, R$"></div>'+
     '<button class="btn gold" id="btnAddAct">Cadastrar atividade</button>'+
     '<p class="hint" style="margin-top:8px">Pontos negativos viram penalidade. Ao definir uma unidade, o líder informa a quantidade no lançamento. Remover uma atividade que já tem lançamentos faz esses pontos deixarem de contar.</p></details>';
-  h+='<details open><summary>💾 Backup / Migração</summary>'+
+  h+='<details><summary>💾 Backup / Migração</summary>'+
     '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
     '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
     '<button class="btn gold" id="btnJson" style="margin-top:0">⬇️ Backup (.json)</button></div>'+
-    '<details style="margin-top:10px" open><summary>⬆️ Importar backup para o Firebase</summary>'+
+    '<details style="margin-top:10px"><summary>⬆️ Importar backup para o Firebase</summary>'+
     '<p class="hint" style="margin-top:6px">Cole o conteúdo de um backup .json (o do app antigo serve). Isso <b>substitui</b> os dados no Firebase — use na migração inicial ou em recuperação.</p>'+
     '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:11px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
     '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
@@ -1152,6 +1159,41 @@ function askConfirm(msg){
     ov.querySelector('[data-cf="0"]').onclick=()=>done(false);
     ov.onclick=e=>{ if(e.target===ov) done(false); };
   });
+}
+
+/* Histórico de pontos de um Seed — visível para todos (sem login), aberto
+   ao tocar num nome no ranking individual. Usa só dados públicos (entries). */
+function showMemberHistory(mid){
+  const m=S.members.find(x=>x.id===mid); if(!m) return;
+  const g=S.groups.find(x=>x.id===m.g);
+  const R=calc();
+  const list=[...S.entries].filter(en=>en.mid===mid && ACT[en.act]).sort((x,y)=>(y.ts||0)-(x.ts||0));
+  let rows;
+  if(!list.length){
+    rows='<p class="hint" style="margin-top:12px">Nenhum ponto lançado para '+esc(m.n)+' ainda. O primeiro ponto planta a primeira semente! 🌱</p>';
+  } else {
+    rows='<div class="histscroll" style="margin-top:12px">';
+    list.forEach(en=>{
+      const ac=ACT[en.act], pts=ac.v*en.qty;
+      rows+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
+        '<div><div class="t1">'+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+        '<div class="t2">'+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
+        '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div></div>';
+    });
+    rows+='</div>';
+  }
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(10,8,5,.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:420px;width:100%;padding:20px;max-height:82vh;overflow:auto">'+
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'+
+      '<div><div style="font-weight:800;font-size:16px;color:var(--cream)"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span> '+esc(m.n)+'</div>'+
+      '<div class="t2" style="margin-top:2px">'+(g?esc(g.name)+' · ':'')+fmt(R.ind[mid]||0)+' pts · '+list.length+' lançamento(s)</div></div>'+
+      '<button class="btn ghost sm" data-close="1" style="margin-top:0">Fechar</button>'+
+    '</div>'+rows+'</div>';
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('[data-close="1"]').onclick=close;
+  ov.onclick=e=>{ if(e.target===ov) close(); };
 }
 
 /* ============ EXPORTAÇÃO / BACKUP ============ */
@@ -1352,6 +1394,10 @@ function bind(){
     }
   };
   if(q('btnCancelEdit'))q('btnCancelEdit').onclick=()=>{editingId=null;render();};
+  document.querySelectorAll('[data-hist]').forEach(el=>{
+    el.onclick=()=>{ SFX.tick(); showMemberHistory(el.dataset.hist); };
+    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); SFX.tick(); showMemberHistory(el.dataset.hist); } };
+  });
   document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editingId=b.dataset.edit;render();window.scrollTo({top:0,behavior:'smooth'});});
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
     if(!(await askConfirm('Excluir este lançamento? Não pode ser desfeito.')))return;
@@ -1405,6 +1451,37 @@ function bind(){
     const c=currentConfig(); c.usedQuestions=[...set];
     await fbSaveConfig(c); SFX.tick();
     toast(wasOn?'Pergunta liberada de novo':'Pergunta marcada como usada ✓');});
+  if(q('btnQPublish'))q('btnQPublish').onclick=async()=>{
+    const raw=(q('qJson')&&q('qJson').value||'').trim();
+    if(!raw)return toast('Cole o JSON das perguntas primeiro');
+    let arr; try{ arr=JSON.parse(raw); }catch(e){ return toast('JSON inválido: '+e.message); }
+    if(!Array.isArray(arr)||!arr.length)return toast('O JSON deve ser um array de seções');
+    const bad=arr.some(sec=>!sec||!Array.isArray(sec.items));
+    if(bad)return toast('Cada seção precisa ter uma lista "items"');
+    const n=arr.reduce((s,sec)=>s+sec.items.length,0);
+    if(!(await askConfirm('Publicar '+arr.length+' seção(ões) e '+n+' pergunta(s)? Isso substitui o banco atual no Firebase.')))return;
+    await fbPublishQuestions(arr);};
+  if(q('btnQAdd'))q('btnQAdd').onclick=async()=>{
+    const secId=(q('qfSec')&&q('qfSec').value)||'';
+    const cod=(q('qfCod')&&q('qfCod').value||'').trim();
+    const perg=(q('qfQ')&&q('qfQ').value||'').trim();
+    const resp=(q('qfA')&&q('qfA').value||'').trim();
+    const ref=(q('qfR')&&q('qfR').value||'').trim();
+    if(!secId)return toast('Escolha a seção');
+    if(!perg)return toast('Digite a pergunta');
+    if(!resp)return toast('Digite a resposta');
+    const bank=JSON.parse(JSON.stringify(Array.isArray(QUESTIONS)?QUESTIONS:[]));
+    let sec=bank.find(s=>s&&s.id===secId);
+    if(!sec){ const meta=QSECTIONS_META.find(m=>m.id===secId)||{id:secId,name:secId,pts:''}; sec={id:meta.id,name:meta.name,pts:meta.pts,items:[]}; bank.push(sec); }
+    if(!Array.isArray(sec.items)) sec.items=[];
+    const allIds=new Set(); bank.forEach(s=>(s&&s.items||[]).forEach(it=>it&&it.id&&allIds.add(it.id)));
+    let nid; do{ nid='q'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }while(allIds.has(nid));
+    const meta=QSECTIONS_META.find(m=>m.id===secId);
+    const pref=(meta&&meta.pref)||(secId[0]||'Q').toUpperCase();
+    const item={ id:nid, c:cod||(pref+(sec.items.length+1)), q:perg, a:resp, r:ref };
+    if(!(await askConfirm('Adicionar a pergunta na seção "'+(sec.name||sec.id)+'" e publicar no Firebase?')))return;
+    sec.items.push(item);
+    await fbPublishQuestions(bank);};
   if(q('btnQClear'))q('btnQClear').onclick=async()=>{
     if(!(S.usedQuestions&&S.usedQuestions.length))return toast('Nenhuma pergunta marcada');
     if(!(await askConfirm('Desmarcar todas as perguntas usadas? Isso zera o controle para todos os líderes.')))return;
