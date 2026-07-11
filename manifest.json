@@ -1,0 +1,17 @@
+{
+  "name": "Seeds Battle",
+  "short_name": "Seeds Battle",
+  "description": "Ranking ao vivo da gincana Seeds Battle — Ouvi · Entendi · Vivi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#171310",
+  "theme_color": "#171310",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "192x192", "type": "image/svg+xml" },
+    { "src": "icon.svg", "sizes": "512x512", "type": "image/svg+xml" }
+  ]
+}

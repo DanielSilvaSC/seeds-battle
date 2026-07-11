@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#171310">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>Seeds Battle · Edição 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -260,6 +263,94 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 .qans{color:var(--leaf);font-weight:800;font-size:13px;line-height:1.5;margin-top:4px}
 .qref{color:var(--muted);font-size:11px;font-weight:700;margin-top:3px}
 .qsecmeta{color:var(--muted);font-weight:800;font-size:11px}
+
+/* ===== countdown ===== */
+.countdown{margin-top:6px;font-size:12px;font-weight:900;color:var(--leaf);letter-spacing:1px}
+.countdown.urgent{color:var(--gold);animation:cdPulse 1.6s ease-in-out infinite}
+.countdown.over{color:var(--muted)}
+@keyframes cdPulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ===== feed ao vivo ===== */
+.feedrow{display:flex;justify-content:space-between;gap:8px;align-items:center;background:var(--card2);
+  border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:7px;font-size:12.5px;animation:gFade .4s ease both}
+.feedrow .fw{font-weight:900}
+.feedrow .ft{color:var(--muted);font-size:11px;font-weight:700}
+.feedrow .fp{font-family:'Bungee';font-size:13px;white-space:nowrap}
+.feedrow .fp.plus{color:var(--leaf)}.feedrow .fp.minus{color:var(--danger)}
+
+/* ===== conquistas (badges) ===== */
+.bdg{display:inline-block;font-size:13px;margin-left:3px;cursor:default}
+.bdgrow{display:flex;gap:10px;align-items:flex-start;background:var(--soil2);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;margin-top:6px}
+.bdgrow .be{font-size:20px;line-height:1.2;flex:none}
+.bdgrow b{font-size:12.5px}
+.bdgrow .bd{color:var(--muted);font-size:11px;font-weight:700;margin-top:1px;line-height:1.4}
+.bdgrow.off{opacity:.4;filter:grayscale(1)}
+
+/* ===== scrollbars no tema (histórico, modais, telão, textareas) ===== */
+*{scrollbar-width:thin;scrollbar-color:var(--leaf-dim) var(--soil2)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--soil2);border-radius:99px}
+::-webkit-scrollbar-thumb{background:var(--leaf-dim);border-radius:99px;border:2px solid var(--soil2)}
+::-webkit-scrollbar-thumb:active,::-webkit-scrollbar-thumb:hover{background:var(--leaf)}
+::-webkit-scrollbar-corner{background:var(--soil2)}
+
+/* ===== gráfico corrida de pontos ===== */
+.race{margin-top:6px}
+.race svg{width:100%;height:auto;display:block}
+
+/* ===== confete de subida de nível ===== */
+#lvlfx{position:fixed;inset:0;pointer-events:none;z-index:180;overflow:hidden}
+#lvlfx span{position:absolute;top:-30px;font-size:18px;animation:cfFall linear forwards}
+@keyframes cfFall{to{transform:translateY(112vh) rotate(var(--rot,360deg))}}
+
+/* ===== toast com ação (desfazer) ===== */
+#toast.act{pointer-events:auto}
+#toast .tbtn{appearance:none;border:none;background:#241c06;color:var(--gold);font-family:'Nunito';
+  font-weight:900;font-size:13px;border-radius:8px;padding:6px 12px;margin-left:10px;cursor:pointer;vertical-align:middle}
+
+/* ===== chamada em lote ===== */
+.chkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.chk{display:flex;align-items:center;gap:8px;background:var(--soil2);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:13px;font-weight:800;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--leaf);margin:0;flex:none}
+
+/* ===== modo telão ===== */
+#telao{position:fixed;inset:0;z-index:150;background:var(--soil);
+  background-image:radial-gradient(1200px 600px at 50% -200px,#2a2115 0%,var(--soil) 60%);
+  overflow-y:auto;padding:28px 20px 40px;display:none}
+#telao.on{display:block}
+.tl-in{max-width:900px;margin:0 auto;text-align:center}
+.tl-logo{font-size:clamp(34px,6vw,60px);color:var(--cream)}
+.tl-logo .b{color:var(--leaf)}
+.tl-count{color:var(--gold);font-weight:900;font-size:clamp(13px,2vw,18px);margin-top:6px;letter-spacing:1px}
+.tl-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;margin-top:26px}
+.tl-g{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 14px}
+.tl-g.lead{box-shadow:0 0 0 2px var(--gold),0 10px 40px -8px rgba(245,197,66,.5)}
+.tl-g .e{font-size:clamp(40px,7vw,64px)}
+.tl-g .n{font-weight:900;font-size:clamp(16px,3vw,26px);margin-top:8px}
+.tl-g .p{font-family:'Bungee';font-size:clamp(34px,7vw,64px);margin-top:6px;color:var(--cream)}
+.tl-vsb{font-family:'Bungee';color:var(--soil);background:var(--gold);border-radius:14px;padding:12px 14px;font-size:clamp(16px,3vw,26px)}
+.tl-duel{margin-top:22px;height:30px}
+.tl-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;align-items:center}
+.tl-btns .btn{width:auto;margin-top:0}
+.tl-btns select{width:auto;min-width:170px}
+.tl-close{position:fixed;top:14px;right:14px;z-index:160;width:auto;margin:0}
+.tl-quiz{background:var(--card);border:1px solid var(--gold);border-radius:20px;padding:26px 20px;margin-top:26px;text-align:center}
+.tl-qtag{display:inline-block;background:var(--gold);color:#241c06;font-weight:900;border-radius:99px;padding:4px 14px;font-size:13px}
+.tl-qq{font-size:clamp(18px,3.4vw,30px);font-weight:900;line-height:1.4;margin-top:16px}
+.tl-timer{font-family:'Bungee';font-size:clamp(30px,6vw,52px);margin-top:14px;color:var(--leaf)}
+.tl-timer.low{color:var(--danger);animation:cdPulse .8s ease-in-out infinite}
+.tl-ans{margin-top:16px;font-size:clamp(15px,2.6vw,22px);color:var(--leaf);font-weight:800;line-height:1.5}
+.tl-ref{color:var(--muted);font-size:13px;font-weight:700;margin-top:6px}
+.tl-pod{margin-top:26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}
+.tl-pd{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 10px;opacity:.15;transition:.5s}
+.tl-pd.show{opacity:1}
+.tl-pd.p1.show{box-shadow:0 0 0 2px var(--gold);padding-top:30px}
+.tl-pd .m{font-size:clamp(28px,5vw,44px)}
+.tl-pd .n{font-weight:900;font-size:clamp(13px,2.4vw,20px);margin-top:6px}
+.tl-pd .p{font-family:'Bungee';color:var(--gold);font-size:clamp(16px,3vw,26px);margin-top:4px}
+@media(max-width:560px){.tl-vs{gap:10px}.tl-pod{gap:8px}}
 </style>
 </head>
 <body>
@@ -274,6 +365,7 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
     <div class="logo display">SEEDS <span class="b">BATTLE</span></div>
     <div class="tagline">Ouvi · Entendi · Vivi</div>
     <div class="dates">Edição 1 · Parábolas de Jesus · 01/07 → 01/08</div>
+    <div class="countdown" id="countdown"></div>
   </header>
 
   <div id="app"><div class="loading"><span class="seedspin">🌱</span><br><br>Preparando o solo...</div></div>
@@ -286,6 +378,7 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
   <button class="tab" data-v="leader"><span class="ic">🛡️</span>Líder</button>
 </div></nav>
 
+<div id="telao"></div>
 <div id="toast" role="status"></div>
 <button id="musicBtn" class="mutebtn m2" aria-label="Música de fundo" title="Música de fundo">🎵</button>
 <button id="muteBtn" class="mutebtn" aria-label="Ativar ou silenciar sons" title="Efeitos sonoros">🔊</button>
@@ -368,6 +461,48 @@ const LEVELS = [
   {min:5000, e:'👑', n:'Colheita Lendária'}
 ];
 
+/* ============ EDIÇÃO / CONTAGEM REGRESSIVA ============ */
+const KEY='ed1';                 /* identificador da edição (backup e Hall da Fama) */
+const ED_END='2026-08-01';       /* último dia da edição */
+function countdownText(){
+  const end=new Date(ED_END+'T23:59:59');
+  const days=Math.ceil((end-Date.now())/86400000);
+  if(days<0) return '🏁 Edição encerrada';
+  if(days===0) return '⏰ ÚLTIMO DIA!';
+  return '⏰ Faltam '+days+' dia'+(days>1?'s':'')+' de batalha';
+}
+function updCountdown(){
+  const el=document.getElementById('countdown'); if(!el) return;
+  const days=Math.ceil((new Date(ED_END+'T23:59:59')-Date.now())/86400000);
+  el.textContent=countdownText();
+  el.classList.toggle('urgent',days>=0&&days<=7);
+  el.classList.toggle('over',days<0);
+}
+
+/* ============ CONQUISTAS (badges) — calculadas dos lançamentos ============ */
+const BADGES=[
+ {id:'fiel',      e:'📖', n:'Fiel na Palavra',    d:'Levou a Bíblia 5+ vezes',            test:t=>((t.biblia_ebd||0)+(t.biblia_culto||0))>=5},
+ {id:'pescador',  e:'🕊️', n:'Pescador',           d:'Levou visitante não crente',          test:t=>(t.vis_nc||0)>=1},
+ {id:'constante', e:'🔥', n:'Constante',           d:'3+ presenças na EBD',                 test:t=>(t.ebd||0)>=3},
+ {id:'teologo',   e:'🧠', n:'Teólogo',             d:'Acertou pergunta difícil',            test:t=>(t.pd||0)>=1},
+ {id:'generoso',  e:'💝', n:'Coração generoso',    d:'Bateu o teto de ofertas (500 pts)',   test:t=>(t.ofertaPts||0)>=500},
+ {id:'estrela',   e:'⭐', n:'Estrela do louvor',   d:'Louvor ou saudação no tema',          test:t=>(t.oport||0)>=1}
+];
+function badgeTallies(){
+  const T={};
+  S.members.forEach(m=>T[m.id]={});
+  for(const e of S.entries){
+    if(!e.mid || !T[e.mid]) continue;
+    const a=ACT[e.act]; if(!a) continue;
+    const t=T[e.mid];
+    t[e.act]=(t[e.act]||0)+e.qty;
+    if(a.cap==='oferta') t.ofertaPts=(t.ofertaPts||0)+a.v*e.qty;
+    if(a.cat==='oport') t.oport=(t.oport||0)+1;
+  }
+  return T;
+}
+function badgesFor(mid,T){ const t=(T||badgeTallies())[mid]||{}; return BADGES.filter(b=>b.test(t)); }
+
 /* ============ BANCO DE PERGUNTAS — carregado do Firebase ============ */
 /* As perguntas e respostas NÃO ficam mais no HTML. Elas moram no nó
    protegido /questions do Firebase, que só líderes autenticados conseguem
@@ -405,6 +540,9 @@ const FIREBASE_CONFIG =  {
 let S=null, view='groups', editingId=null, logged=null;
 let DB=null, AUTH=null, currentUser=null, fbError=null;
 let cfg=null, entriesMap={};
+let hallMap=null;                      /* /hall — edições passadas (leitura pública) */
+let histFilter='';                     /* busca no histórico do painel do líder */
+let telaoOn=false, TQ={phase:'idle'}, PR={step:0}; /* modo telão: quiz + revelação de pódio */
 
 /* E-mail do líder → nome que aparece no histórico.
    Quando um desses e-mails loga, o "Lançando como" já vem fixo (sem escolher). */
@@ -458,6 +596,8 @@ function initFirebase(){
     AUTH.onAuthStateChanged(u=>{ currentUser=u; if(!u) logged=null; watchQuestions(u); render(); });
     DB.ref('config').on('value', s=>{ cfg=s.val(); rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
     DB.ref('entries').on('value', s=>{ entriesMap=s.val()||{}; rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
+    /* Hall da Fama (edições passadas) — leitura pública; se a regra não existir, ignora em silêncio */
+    DB.ref('hall').on('value', s=>{ hallMap=s.val(); render(); }, ()=>{ hallMap=null; });
   }catch(e){ fbError='init'; cfg=defaultConfig(); rebuildS(); render(); }
 }
 /* Banco de perguntas: só é lido quando há líder autenticado (regra .read: "auth != null").
@@ -482,7 +622,11 @@ async function fbPublishQuestions(arr){
   catch(e){ toast('Falha ao publicar: '+(e.code||e.message)); }
 }
 async function fbSaveConfig(c){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('config').set(c); }catch(e){ toast('Falha ao salvar: '+(e.code||e.message)); } }
-async function fbAddEntry(obj){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('entries').push(obj); }catch(e){ toast('Falha ao lançar: '+(e.code||e.message)); } }
+async function fbAddEntry(obj){
+  if(!DB){ toast('Firebase não configurado'); return null; }
+  try{ const r=DB.ref('entries').push(); await r.set(obj); return r.key; }
+  catch(e){ toast('Falha ao lançar: '+(e.code||e.message)); return null; }
+}
 async function fbSetEntry(key,obj){ try{ await DB.ref('entries/'+key).set(obj); }catch(e){ toast('Falha ao corrigir: '+(e.code||e.message)); } }
 async function fbDelEntry(key){ try{ await DB.ref('entries/'+key).remove(); }catch(e){ toast('Falha ao excluir: '+(e.code||e.message)); } }
 
@@ -670,6 +814,7 @@ function render(){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
   renderPrevView=view;
   bind();
+  renderTelao(); /* se o modo telão estiver aberto, atualiza com os dados novos */
 }
 
 /* ===== Animações da aba Grupos — estado persiste FORA do #app (innerHTML) ===== */
@@ -755,8 +900,17 @@ function animateInd(R, isEntry){
     const from=isEntry?0:(prev===undefined?to:prev);
     animCount('i'+el.dataset.k, el, from, to, 900);
   });
+  /* subida de nível: compara o nível anterior com o novo ANTES de atualizar iAnim */
+  const lvlUps=[];
+  S.members.forEach(m=>{
+    const prev=iAnim.pts[m.id], now=R.ind[m.id]||0;
+    if(!isEntry && prev!==undefined && now>prev && lvlOf(now).min>lvlOf(prev).min) lvlUps.push({m,L:lvlOf(now)});
+  });
   S.members.forEach(m=>{ iAnim.pts[m.id]=R.ind[m.id]||0; });
-  if(iGain) SFX.seed();
+  if(lvlUps.length && !RM){
+    confetti(); SFX.fanfare();
+    toast(lvlUps.map(x=>x.m.n+' virou '+x.L.e+' '+x.L.n).join(' · ')+'! 🎉');
+  } else if(iGain) SFX.seed();
   /* barras de XP */
   document.querySelectorAll('.xp>i[data-xpmid]').forEach(el=>{
     const mid=el.dataset.xpmid, target=parseFloat(el.dataset.pct)||0;
@@ -867,6 +1021,9 @@ function vGroups(R){
   h+='<div class="duel" style="--w1:'+w1+'%"><div class="d1" style="width:'+w1+'%"></div><div class="d2" style="width:'+(100-w1)+'%"></div><span class="seam"></span></div>';
   h+='<div class="legend"><span><span class="gdot" style="background:'+g1.color+'"></span>'+esc(g1.name)+'</span>'+
      '<span>'+esc(g2.name)+'<span class="gdot" style="background:'+g2.color+';margin:0 0 0 5px"></span></span></div>';
+  h+='<div class="row2" style="margin-top:12px"><button class="btn gold" id="btnTelao" style="margin-top:0">📺 Modo Telão</button>'+
+     '<button class="btn ghost" id="btnShare" style="margin-top:0">📤 Compartilhar</button></div>';
+  h+=vFeed();
   if(tie01.by!==null){
     const leadG=gs[0], msg = tie01.by==='EXTRA'
       ? '🟰 Empate total entre os grupos, inclusive nos critérios 1 a 4 — a decisão vai para <b>pergunta bíblica extra</b> no dia oficial.'
@@ -891,11 +1048,83 @@ function vGroups(R){
     '<span class="pill">⚠️ Penalidades: −'+fmt(st.pen)+'</span></div>';}
   h+='<p class="hint">O app aplica automaticamente os critérios 1 a 4, nesta ordem: pontos em perguntas do dia oficial → presença na EBD → visitantes não crentes → menos penalidades. Se ainda assim persistir empate, o critério 5 (pergunta bíblica extra) é decidido ao vivo.</p></div>';
   if(R.capNotes.length) h+='<div class="card"><h2>Tetos aplicados</h2>'+R.capNotes.map(c=>'<div class="capnote">• '+esc(c)+'</div>').join('')+'</div>';
+  h+=vRace();
+  h+=vHall();
+  return h+'</div>';
+}
+
+/* ===== Feed ao vivo — últimos lançamentos (dados públicos) ===== */
+function vFeed(){
+  const list=[...S.entries].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,5);
+  if(!list.length) return '';
+  let h='<div class="card"><h2>⚡ Últimos pontos</h2>';
+  list.forEach((en,i)=>{
+    const a=ACT[en.act]; if(!a) return;
+    const pts=a.v*en.qty;
+    const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):(S.groups.find(g=>g.id===en.gid)?.name||'?');
+    h+='<div class="feedrow" style="animation-delay:'+(i*60)+'ms">'+
+       '<div><span class="fw">'+esc(who)+'</span> · '+esc(a.n)+(en.qty>1?' ×'+en.qty:'')+
+       '<div class="ft">'+en.d.split('-').reverse().join('/')+'</div></div>'+
+       '<div class="fp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div>';
+  });
+  return h+'</div>';
+}
+
+/* ===== Corrida de pontos — acumulado por dia de lançamento (SVG puro) ===== */
+function vRace(){
+  const g1=S.groups[0],g2=S.groups[1]; if(!g1||!g2) return '';
+  const evs=S.entries.map(e=>({e,a:ACT[e.act]}))
+    .filter(x=>x.a&&(x.a.s==='both'||x.a.s==='group')&&x.e.gid&&x.e.d)
+    .sort((x,y)=>x.e.d.localeCompare(y.e.d)||((x.e.ts||0)-(y.e.ts||0)));
+  const dates=[...new Set(evs.map(x=>x.e.d))];
+  if(dates.length<2) return '';
+  const byDate={}; evs.forEach(x=>{ (byDate[x.e.d]=byDate[x.e.d]||[]).push(x); });
+  const acc={}, series={};
+  S.groups.forEach(g=>{acc[g.id]=0;series[g.id]=[];});
+  dates.forEach(d=>{
+    byDate[d].forEach(x=>{ if(acc[x.e.gid]!==undefined) acc[x.e.gid]+=x.a.v*x.e.qty; });
+    S.groups.forEach(g=>series[g.id].push(acc[g.id]));
+  });
+  const W=360,H=150,P=10;
+  const maxV=Math.max(1,...S.groups.map(g=>Math.max(...series[g.id])));
+  const minV=Math.min(0,...S.groups.map(g=>Math.min(...series[g.id])));
+  const X=i=>P+(W-2*P)*(i/(dates.length-1));
+  const Y=v=>H-P-(H-2*P)*((v-minV)/((maxV-minV)||1));
+  const line=g=>series[g.id].map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
+  let h='<div class="card"><h2>📈 Corrida de pontos</h2><div class="race">';
+  h+='<svg viewBox="0 0 '+W+' '+H+'" aria-hidden="true">';
+  h+='<line x1="'+P+'" y1="'+Y(0).toFixed(1)+'" x2="'+(W-P)+'" y2="'+Y(0).toFixed(1)+'" stroke="var(--line)" stroke-width="1"/>';
+  [g1,g2].forEach(g=>{
+    h+='<path d="'+line(g)+'" fill="none" stroke="'+g.color+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
+    const last=series[g.id][series[g.id].length-1];
+    h+='<circle cx="'+X(dates.length-1).toFixed(1)+'" cy="'+Y(last).toFixed(1)+'" r="4" fill="'+g.color+'"/>';
+  });
+  h+='</svg></div>';
+  h+='<div class="legend"><span><span class="gdot" style="background:'+g1.color+'"></span>'+esc(g1.name)+'</span>'+
+     '<span>'+dates[0].split('-').reverse().join('/')+' → '+dates[dates.length-1].split('-').reverse().join('/')+'</span>'+
+     '<span>'+esc(g2.name)+'<span class="gdot" style="background:'+g2.color+';margin:0 0 0 5px"></span></span></div>';
+  h+='<p class="hint" style="margin-top:6px">Acumulado por dia de lançamento (sem aplicar tetos).</p></div>';
+  return h;
+}
+
+/* ===== Hall da Fama — edições encerradas (nó /hall, leitura pública) ===== */
+function vHall(){
+  if(!hallMap) return '';
+  const eds=Object.entries(hallMap).sort((a,b)=>String(b[0]).localeCompare(String(a[0])));
+  if(!eds.length) return '';
+  let h='<div class="card"><h2>🏛️ Hall da Fama</h2>';
+  eds.forEach(([k,e])=>{
+    if(!e) return;
+    h+='<div class="hrow"><div class="t1">'+esc(e.name||k)+'</div>'+
+       '<div class="t2">🏆 '+esc(e.champion||'—')+(e.championPts?' · '+fmt(e.championPts)+' pts':'')+
+       ' &nbsp;·&nbsp; 🥇 '+esc(e.topSeed||'—')+(e.topSeedPts?' · '+fmt(e.topSeedPts)+' pts':'')+'</div></div>';
+  });
   return h+'</div>';
 }
 
 function vInd(R){
   const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
+  const T=badgeTallies();
   const med=['🥇','🥈','🥉'];
   let h='<div class="iwrap">'+SEEDS_BG;
   if(ms.length>=3){
@@ -918,8 +1147,10 @@ function vInd(R){
         ? '<div class="lvl" style="color:var(--gold)">🟰 Empate com '+esc(ms[i-1].n)+' — pergunta bíblica extra</div>'
         : (t.by ? '<div class="lvl" style="color:var(--gold)">⚖️ Atrás de '+esc(ms[i-1].n)+' por: '+t.by+'</div>' : '');
     }
+    const bds=badgesFor(m.id,T);
     h+='<div class="rrow" style="--i:'+i+';cursor:pointer" data-hist="'+m.id+'" role="button" tabindex="0" title="Ver histórico de '+esc(m.n)+'"><div class="pos">'+(i+1)+'º</div><div class="plant">'+L.e+'</div>'+
-    '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+'</div>'+
+    '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+
+    bds.map(b=>'<span class="bdg" title="'+esc(b.n)+'">'+b.e+'</span>').join('')+'</div>'+
     '<div class="lvl">'+L.n+(N?' · faltam '+fmt(N.min-p)+' p/ '+N.e:' · nível máximo!')+'</div>'+
     '<div class="xp"><i data-xpmid="'+m.id+'" data-pct="'+pct+'" style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
     '<div class="pts" data-ptsmid="'+m.id+'" data-k="row'+m.id+'">'+fmt(p)+'</div></div>';
@@ -927,6 +1158,9 @@ function vInd(R){
   h+='</div>';
   h+='<div class="card"><h2>Desempate individual</h2><p class="hint">Em empate de pontos, o app aplica: acertos no dia oficial → presença na EBD → visitantes levados → menos penalidades. Persistindo, vai para pergunta bíblica extra.</p></div>';
   h+='<div class="card"><h2>Níveis</h2>'+LEVELS.map(l=>'<span class="pill">'+l.e+' '+l.n+' · '+fmt(l.min)+'+</span>').join('')+'</div>';
+  h+='<div class="card"><h2>🎖️ Conquistas</h2>'+
+     '<p class="hint">Emblemas ganhos automaticamente pelos pontos lançados — aparecem ao lado do nome no ranking. Toque num Seed para ver quais ele já conquistou.</p>'+
+     BADGES.map(b=>'<div class="bdgrow"><span class="be">'+b.e+'</span><div><b>'+esc(b.n)+'</b><div class="bd">'+esc(b.d)+'</div></div></div>').join('')+'</div>';
   return h+'</div>';
 }
 
@@ -943,6 +1177,222 @@ function vTable(){
   });
   h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Tetos: ofertas até 500 por Seed · alimentos até 1000 por grupo · agasalhos até 1000 por grupo.</p></div>';
   return h;
+}
+
+/* ============ MODO TELÃO — placar gigante para projetar no culto/EBD ============ */
+/* Seção do quiz → atividade lançada quando acerta (dia oficial ou pergunta da semana) */
+const QUIZ_ACT={easy:'pf', med:'pm', hard:'pd', week:'psem_ok'};
+let quizTimerH=null;
+function stopQuizTimer(){ if(quizTimerH){ clearInterval(quizTimerH); quizTimerH=null; } }
+function openTelao(){ telaoOn=true; PR={step:0}; TQ={phase:'idle'}; renderTelao(); }
+function closeTelao(){ telaoOn=false; stopQuizTimer(); TQ={phase:'idle'}; const el=document.getElementById('telao'); if(el){ el.classList.remove('on'); el.innerHTML=''; } }
+
+function renderTelao(){
+  const el=document.getElementById('telao'); if(!el) return;
+  if(!telaoOn){ el.classList.remove('on'); el.innerHTML=''; return; }
+  el.classList.add('on');
+  const R=calc();
+  const g1=S.groups[0], g2=S.groups[1];
+  if(!g1||!g2){ el.innerHTML='<button class="btn ghost sm tl-close" id="tlClose">✕ Sair</button>'; const c=document.getElementById('tlClose'); if(c)c.onclick=closeTelao; return; }
+  const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const t01=gs.length>1?tieGroup(gs[0].id,gs[1].id,R):{n:0};
+  const leadId=t01.n!==0?gs[0].id:null;
+  const w1=Math.round((R.grp[g1.id]||0)/(((R.grp[g1.id]||0)+(R.grp[g2.id]||0))||1)*100);
+  let h='<button class="btn ghost sm tl-close" id="tlClose">✕ Sair</button><div class="tl-in">';
+  h+='<div class="tl-logo display">SEEDS <span class="b">BATTLE</span></div>';
+  h+='<div class="tl-count">'+countdownText()+'</div>';
+  h+='<div class="tl-vs">';
+  [g1,g2].forEach((g,i)=>{
+    h+='<div class="tl-g'+(g.id===leadId?' lead':'')+'"><div class="e">'+g.seed+'</div>'+
+       '<div class="n" style="color:'+g.color+'">'+esc(g.name)+'</div><div class="p">'+fmt(R.grp[g.id]||0)+'</div></div>';
+    if(i===0)h+='<div class="tl-vsb">VS</div>';
+  });
+  h+='</div>';
+  h+='<div class="duel tl-duel" style="--w1:'+w1+'%"><div class="d1" style="width:'+w1+'%"></div><div class="d2" style="width:'+(100-w1)+'%"></div><span class="seam"></span></div>';
+  h+=tlQuiz();
+  h+=tlPodium(R);
+  h+='<div class="tl-btns">';
+  h+='<button class="btn gold sm" id="tlPod">🏆 '+(PR.step===0?'Revelar pódio':(PR.step>=3?'Esconder pódio':'Revelar próximo'))+'</button>';
+  if(currentUser && QUESTIONS.length && TQ.phase==='idle') h+='<button class="btn go sm" id="tlQuizBtn">🎲 Sortear pergunta</button>';
+  h+='</div></div>';
+  el.innerHTML=h;
+  bindTelao();
+}
+
+/* pódio individual com revelação dramática: 3º → 2º → 1º */
+function tlPodium(R){
+  if(PR.step===0) return '';
+  const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n).slice(0,3);
+  if(ms.length<3) return '';
+  const med=['🥇','🥈','🥉'];
+  const order=[ms[1],ms[0],ms[2]]; /* 2º · 1º · 3º */
+  let h='<div class="tl-pod">';
+  order.forEach((m,i)=>{
+    const rank=i===1?0:(i===0?1:2);            /* 0 = campeão */
+    const revealed=PR.step>=(3-rank);          /* passo 1 revela o 3º, passo 2 o 2º, passo 3 o 1º */
+    h+='<div class="tl-pd'+(rank===0?' p1':'')+(revealed?' show':'')+'"><div class="m">'+med[rank]+'</div>'+
+       '<div class="n">'+(revealed?esc(m.n):'???')+'</div><div class="p">'+(revealed?fmt(R.ind[m.id]||0):'&nbsp;')+'</div></div>';
+  });
+  return h+'</div>';
+}
+
+/* quiz ao vivo: pergunta gigante + timer + lançamento de pontos em 1 clique */
+function tlQuiz(){
+  if(TQ.phase==='idle'||!TQ.item) return '';
+  const it=TQ.item, sec=TQ.sec;
+  let h='<div class="tl-quiz"><span class="tl-qtag">'+esc(sec.name)+(sec.pts?' · '+esc(sec.pts):'')+'</span>';
+  h+='<div class="tl-qq">'+esc(it.q)+'</div>';
+  if(TQ.phase==='q'){
+    h+='<div class="tl-timer'+(TQ.tleft<=5?' low':'')+'" id="tlTimer">'+(TQ.tleft>0?TQ.tleft:'⏰')+'</div>';
+    h+='<div class="tl-btns"><button class="btn gold sm" id="tlReveal">👁️ Revelar resposta</button>'+
+       '<button class="btn ghost sm" id="tlQCancel">Cancelar</button></div>';
+  } else {
+    h+='<div class="tl-ans">'+esc(it.a)+'</div><div class="tl-ref">'+esc(it.r||'')+'</div>';
+    const actId=QUIZ_ACT[sec.id], a=actId?ACT[actId]:null;
+    if(currentUser && a){
+      if(a.s!=='group'){ /* dia oficial: quem acertou foi um Seed */
+        h+='<div class="tl-btns"><select id="tlSeed">'+S.members.map(m=>{const g=S.groups.find(x=>x.id===m.g);
+             return '<option value="'+m.id+'">'+esc(m.n)+' · '+esc(g?g.name:'')+'</option>';}).join('')+'</select>'+
+           '<button class="btn go sm" id="tlHit">✅ Acertou (+'+a.v+')</button></div>';
+        h+='<div class="tl-btns"><select id="tlGrpT">'+S.groups.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select>'+
+           '<button class="btn ghost sm" id="tlTry">🤏 Tentativa c/ raciocínio (+'+ACT['prac'].v+')</button></div>';
+      } else { /* pergunta da semana: pontua o grupo */
+        h+='<div class="tl-btns"><select id="tlGrp">'+S.groups.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select>'+
+           '<button class="btn go sm" id="tlHitG">✅ Grupo acertou (+'+a.v+')</button>'+
+           '<button class="btn ghost sm" id="tlTryG">🤏 Tentativa (+'+ACT['psem_tent'].v+')</button></div>';
+      }
+    }
+    h+='<div class="tl-btns"><button class="btn gold sm" id="tlUsed">✓ Marcar usada e fechar</button>'+
+       '<button class="btn ghost sm" id="tlQClose">Fechar sem marcar</button></div>';
+  }
+  return h+'</div>';
+}
+
+function tlPickSection(){
+  const used=new Set(S.usedQuestions||[]);
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(10,8,5,.82);z-index:210;display:flex;align-items:center;justify-content:center;padding:20px';
+  let inner='<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:340px;width:100%;padding:20px">'+
+    '<h2 style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)">Sortear de qual seção?</h2>';
+  QUESTIONS.forEach(sec=>{
+    if(!sec) return;
+    const n=(sec.items||[]).filter(it=>it&&!used.has(it.id)).length;
+    inner+='<button class="btn ghost" data-sec="'+esc(sec.id)+'"'+(n?'':' disabled style="opacity:.4"')+'>'+esc(sec.name)+' · '+n+' restante(s)</button>';
+  });
+  inner+='<button class="btn red" data-x>Cancelar</button></div>';
+  ov.innerHTML=inner;
+  document.body.appendChild(ov);
+  ov.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{ ov.remove(); startQuiz(b.dataset.sec); });
+  ov.querySelector('[data-x]').onclick=()=>ov.remove();
+  ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+}
+function startQuiz(secId){
+  const sec=QUESTIONS.find(s=>s&&s.id===secId); if(!sec) return;
+  const used=new Set(S.usedQuestions||[]);
+  const pool=(sec.items||[]).filter(it=>it&&!used.has(it.id));
+  if(!pool.length) return toast('Sem perguntas restantes nessa seção');
+  TQ={phase:'q', sec, item:pool[Math.floor(Math.random()*pool.length)], tleft:30};
+  SFX.success();
+  stopQuizTimer();
+  quizTimerH=setInterval(()=>{
+    if(TQ.phase!=='q'||TQ.tleft<=0){ stopQuizTimer(); return; }
+    TQ.tleft--;
+    const t=document.getElementById('tlTimer');
+    if(t){ t.textContent=TQ.tleft>0?TQ.tleft:'⏰'; t.classList.toggle('low',TQ.tleft<=5); }
+    if(TQ.tleft>0&&TQ.tleft<=5) SFX.tick();
+    if(TQ.tleft<=0){ stopQuizTimer(); SFX.penalty(); }
+  },1000);
+  renderTelao();
+}
+function bindTelao(){
+  const q=id=>document.getElementById(id);
+  if(q('tlClose'))q('tlClose').onclick=closeTelao;
+  if(q('tlPod'))q('tlPod').onclick=()=>{
+    PR.step=(PR.step+1)%4;
+    if(PR.step===1||PR.step===2) SFX.coin();
+    if(PR.step===3){ SFX.fanfare(); confetti(); }
+    renderTelao();
+  };
+  if(q('tlQuizBtn'))q('tlQuizBtn').onclick=tlPickSection;
+  if(q('tlReveal'))q('tlReveal').onclick=()=>{ stopQuizTimer(); TQ.phase='rev'; SFX.success(); renderTelao(); };
+  if(q('tlQCancel'))q('tlQCancel').onclick=()=>{ stopQuizTimer(); TQ={phase:'idle'}; renderTelao(); };
+  if(q('tlQClose'))q('tlQClose').onclick=()=>{ TQ={phase:'idle'}; renderTelao(); };
+  if(q('tlUsed'))q('tlUsed').onclick=async()=>{ const id=TQ.item.id; TQ={phase:'idle'}; await markUsed(id); toast('Pergunta marcada como usada ✓'); renderTelao(); };
+  const launch=async(actId,mid,gid)=>{
+    const a=ACT[actId]; if(!a) return;
+    const item=TQ.item;
+    const key=await fbAddEntry({ts:Date.now(),act:actId,qty:1,d:new Date().toISOString().slice(0,10),
+      note:'Quiz'+(item?' '+item.c:''),mid:mid||null,gid,leader:logged||'Telão'});
+    TQ={phase:'idle'};
+    if(key){ SFX.coin(); toast('+'+fmt(a.v)+' pts lançados 🌱'); }
+    if(item) await markUsed(item.id);
+    renderTelao();
+  };
+  if(q('tlHit'))q('tlHit').onclick=()=>{ const mid=q('tlSeed').value; const m=S.members.find(x=>x.id===mid); launch(QUIZ_ACT[TQ.sec.id],mid,m?m.g:null); };
+  if(q('tlTry'))q('tlTry').onclick=()=>launch('prac',null,q('tlGrpT').value);
+  if(q('tlHitG'))q('tlHitG').onclick=()=>launch('psem_ok',null,q('tlGrp').value);
+  if(q('tlTryG'))q('tlTryG').onclick=()=>launch('psem_tent',null,q('tlGrp').value);
+}
+
+/* ============ COMPARTILHAR PLACAR (imagem via canvas → WhatsApp etc.) ============ */
+function shareScore(){
+  const R=calc();
+  const g1=S.groups[0], g2=S.groups[1]; if(!g1||!g2) return toast('Sem grupos para compartilhar');
+  const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n).slice(0,3);
+  const cv=document.createElement('canvas'); cv.width=1080; cv.height=1080;
+  const x=cv.getContext('2d');
+  const grd=x.createRadialGradient(540,-100,50,540,700,1100);
+  grd.addColorStop(0,'#2a2115'); grd.addColorStop(1,'#171310');
+  x.fillStyle=grd; x.fillRect(0,0,1080,1080);
+  /* título */
+  x.font='80px Bungee, sans-serif'; x.textAlign='left';
+  const t1='SEEDS ', t2='BATTLE';
+  const w1=x.measureText(t1).width, w2=x.measureText(t2).width;
+  const sx=(1080-w1-w2)/2;
+  x.fillStyle='#f5eedf'; x.fillText(t1,sx,140);
+  x.fillStyle='#8bd450'; x.fillText(t2,sx+w1,140);
+  x.textAlign='center';
+  x.fillStyle='#f5c542'; x.font='900 30px Nunito, sans-serif';
+  x.fillText('OUVI · ENTENDI · VIVI',540,195);
+  x.fillStyle='#a4957e'; x.font='700 26px Nunito, sans-serif';
+  x.fillText('Edição 1 · Parábolas de Jesus · '+new Date().toLocaleDateString('pt-BR'),540,240);
+  /* cards dos grupos */
+  const drawG=(g,pts,cx,lead)=>{
+    x.fillStyle='#261e15'; x.strokeStyle=lead?'#f5c542':'#3d3122'; x.lineWidth=lead?6:2;
+    x.beginPath(); x.roundRect(cx-210,300,420,330,28); x.fill(); x.stroke();
+    x.font='90px serif'; x.fillText(g.seed,cx,410);
+    x.fillStyle=g.color; x.font='900 40px Nunito, sans-serif'; x.fillText(g.name,cx,480,380);
+    x.fillStyle='#f5eedf'; x.font='72px Bungee, sans-serif'; x.fillText(fmt(pts),cx,580,380);
+  };
+  const p1=R.grp[g1.id]||0, p2=R.grp[g2.id]||0;
+  drawG(g1,p1,290,p1>p2); drawG(g2,p2,790,p2>p1);
+  x.fillStyle='#f5c542'; x.font='44px Bungee, sans-serif'; x.fillText('VS',540,480);
+  /* barra de duelo */
+  const bw=840, bx=(1080-bw)/2, r1=p1/((p1+p2)||1);
+  x.fillStyle='#211a13'; x.beginPath(); x.roundRect(bx,680,bw,34,17); x.fill();
+  x.save(); x.beginPath(); x.roundRect(bx,680,bw,34,17); x.clip();
+  x.fillStyle=g1.color; x.fillRect(bx,680,bw*r1,34);
+  x.fillStyle=g2.color; x.fillRect(bx+bw*r1,680,bw*(1-r1),34);
+  x.restore();
+  /* top 3 seeds */
+  x.fillStyle='#f5c542'; x.font='900 30px Nunito, sans-serif';
+  x.fillText('TOP SEEDS',540,790);
+  const med=['🥇','🥈','🥉'];
+  ms.forEach((m,i)=>{
+    x.fillStyle='#f5eedf'; x.font='700 34px Nunito, sans-serif';
+    x.fillText(med[i]+' '+m.n+' · '+fmt(R.ind[m.id]||0)+' pts',540,850+i*54);
+  });
+  x.fillStyle='#a4957e'; x.font='700 26px Nunito, sans-serif';
+  x.fillText(countdownText().replace('⏰','').trim(),540,1030);
+  cv.toBlob(async blob=>{
+    if(!blob) return toast('Falha ao gerar a imagem');
+    const file=new File([blob],'seeds-battle-placar.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:'Seeds Battle',text:'Placar ao vivo da Seeds Battle 🌱⚔️'}); return; }catch(e){ if(e&&e.name==='AbortError') return; }
+    }
+    const ok=tryDownload('seeds-battle-placar.png',blob);
+    toast(ok?'Imagem do placar baixada ✅':'Não foi possível gerar o compartilhamento');
+  },'image/png');
 }
 </script>
 <script>
@@ -967,6 +1417,27 @@ function actOptions(){
   '</optgroup>').join('');
 }
 
+/* ===== Chamada rápida — lança a mesma atividade para vários Seeds ===== */
+const PRESENCE_ACTS=['culto_sem','culto_dom','ebd','biblia_ebd','biblia_culto'];
+function vChamada(){
+  let h='<div class="card"><h2>📋 Chamada rápida</h2>';
+  h+='<p class="hint">Lança a mesma atividade para vários Seeds de uma vez — ideal para presença e Bíblia. Cada Seed marcado vira um lançamento individual (aparece no histórico e pode ser corrigido).</p>';
+  h+='<div class="row2"><div class="field"><label>Atividade</label><select id="chAct">'+
+    PRESENCE_ACTS.map(id=>{const a=ACT[id];return a?'<option value="'+id+'">'+esc(a.n)+' (+'+a.v+')</option>':'';}).join('')+'</select></div>'+
+    '<div class="field"><label>Data</label><input id="chDate" type="date" value="'+new Date().toISOString().slice(0,10)+'"></div></div>';
+  S.groups.forEach(g=>{
+    h+='<div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">'+
+       '<b style="color:'+g.color+'">'+g.seed+' '+esc(g.name)+'</b>'+
+       '<button class="btn ghost sm" data-chall="'+g.id+'">marcar todos</button></div><div class="chkgrid">';
+    S.members.filter(m=>m.g===g.id).forEach(m=>{
+      h+='<label class="chk"><input type="checkbox" class="chkm" data-mid="'+m.id+'" data-gid="'+g.id+'">'+esc(m.n)+'</label>';
+    });
+    h+='</div>';
+  });
+  h+='<button class="btn go" id="btnChamada">Lançar para os marcados</button></div>';
+  return h;
+}
+
 /* ===== Banco de perguntas (só aparece no painel do líder) ===== */
 function vQuestions(){
   const used=new Set(S.usedQuestions||[]);
@@ -986,6 +1457,7 @@ function vQuestions(){
     const items=sec.items||[];
     const uc=items.filter(it=>used.has(it.id)).length;
     h+='<details style="--i:'+si+'"><summary>'+esc(sec.name)+' <span class="qsecmeta">· '+esc(sec.pts)+' · '+uc+'/'+items.length+'</span></summary>';
+    if(uc<items.length) h+='<button class="btn ghost sm" data-qdraw="'+esc(sec.id)+'" style="margin-top:8px">🎲 Sortear pergunta não usada</button>';
     items.forEach(it=>{
       const on=used.has(it.id);
       h+='<div class="hrow qrow'+(on?' used':'')+'">'+
@@ -1071,23 +1543,38 @@ function vPanel(R){
   if(e)h+='<button class="btn ghost" id="btnCancelEdit">Cancelar edição</button>';
   h+='</div>';
 
-  /* histórico */
+  /* chamada em lote */
+  h+=vChamada();
+
+  /* histórico (com busca) */
   h+='<div class="card"><h2>Histórico ('+S.entries.length+')</h2>';
   if(!S.entries.length)h+='<p class="hint">Nenhum lançamento ainda. O primeiro ponto planta a primeira semente!</p>';
-  else h+='<div class="histscroll">';
-  [...S.entries].sort((x,y)=>y.ts-x.ts).slice(0,40).forEach(en=>{
-    const ac=ACT[en.act]; if(!ac)return;
-    const pts=ac.v*en.qty;
-    const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):(S.groups.find(g=>g.id===en.gid)?.name||'?');
-    h+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
-    '<div><div class="t1">'+esc(who)+' · '+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
-    '<div class="t2">'+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
-    '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div>'+
-    '<div class="hact"><button class="btn ghost sm" data-edit="'+en.id+'">✏️ Corrigir</button>'+
-    '<button class="btn red sm" data-del="'+en.id+'">Excluir</button></div></div>';
-  });
-  if(S.entries.length)h+='</div>';
-  if(S.entries.length>40)h+='<p class="hint" style="margin-top:8px">Mostrando os 40 mais recentes.</p>';
+  else{
+    h+='<div class="field" style="margin-top:0"><input id="histQ" placeholder="🔎 Buscar por Seed, atividade, líder, data..." value="'+esc(histFilter)+'"></div>';
+    const f=histFilter.trim().toLowerCase();
+    let list=[...S.entries].sort((x,y)=>y.ts-x.ts);
+    if(f) list=list.filter(en=>{
+      const ac=ACT[en.act]; if(!ac) return false;
+      const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||''):(S.groups.find(g=>g.id===en.gid)?.name||'');
+      return (who+' '+ac.n+' '+(en.leader||'')+' '+(en.note||'')+' '+en.d.split('-').reverse().join('/')).toLowerCase().includes(f);
+    });
+    const lim=f?200:40;
+    h+='<div class="histscroll">';
+    list.slice(0,lim).forEach(en=>{
+      const ac=ACT[en.act]; if(!ac)return;
+      const pts=ac.v*en.qty;
+      const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):(S.groups.find(g=>g.id===en.gid)?.name||'?');
+      h+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
+      '<div><div class="t1">'+esc(who)+' · '+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+      '<div class="t2">'+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
+      '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div>'+
+      '<div class="hact"><button class="btn ghost sm" data-edit="'+en.id+'">✏️ Corrigir</button>'+
+      '<button class="btn red sm" data-del="'+en.id+'">Excluir</button></div></div>';
+    });
+    h+='</div>';
+    if(f) h+='<p class="hint" style="margin-top:8px">'+list.length+' resultado(s) para "'+esc(histFilter)+'"'+(list.length>lim?' · mostrando '+lim:'')+'.</p>';
+    else if(S.entries.length>40) h+='<p class="hint" style="margin-top:8px">Mostrando os 40 mais recentes. Use a busca para achar os demais.</p>';
+  }
   h+='</div>';
 
   /* banco de perguntas (restrito à liderança) */
@@ -1119,6 +1606,9 @@ function vPanel(R){
     '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
     '<button class="btn ghost" id="btnInit" style="margin-top:10px">Inicializar com os 18 participantes padrão</button>'+
     '<p class="hint" style="margin-top:8px">💡 Como os dados ficam no Firebase, o ranking já é público e ao vivo — os Seeds veem sem login.</p></details>';
+  h+='<details><summary>🏛️ Hall da Fama / Encerrar edição</summary>'+
+    '<p class="hint" style="margin-top:6px">Ao final da edição, registre o resultado no <b>Hall da Fama</b> — ele aparece na aba Grupos para todos, e fica guardado para as próximas edições. Isso <b>não apaga</b> nenhum dado. Requer a regra <b>hall</b> nas regras do Realtime Database.</p>'+
+    '<button class="btn gold" id="btnCloseEd">🏁 Registrar resultado da edição</button></details>';
   h+='<details><summary>👥 Líderes ('+S.leaders.length+')</summary>'+
     '<p class="hint" style="margin-top:6px">Estes nomes aparecem no histórico (quem lançou). O <b>acesso</b> em si é controlado pelo e-mail/senha do Firebase — para dar ou tirar acesso, use a aba Authentication no console do Firebase.</p>'+
     S.leaders.map((l,i)=>'<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center">'+
@@ -1139,8 +1629,57 @@ function vPanel(R){
 }
 
 /* ============ AÇÕES ============ */
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+function toast(m){const t=document.getElementById('toast');t.classList.remove('act');t.textContent=m;t.classList.add('show');
   clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2600);}
+/* toast com botão de ação (ex.: Desfazer) — fica 6s na tela */
+function toastAction(msg,label,fn){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  const b=document.createElement('button'); b.className='tbtn'; b.textContent=label;
+  b.onclick=()=>{ t.classList.remove('show','act'); fn(); };
+  t.appendChild(b);
+  t.classList.add('show','act');
+  clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove('show','act'),6000);
+}
+/* chuva de confete (subida de nível / revelação de pódio) */
+function confetti(){
+  let host=document.getElementById('lvlfx');
+  if(!host){ host=document.createElement('div'); host.id='lvlfx'; document.body.appendChild(host); }
+  const emo=['🎉','✨','🌱','⭐','🍃','🌟'];
+  for(let i=0;i<26;i++){
+    const s=document.createElement('span');
+    s.textContent=emo[i%emo.length];
+    s.style.left=(Math.random()*100).toFixed(1)+'%';
+    s.style.animationDuration=(1.6+Math.random()*1.6).toFixed(2)+'s';
+    s.style.animationDelay=(Math.random()*.5).toFixed(2)+'s';
+    s.style.setProperty('--rot',(Math.random()*720-360).toFixed(0)+'deg');
+    host.appendChild(s);
+    setTimeout(()=>s.remove(),4200);
+  }
+}
+/* marca uma pergunta como usada no config compartilhado */
+async function markUsed(id){
+  const set=new Set(S.usedQuestions||[]); set.add(id);
+  const c=currentConfig(); c.usedQuestions=[...set];
+  await fbSaveConfig(c);
+}
+/* modal da pergunta sorteada (painel do líder) */
+function showQuestionModal(sec,it){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(10,8,5,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML='<div style="background:var(--card);border:1px solid var(--gold);border-radius:14px;max-width:420px;width:100%;padding:20px;max-height:82vh;overflow:auto">'+
+    '<div class="qsecmeta">'+esc(sec.name)+(sec.pts?' · '+esc(sec.pts):'')+'</div>'+
+    '<div class="qq" style="font-size:15px;margin-top:10px"><b>'+esc(it.c)+'.</b> '+esc(it.q)+'</div>'+
+    '<details class="qansd" style="margin-top:12px"><summary>Ver resposta</summary>'+
+      '<div class="qans">'+esc(it.a)+'</div><div class="qref">'+esc(it.r||'')+'</div></details>'+
+    '<div style="display:flex;gap:10px;margin-top:16px">'+
+      '<button class="btn gold" data-use style="margin-top:0;flex:1">✓ Marcar usada</button>'+
+      '<button class="btn ghost" data-close style="margin-top:0;flex:1">Fechar</button></div></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('[data-close]').onclick=()=>ov.remove();
+  ov.querySelector('[data-use]').onclick=async()=>{ await markUsed(it.id); toast('Pergunta marcada como usada ✓'); ov.remove(); };
+  ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+}
 const uid=()=> 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 /* confirmação interna (o confirm() nativo é bloqueado no iframe do artifact) */
@@ -1168,6 +1707,13 @@ function showMemberHistory(mid){
   const g=S.groups.find(x=>x.id===m.g);
   const R=calc();
   const list=[...S.entries].filter(en=>en.mid===mid && ACT[en.act]).sort((x,y)=>(y.ts||0)-(x.ts||0));
+  const myBds=badgesFor(mid);
+  const bh='<details style="margin-top:10px"'+(myBds.length?' open':'')+'><summary>🎖️ Conquistas · '+myBds.length+' de '+BADGES.length+'</summary>'+
+    BADGES.map(b=>{
+      const on=myBds.includes(b);
+      return '<div class="bdgrow'+(on?'':' off')+'"><span class="be">'+b.e+'</span>'+
+        '<div><b>'+esc(b.n)+(on?' ✓':'')+'</b><div class="bd">'+esc(b.d)+(on?'':' · ainda não conquistada')+'</div></div></div>';
+    }).join('')+'</details>';
   let rows;
   if(!list.length){
     rows='<p class="hint" style="margin-top:12px">Nenhum ponto lançado para '+esc(m.n)+' ainda. O primeiro ponto planta a primeira semente! 🌱</p>';
@@ -1189,7 +1735,7 @@ function showMemberHistory(mid){
       '<div><div style="font-weight:800;font-size:16px;color:var(--cream)"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span> '+esc(m.n)+'</div>'+
       '<div class="t2" style="margin-top:2px">'+(g?esc(g.name)+' · ':'')+fmt(R.ind[mid]||0)+' pts · '+list.length+' lançamento(s)</div></div>'+
       '<button class="btn ghost sm" data-close="1" style="margin-top:0">Fechar</button>'+
-    '</div>'+rows+'</div>';
+    '</div>'+bh+rows+'</div>';
   document.body.appendChild(ov);
   const close=()=>ov.remove();
   ov.querySelector('[data-close="1"]').onclick=close;
@@ -1338,6 +1884,26 @@ async function importJson(text){
   }catch(err){ toast('Falha ao importar: '+(err.code||err.message)); }
 }
 
+/* Registra o resultado atual no Hall da Fama (/hall/ed1) — não apaga nada */
+async function closeEdition(){
+  if(!DB) return toast('Firebase não configurado');
+  const R=calc();
+  const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
+  const champ=gs[0], top=ms[0];
+  if(!champ||!top) return toast('Sem dados suficientes');
+  if(!(await askConfirm('Registrar no Hall da Fama?\n\n🏆 '+champ.name+' ('+fmt(R.grp[champ.id]||0)+' pts)\n🥇 '+top.n+' ('+fmt(R.ind[top.id]||0)+' pts)\n\nIsso NÃO apaga os dados — só grava o resultado da edição.'))) return;
+  try{
+    await DB.ref('hall/'+KEY).set({
+      name:'Edição 1 · Parábolas de Jesus',
+      champion:champ.name, championPts:R.grp[champ.id]||0,
+      topSeed:top.n, topSeedPts:R.ind[top.id]||0,
+      closedAt:new Date().toISOString()
+    });
+    toast('Edição registrada no Hall da Fama 🏛️'); SFX.fanfare();
+  }catch(e){ toast('Falha: '+(e.code||e.message)+' — confira a regra "hall" no Firebase'); }
+}
+
 async function initDefaults(){
   if(!DB) return toast('Configure o Firebase antes');
   if(!(await askConfirm('Inicializar com os 18 participantes padrão? Isso grava a configuração inicial (não apaga lançamentos existentes).'))) return;
@@ -1388,9 +1954,10 @@ function bind(){
       const obj={ts:e.ts||Date.now(),act,qty,d,note,mid,gid,leader:(e.leader||'')+' (corr. '+logged+')'};
       const key=editingId; editingId=null; await fbSetEntry(key,obj); toast('Lançamento corrigido ✏️'); SFX.tick();
     }else{
-      await fbAddEntry({ts:Date.now(),act,qty,d,note,mid,gid,leader:logged});
-      toast((a.v<0?'Penalidade registrada':'+'+fmt(a.v*qty)+' pts lançados! 🌱'));
+      const key=await fbAddEntry({ts:Date.now(),act,qty,d,note,mid,gid,leader:logged});
       a.v<0?SFX.penalty():SFX.coin();
+      if(key) toastAction((a.v<0?'Penalidade registrada':'+'+fmt(a.v*qty)+' pts lançados! 🌱'),'Desfazer',
+        async()=>{ await fbDelEntry(key); toast('Lançamento desfeito ↩️'); });
     }
   };
   if(q('btnCancelEdit'))q('btnCancelEdit').onclick=()=>{editingId=null;render();};
@@ -1493,11 +2060,69 @@ function bind(){
     if(!(await askConfirm(msg)))return;
     const c=currentConfig(); c.customActs=(c.customActs||[]).filter(a=>a.id!==id);
     await fbSaveConfig(c); toast('Atividade removida');});
+  /* ===== modo telão + compartilhar (aba Grupos) ===== */
+  if(q('btnTelao'))q('btnTelao').onclick=()=>{ SFX.tick(); openTelao(); };
+  if(q('btnShare'))q('btnShare').onclick=()=>{ SFX.tick(); shareScore(); };
+  /* ===== chamada em lote ===== */
+  document.querySelectorAll('[data-chall]').forEach(b=>b.onclick=()=>{
+    const boxes=[...document.querySelectorAll('.chkm')].filter(c=>c.dataset.gid===b.dataset.chall);
+    const all=boxes.length&&boxes.every(c=>c.checked);
+    boxes.forEach(c=>c.checked=!all);
+  });
+  if(q('btnChamada'))q('btnChamada').onclick=async()=>{
+    const sel=[...document.querySelectorAll('.chkm:checked')];
+    if(!sel.length) return toast('Marque ao menos 1 Seed');
+    if(!DB) return toast('Firebase não configurado');
+    const act=q('chAct').value, a=ACT[act]; if(!a) return;
+    const d=q('chDate').value||new Date().toISOString().slice(0,10);
+    if(!(await askConfirm('Lançar "'+a.n+'" (+'+a.v+' cada) para '+sel.length+' Seed(s) em '+d.split('-').reverse().join('/')+'?'))) return;
+    const upd={}, keys=[];
+    sel.forEach(c=>{ const k=DB.ref('entries').push().key; keys.push(k);
+      upd[k]={ts:Date.now(),act,qty:1,d,note:'',mid:c.dataset.mid,gid:c.dataset.gid,leader:logged}; });
+    try{
+      await DB.ref('entries').update(upd); /* gravação única e atômica */
+      SFX.success();
+      toastAction(sel.length+' lançamento(s) feitos ✅','Desfazer',async()=>{
+        const del={}; keys.forEach(k=>del[k]=null);
+        try{ await DB.ref('entries').update(del); toast('Chamada desfeita ↩️'); }
+        catch(e){ toast('Falha ao desfazer: '+(e.code||e.message)); }
+      });
+    }catch(e){ toast('Falha: '+(e.code||e.message)); }
+  };
+  /* ===== busca no histórico (mantém o foco após re-render) ===== */
+  if(q('histQ')){
+    q('histQ').oninput=()=>{
+      histFilter=q('histQ').value;
+      clearTimeout(window._hqT);
+      window._hqT=setTimeout(()=>{
+        render();
+        const el=document.getElementById('histQ');
+        if(el){ el.focus({preventScroll:true}); el.setSelectionRange(el.value.length,el.value.length); }
+      },300);
+    };
+  }
+  /* ===== sortear pergunta (banco de perguntas) ===== */
+  document.querySelectorAll('[data-qdraw]').forEach(b=>b.onclick=()=>{
+    const sec=QUESTIONS.find(s=>s&&s.id===b.dataset.qdraw); if(!sec) return;
+    const used=new Set(S.usedQuestions||[]);
+    const pool=(sec.items||[]).filter(it=>it&&!used.has(it.id));
+    if(!pool.length) return toast('Todas as perguntas desta seção já foram usadas');
+    SFX.tick();
+    showQuestionModal(sec, pool[Math.floor(Math.random()*pool.length)]);
+  });
+  /* ===== encerrar edição ===== */
+  if(q('btnCloseEd'))q('btnCloseEd').onclick=()=>closeEdition();
 }
 buildFx();
 initMute();
 initMusic();
 load();
+updCountdown();
+setInterval(updCountdown,60000);
+/* PWA: registra o service worker (só em https/localhost — no file:// é ignorado) */
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#171310"/>
+  <rect x="10" y="10" width="492" height="492" rx="92" fill="none" stroke="#3d3122" stroke-width="8"/>
+  <!-- semente -->
+  <ellipse cx="256" cy="408" rx="34" ry="26" fill="#f5c542"/>
+  <!-- caule -->
+  <path d="M256 400 V240" stroke="#8bd450" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <!-- folhas -->
+  <path d="M256 320 Q170 300 140 205 Q240 220 256 300 Z" fill="#8bd450"/>
+  <path d="M256 285 Q342 265 372 170 Q272 185 256 265 Z" fill="#5c9938"/>
+  <!-- broto -->
+  <circle cx="256" cy="222" r="22" fill="#8bd450"/>
+  <!-- brilho -->
+  <path d="M120 96 l14 34 34 14 -34 14 -14 34 -14 -34 -34 -14 34 -14 Z" fill="#f5c542"/>
+</svg>
