@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Configuração (grupos, seeds, líderes, atividades) — ranking é público
+    match /app/config {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Hall da Fama — público
+    match /app/hall {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Banco de perguntas — só liderança autenticada (respostas protegidas)
+    match /app/questions {
+      allow read, write: if request.auth != null;
+    }
+
+    // Lançamentos, um doc por mês (entries/AAAA-MM) — leitura pública, escrita só liderança
+    match /entries/{shard} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
