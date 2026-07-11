@@ -11,7 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script><!-- só para a migração RTDB→Firestore; remover depois -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <style>
 :root{
@@ -23,6 +24,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
+/* overflow-x travado: nada pode arrastar a página de lado (menu fixo fica de fato fixo) */
+html,body{overflow-x:hidden;overflow-x:clip}
 body{background:var(--soil);color:var(--cream);font-family:'Nunito',system-ui,sans-serif;min-height:100vh;
   background-image:radial-gradient(1200px 500px at 50% -200px,#2a2115 0%,var(--soil) 60%)}
 .wrap{max-width:640px;margin:0 auto;padding:16px 14px 90px}
@@ -100,7 +103,8 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710;border-top:1px sol
 /* fundos temáticos por aba */
 .gwrap,.iwrap,.twrap,.lwrap{position:relative}
 .gwrap>*,.iwrap>*,.twrap>*,.lwrap>*{position:relative;z-index:1}
-.tabbg{position:absolute;top:-14px;left:-14px;right:-14px;height:300px;z-index:0;pointer-events:none;
+/* width explícita: sem ela o SVG usa a largura intrínseca do viewBox (400px) e vaza da tela */
+.tabbg{position:absolute;top:-14px;left:-14px;width:calc(100% + 28px);height:300px;z-index:0;pointer-events:none;
   opacity:.5;-webkit-mask-image:linear-gradient(#000 52%,transparent);mask-image:linear-gradient(#000 52%,transparent)}
 .gbg .bg-path{fill:none;stroke:var(--line);stroke-width:6;stroke-dasharray:2 12;stroke-linecap:round}
 .gbg .bg-soil{fill:var(--soil2)}
@@ -207,8 +211,9 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710;border-top:1px sol
 /* leader panel */
 .field{margin-top:12px}
 label{display:block;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+/* 16px mínimo: fonte menor em input faz o iOS dar zoom ao focar, deslocando o layout e o menu fixo */
 input,select,textarea{width:100%;background:var(--soil2);border:1px solid var(--line);border-radius:10px;color:var(--cream);
-  font-family:'Nunito';font-weight:700;font-size:15px;padding:11px 12px}
+  font-family:'Nunito';font-weight:700;font-size:16px;padding:11px 12px}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-offset:-1px}
 .btn{appearance:none;border:none;border-radius:12px;font-family:'Nunito';font-weight:900;font-size:15px;
   padding:13px 16px;cursor:pointer;width:100%;margin-top:14px}
@@ -586,18 +591,33 @@ function rebuildS(){
         rosterSeeded:c.rosterSeeded||null, entries };
 }
 
-/* ============ FIREBASE ============ */
-function fbConfigured(){ return FIREBASE_CONFIG.databaseURL && FIREBASE_CONFIG.databaseURL!=='COLE_AQUI'; }
+/* ============ FIREBASE (Firestore) ============ */
+/* Os dados ficam agregados em POUCOS documentos, para caber na cota grátis
+   mesmo com 100+ conectados (cada atualização custa 1 leitura por pessoa):
+   - app/config      → grupos, seeds, líderes, atividades (leitura pública)
+   - app/hall        → hall da fama, mapa por edição (leitura pública)
+   - app/questions   → banco de perguntas (só liderança lê — regra do Firestore)
+   - entries/AAAA-MM → lançamentos do mês, mapa id→lançamento (leitura pública)
+   O id de cada lançamento embute o mês ("2026-07_ab12cd") para achar o doc. */
+function fbConfigured(){ return FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.projectId!=='COLE_AQUI'; }
+function entryShard(id){ return id.slice(0,7); }
+function newEntryId(d){
+  const m=(d||new Date().toISOString().slice(0,10)).slice(0,7);
+  return m+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+}
+/* FieldPath: os ids têm "-" e "_", que não podem ir crus no caminho do update() */
+function fp(key){ return new firebase.firestore.FieldPath(key); }
+function fdel(){ return firebase.firestore.FieldValue.delete(); }
 function initFirebase(){
   if(!fbConfigured()){ fbError='config'; cfg=defaultConfig(); rebuildS(); render(); return; }
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
-    DB=firebase.database(); AUTH=firebase.auth();
+    DB=firebase.firestore(); AUTH=firebase.auth();
     AUTH.onAuthStateChanged(u=>{ currentUser=u; if(!u) logged=null; watchQuestions(u); render(); });
-    DB.ref('config').on('value', s=>{ cfg=s.val(); rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
-    DB.ref('entries').on('value', s=>{ entriesMap=s.val()||{}; rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
+    DB.doc('app/config').onSnapshot(s=>{ cfg=s.data()||null; rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
+    DB.collection('entries').onSnapshot(s=>{ entriesMap={}; s.forEach(d=>Object.assign(entriesMap,d.data())); rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
     /* Hall da Fama (edições passadas) — leitura pública; se a regra não existir, ignora em silêncio */
-    DB.ref('hall').on('value', s=>{ hallMap=s.val(); render(); }, ()=>{ hallMap=null; });
+    DB.doc('app/hall').onSnapshot(s=>{ hallMap=s.data()||null; render(); }, ()=>{ hallMap=null; });
   }catch(e){ fbError='init'; cfg=defaultConfig(); rebuildS(); render(); }
 }
 /* Banco de perguntas: só é lido quando há líder autenticado (regra .read: "auth != null").
@@ -607,28 +627,30 @@ function normalizeQuestions(v){
   if(v && typeof v==='object') return Object.values(v).filter(Boolean);
   return [];
 }
+let unsubQuestions=null;
 function watchQuestions(u){
   if(!DB) return;
-  DB.ref('questions').off();
+  if(unsubQuestions){ unsubQuestions(); unsubQuestions=null; }
   if(!u){ QUESTIONS=[]; questionsLoaded=false; return; }
   questionsLoaded=false;
-  DB.ref('questions').on('value',
-    s=>{ QUESTIONS=normalizeQuestions(s.val()); questionsLoaded=true; render(); },
+  unsubQuestions=DB.doc('app/questions').onSnapshot(
+    s=>{ QUESTIONS=normalizeQuestions((s.data()||{}).sections); questionsLoaded=true; render(); },
     ()=>{ QUESTIONS=[]; questionsLoaded=true; render(); });
 }
 async function fbPublishQuestions(arr){
   if(!DB) return toast('Firebase não configurado');
-  try{ await DB.ref('questions').set(arr); toast('Banco de perguntas publicado ✓'); }
+  try{ await DB.doc('app/questions').set({sections:arr}); toast('Banco de perguntas publicado ✓'); }
   catch(e){ toast('Falha ao publicar: '+(e.code||e.message)); }
 }
-async function fbSaveConfig(c){ if(!DB) return toast('Firebase não configurado'); try{ await DB.ref('config').set(c); }catch(e){ toast('Falha ao salvar: '+(e.code||e.message)); } }
+async function fbSaveConfig(c){ if(!DB) return toast('Firebase não configurado'); try{ await DB.doc('app/config').set(c); }catch(e){ toast('Falha ao salvar: '+(e.code||e.message)); } }
 async function fbAddEntry(obj){
   if(!DB){ toast('Firebase não configurado'); return null; }
-  try{ const r=DB.ref('entries').push(); await r.set(obj); return r.key; }
+  try{ const id=newEntryId(obj.d); await DB.doc('entries/'+entryShard(id)).set({[id]:obj},{merge:true}); return id; }
   catch(e){ toast('Falha ao lançar: '+(e.code||e.message)); return null; }
 }
-async function fbSetEntry(key,obj){ try{ await DB.ref('entries/'+key).set(obj); }catch(e){ toast('Falha ao corrigir: '+(e.code||e.message)); } }
-async function fbDelEntry(key){ try{ await DB.ref('entries/'+key).remove(); }catch(e){ toast('Falha ao excluir: '+(e.code||e.message)); } }
+/* update(fp(key),obj) substitui o lançamento inteiro (set+merge deixaria campo velho para trás) */
+async function fbSetEntry(key,obj){ try{ await DB.doc('entries/'+entryShard(key)).update(fp(key),obj); }catch(e){ toast('Falha ao corrigir: '+(e.code||e.message)); } }
+async function fbDelEntry(key){ try{ await DB.doc('entries/'+entryShard(key)).update(fp(key),fdel()); }catch(e){ toast('Falha ao excluir: '+(e.code||e.message)); } }
 
 function load(){ initFirebase(); }
 
@@ -1501,7 +1523,7 @@ function vQuestionsForm(){
 function vQuestionsJson(){
   return '<details><summary>⚙️ Publicar banco de perguntas (JSON)</summary>'+
     '<p class="hint" style="margin-top:8px">Cole aqui o <b>JSON</b> das perguntas (array de seções) e clique em publicar. Isso <b>substitui</b> o banco no Firebase, que fica visível só para a liderança. Use na migração inicial ou para subir uma nova edição.</p>'+
-    '<textarea id="qJson" rows="6" placeholder=\'[ { "id":"week", "name":"...", "pts":"...", "items":[ {"id":"qw1","c":"S1","q":"...","a":"...","r":"..."} ] } ]\' style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px"></textarea>'+
+    '<textarea id="qJson" rows="6" placeholder=\'[ { "id":"week", "name":"...", "pts":"...", "items":[ {"id":"qw1","c":"S1","q":"...","a":"...","r":"..."} ] } ]\' style="width:100%;box-sizing:border-box;font-family:monospace;font-size:16px"></textarea>'+
     '<button class="btn go" id="btnQPublish" style="margin-top:8px">Publicar no Firebase</button>'+
     '</details>';
 }
@@ -1602,12 +1624,15 @@ function vPanel(R){
     '<button class="btn gold" id="btnJson" style="margin-top:0">⬇️ Backup (.json)</button></div>'+
     '<details style="margin-top:10px"><summary>⬆️ Importar backup para o Firebase</summary>'+
     '<p class="hint" style="margin-top:6px">Cole o conteúdo de um backup .json (o do app antigo serve). Isso <b>substitui</b> os dados no Firebase — use na migração inicial ou em recuperação.</p>'+
-    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:11px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
+    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:16px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
     '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
+    '<details style="margin-top:10px"><summary>🔄 Migrar do banco antigo (Realtime Database)</summary>'+
+    '<p class="hint" style="margin-top:6px">Copia <b>tudo</b> do banco antigo — participantes, lançamentos, hall e perguntas — para o novo banco (Firestore). Pode rodar mais de uma vez: cada execução substitui o conteúdo do novo pelo estado atual do antigo.</p>'+
+    '<button class="btn red" id="btnMigrate">Migrar agora</button></details>'+
     '<button class="btn ghost" id="btnInit" style="margin-top:10px">Inicializar com os 18 participantes padrão</button>'+
     '<p class="hint" style="margin-top:8px">💡 Como os dados ficam no Firebase, o ranking já é público e ao vivo — os Seeds veem sem login.</p></details>';
   h+='<details><summary>🏛️ Hall da Fama / Encerrar edição</summary>'+
-    '<p class="hint" style="margin-top:6px">Ao final da edição, registre o resultado no <b>Hall da Fama</b> — ele aparece na aba Grupos para todos, e fica guardado para as próximas edições. Isso <b>não apaga</b> nenhum dado. Requer a regra <b>hall</b> nas regras do Realtime Database.</p>'+
+    '<p class="hint" style="margin-top:6px">Ao final da edição, registre o resultado no <b>Hall da Fama</b> — ele aparece na aba Grupos para todos, e fica guardado para as próximas edições. Isso <b>não apaga</b> nenhum dado.</p>'+
     '<button class="btn gold" id="btnCloseEd">🏁 Registrar resultado da edição</button></details>';
   h+='<details><summary>👥 Líderes ('+S.leaders.length+')</summary>'+
     '<p class="hint" style="margin-top:6px">Estes nomes aparecem no histórico (quem lançou). O <b>acesso</b> em si é controlado pelo e-mail/senha do Firebase — para dar ou tirar acesso, use a aba Authentication no console do Firebase.</p>'+
@@ -1872,14 +1897,17 @@ async function importJson(text){
     customActs:Array.isArray(data.customActs)?data.customActs:[],
     usedQuestions:Array.isArray(data.usedQuestions)?data.usedQuestions:[],
     rosterSeeded:data.rosterSeeded||'ed1-18' };
-  const eObj={};
+  const shards={};
   for(const e of data.entries){
-    const k=DB.ref('entries').push().key;
-    const {id, ...rest}=e; eObj[k]=rest;
+    const {id, ...rest}=e; const k=newEntryId(rest.d);
+    (shards[entryShard(k)]=shards[entryShard(k)]||{})[k]=rest;
   }
   try{
-    await DB.ref('entries').set(eObj);
-    await DB.ref('config').set(newCfg);
+    const batch=DB.batch();
+    (await DB.collection('entries').get()).forEach(d=>batch.delete(d.ref));
+    Object.entries(shards).forEach(([m,obj])=>batch.set(DB.doc('entries/'+m),obj));
+    batch.set(DB.doc('app/config'),newCfg);
+    await batch.commit();
     toast('Importado ✅ '+leaders.length+' líderes · '+newCfg.customActs.length+' atividades · '+data.entries.length+' lançamentos');
   }catch(err){ toast('Falha ao importar: '+(err.code||err.message)); }
 }
@@ -1894,12 +1922,12 @@ async function closeEdition(){
   if(!champ||!top) return toast('Sem dados suficientes');
   if(!(await askConfirm('Registrar no Hall da Fama?\n\n🏆 '+champ.name+' ('+fmt(R.grp[champ.id]||0)+' pts)\n🥇 '+top.n+' ('+fmt(R.ind[top.id]||0)+' pts)\n\nIsso NÃO apaga os dados — só grava o resultado da edição.'))) return;
   try{
-    await DB.ref('hall/'+KEY).set({
+    await DB.doc('app/hall').set({[KEY]:{
       name:'Edição 1 · Parábolas de Jesus',
       champion:champ.name, championPts:R.grp[champ.id]||0,
       topSeed:top.n, topSeedPts:R.ind[top.id]||0,
       closedAt:new Date().toISOString()
-    });
+    }},{merge:true});
     toast('Edição registrada no Hall da Fama 🏛️'); SFX.fanfare();
   }catch(e){ toast('Falha: '+(e.code||e.message)+' — confira a regra "hall" no Firebase'); }
 }
@@ -1907,8 +1935,34 @@ async function closeEdition(){
 async function initDefaults(){
   if(!DB) return toast('Configure o Firebase antes');
   if(!(await askConfirm('Inicializar com os 18 participantes padrão? Isso grava a configuração inicial (não apaga lançamentos existentes).'))) return;
-  try{ await DB.ref('config').set(defaultConfig()); toast('Configuração inicial gravada ✅'); }
+  try{ await DB.doc('app/config').set(defaultConfig()); toast('Configuração inicial gravada ✅'); }
   catch(e){ toast('Falha: '+(e.code||e.message)); }
+}
+
+/* Migração única RTDB → Firestore: copia config, lançamentos, hall e perguntas.
+   Precisa de líder logado (perguntas e escrita exigem auth). Pode rodar de novo:
+   substitui o que houver no Firestore pelo estado atual do banco antigo. */
+async function migrateFromRTDB(){
+  if(!DB) return toast('Firebase não configurado');
+  if(!currentUser) return toast('Entre como líder antes de migrar');
+  if(!FIREBASE_CONFIG.databaseURL) return toast('databaseURL ausente na configuração');
+  if(!(await askConfirm('Copiar TODOS os dados do banco antigo (Realtime Database) para o novo (Firestore)?\n\nSubstitui o que já houver no novo banco.'))) return;
+  try{
+    const R=firebase.database();
+    const [cS,eS,hS,qS]=await Promise.all(['config','entries','hall','questions'].map(p=>R.ref(p).once('value')));
+    const c=cS.val(), eMap=eS.val()||{}, h=hS.val(), qs=normalizeQuestions(qS.val());
+    const shards={};
+    Object.values(eMap).sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(v=>{
+      const k=newEntryId(v.d); (shards[entryShard(k)]=shards[entryShard(k)]||{})[k]=v; });
+    const batch=DB.batch();
+    (await DB.collection('entries').get()).forEach(d=>batch.delete(d.ref));
+    Object.entries(shards).forEach(([m,obj])=>batch.set(DB.doc('entries/'+m),obj));
+    if(c) batch.set(DB.doc('app/config'),c);
+    if(h) batch.set(DB.doc('app/hall'),h);
+    if(qs.length) batch.set(DB.doc('app/questions'),{sections:qs});
+    await batch.commit();
+    toast('Migração concluída ✅ '+Object.keys(eMap).length+' lançamentos, '+qs.length+' seções de perguntas'); SFX.fanfare();
+  }catch(e){ toast('Falha na migração: '+(e.code||e.message)); }
 }
 
 function updatePrev(){
@@ -2002,6 +2056,7 @@ function bind(){
   if(q('btnXlsx'))q('btnXlsx').onclick=()=>exportXlsx();
   if(q('btnJson'))q('btnJson').onclick=()=>exportJson();
   if(q('btnRestore'))q('btnRestore').onclick=()=>importJson(q('restoreTxt').value.trim());
+  if(q('btnMigrate'))q('btnMigrate').onclick=()=>migrateFromRTDB();
   if(q('btnAddAct'))q('btnAddAct').onclick=async()=>{
     const n=q('naName').value.trim(), v=parseInt(q('naVal').value,10), s=q('naScope').value, unit=q('naUnit').value.trim();
     if(n.length<2)return toast('Digite o nome da atividade');
@@ -2077,14 +2132,15 @@ function bind(){
     const d=q('chDate').value||new Date().toISOString().slice(0,10);
     if(!(await askConfirm('Lançar "'+a.n+'" (+'+a.v+' cada) para '+sel.length+' Seed(s) em '+d.split('-').reverse().join('/')+'?'))) return;
     const upd={}, keys=[];
-    sel.forEach(c=>{ const k=DB.ref('entries').push().key; keys.push(k);
+    sel.forEach(c=>{ const k=newEntryId(d); keys.push(k);
       upd[k]={ts:Date.now(),act,qty:1,d,note:'',mid:c.dataset.mid,gid:c.dataset.gid,leader:logged}; });
+    const shardDoc=DB.doc('entries/'+entryShard(keys[0]));
     try{
-      await DB.ref('entries').update(upd); /* gravação única e atômica */
+      await shardDoc.set(upd,{merge:true}); /* gravação única e atômica (mesmo dia → mesmo doc) */
       SFX.success();
       toastAction(sel.length+' lançamento(s) feitos ✅','Desfazer',async()=>{
-        const del={}; keys.forEach(k=>del[k]=null);
-        try{ await DB.ref('entries').update(del); toast('Chamada desfeita ↩️'); }
+        const args=[]; keys.forEach(k=>{ args.push(fp(k),fdel()); });
+        try{ await shardDoc.update(...args); toast('Chamada desfeita ↩️'); }
         catch(e){ toast('Falha ao desfazer: '+(e.code||e.message)); }
       });
     }catch(e){ toast('Falha: '+(e.code||e.message)); }
