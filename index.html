@@ -24,6 +24,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
+/* overflow-x travado: nada pode arrastar a página de lado (menu fixo fica de fato fixo) */
+html,body{overflow-x:hidden;overflow-x:clip}
 body{background:var(--soil);color:var(--cream);font-family:'Nunito',system-ui,sans-serif;min-height:100vh;
   background-image:radial-gradient(1200px 500px at 50% -200px,#2a2115 0%,var(--soil) 60%)}
 .wrap{max-width:640px;margin:0 auto;padding:16px 14px 90px}
@@ -101,7 +103,8 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710;border-top:1px sol
 /* fundos temáticos por aba */
 .gwrap,.iwrap,.twrap,.lwrap{position:relative}
 .gwrap>*,.iwrap>*,.twrap>*,.lwrap>*{position:relative;z-index:1}
-.tabbg{position:absolute;top:-14px;left:-14px;right:-14px;height:300px;z-index:0;pointer-events:none;
+/* width explícita: sem ela o SVG usa a largura intrínseca do viewBox (400px) e vaza da tela */
+.tabbg{position:absolute;top:-14px;left:-14px;width:calc(100% + 28px);height:300px;z-index:0;pointer-events:none;
   opacity:.5;-webkit-mask-image:linear-gradient(#000 52%,transparent);mask-image:linear-gradient(#000 52%,transparent)}
 .gbg .bg-path{fill:none;stroke:var(--line);stroke-width:6;stroke-dasharray:2 12;stroke-linecap:round}
 .gbg .bg-soil{fill:var(--soil2)}
@@ -208,8 +211,9 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#1d1710;border-top:1px sol
 /* leader panel */
 .field{margin-top:12px}
 label{display:block;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+/* 16px mínimo: fonte menor em input faz o iOS dar zoom ao focar, deslocando o layout e o menu fixo */
 input,select,textarea{width:100%;background:var(--soil2);border:1px solid var(--line);border-radius:10px;color:var(--cream);
-  font-family:'Nunito';font-weight:700;font-size:15px;padding:11px 12px}
+  font-family:'Nunito';font-weight:700;font-size:16px;padding:11px 12px}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-offset:-1px}
 .btn{appearance:none;border:none;border-radius:12px;font-family:'Nunito';font-weight:900;font-size:15px;
   padding:13px 16px;cursor:pointer;width:100%;margin-top:14px}
@@ -1519,7 +1523,7 @@ function vQuestionsForm(){
 function vQuestionsJson(){
   return '<details><summary>⚙️ Publicar banco de perguntas (JSON)</summary>'+
     '<p class="hint" style="margin-top:8px">Cole aqui o <b>JSON</b> das perguntas (array de seções) e clique em publicar. Isso <b>substitui</b> o banco no Firebase, que fica visível só para a liderança. Use na migração inicial ou para subir uma nova edição.</p>'+
-    '<textarea id="qJson" rows="6" placeholder=\'[ { "id":"week", "name":"...", "pts":"...", "items":[ {"id":"qw1","c":"S1","q":"...","a":"...","r":"..."} ] } ]\' style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px"></textarea>'+
+    '<textarea id="qJson" rows="6" placeholder=\'[ { "id":"week", "name":"...", "pts":"...", "items":[ {"id":"qw1","c":"S1","q":"...","a":"...","r":"..."} ] } ]\' style="width:100%;box-sizing:border-box;font-family:monospace;font-size:16px"></textarea>'+
     '<button class="btn go" id="btnQPublish" style="margin-top:8px">Publicar no Firebase</button>'+
     '</details>';
 }
@@ -1620,7 +1624,7 @@ function vPanel(R){
     '<button class="btn gold" id="btnJson" style="margin-top:0">⬇️ Backup (.json)</button></div>'+
     '<details style="margin-top:10px"><summary>⬆️ Importar backup para o Firebase</summary>'+
     '<p class="hint" style="margin-top:6px">Cole o conteúdo de um backup .json (o do app antigo serve). Isso <b>substitui</b> os dados no Firebase — use na migração inicial ou em recuperação.</p>'+
-    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:11px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
+    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:16px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
     '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
     '<details style="margin-top:10px"><summary>🔄 Migrar do banco antigo (Realtime Database)</summary>'+
     '<p class="hint" style="margin-top:6px">Copia <b>tudo</b> do banco antigo — participantes, lançamentos, hall e perguntas — para o novo banco (Firestore). Pode rodar mais de uma vez: cada execução substitui o conteúdo do novo pelo estado atual do antigo.</p>'+
