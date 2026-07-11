@@ -9,6 +9,8 @@
       "**/.*",
       ".git/**",
       "**/node_modules/**",
+      "firestore.rules",
+      "**/*.log",
       "perguntas-parabolas.json",
       "**/*.md"
     ],
