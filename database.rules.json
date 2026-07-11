@@ -1,0 +1,10 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "config":    { ".read": true },
+    "entries":   { ".read": true },
+    "hall":      { ".read": true },
+    "questions": { ".read": "auth != null" }
+  }
+}

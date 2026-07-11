@@ -2,6 +2,9 @@
   "firestore": {
     "rules": "firestore.rules"
   },
+  "database": {
+    "rules": "database.rules.json"
+  },
   "hosting": {
     "public": ".",
     "ignore": [
@@ -10,6 +13,7 @@
       ".git/**",
       "**/node_modules/**",
       "firestore.rules",
+      "database.rules.json",
       "**/*.log",
       "perguntas-parabolas.json",
       "**/*.md"
