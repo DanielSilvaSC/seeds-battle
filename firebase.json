@@ -14,6 +14,8 @@
       "**/node_modules/**",
       "firestore.rules",
       "database.rules.json",
+      "backups/**",
+      "scripts/**",
       "**/*.log",
       "perguntas-parabolas.json",
       "**/*.md"

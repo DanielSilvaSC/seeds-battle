@@ -1,0 +1,636 @@
+{
+  "exportedAt": "2026-07-12T04:30:40.455Z",
+  "project": "seeds-battle",
+  "app": {
+    "config": {
+      "members": [
+        {
+          "g": "g1",
+          "n": "Lucas",
+          "id": "m1"
+        },
+        {
+          "n": "Luiz",
+          "id": "m2",
+          "g": "g1"
+        },
+        {
+          "n": "Melissa",
+          "id": "m3",
+          "g": "g1"
+        },
+        {
+          "g": "g1",
+          "n": "Sophia",
+          "id": "m4"
+        },
+        {
+          "id": "m5",
+          "n": "Esther",
+          "g": "g1"
+        },
+        {
+          "id": "m10",
+          "n": "Bruninho",
+          "g": "g1"
+        },
+        {
+          "n": "Maria Eduarda",
+          "id": "m11",
+          "g": "g1"
+        },
+        {
+          "n": "Luiza",
+          "id": "m12",
+          "g": "g1"
+        },
+        {
+          "g": "g1",
+          "n": "Andrej",
+          "id": "m13"
+        },
+        {
+          "g": "g2",
+          "n": "Ana Clara",
+          "id": "m6"
+        },
+        {
+          "n": "Eduardo",
+          "id": "m7",
+          "g": "g2"
+        },
+        {
+          "id": "m8",
+          "n": "Paulo C.",
+          "g": "g2"
+        },
+        {
+          "g": "g2",
+          "n": "Miguel",
+          "id": "m9"
+        },
+        {
+          "n": "Anna Clara",
+          "id": "m14",
+          "g": "g2"
+        },
+        {
+          "id": "m15",
+          "n": "Enzo",
+          "g": "g2"
+        },
+        {
+          "n": "Mariah",
+          "id": "m16",
+          "g": "g2"
+        },
+        {
+          "g": "g2",
+          "id": "m17",
+          "n": "Pedro"
+        },
+        {
+          "n": "Nathanael",
+          "id": "m18",
+          "g": "g2"
+        }
+      ],
+      "usedQuestions": [
+        "qw1"
+      ],
+      "rosterSeeded": "ed1-18",
+      "leaders": [
+        {
+          "id": "emr6jrw0tj6nz",
+          "name": "Mayara"
+        },
+        {
+          "id": "lmr6pc3valhp",
+          "name": "Daniel"
+        },
+        {
+          "id": "lmr6pc9zxwz1",
+          "name": "Vanessa"
+        }
+      ],
+      "groups": [
+        {
+          "name": "Grupo 1",
+          "color": "#8bd450",
+          "seed": "🌿",
+          "id": "g1"
+        },
+        {
+          "color": "#f2a93b",
+          "name": "Grupo 2",
+          "seed": "🌾",
+          "id": "g2"
+        }
+      ]
+    }
+  },
+  "entries": {
+    "2026-07": {
+      "2026-07_mrgkzsjqfeff7c": {
+        "d": "2026-07-10",
+        "mid": "m3",
+        "act": "biblia_culto",
+        "note": "",
+        "qty": 1,
+        "ts": 1783642600284,
+        "leader": "Mayara",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjq7ko3at": {
+        "gid": "g1",
+        "leader": "Mayara",
+        "ts": 1783642583892,
+        "note": "",
+        "qty": 1,
+        "act": "culto_sem",
+        "d": "2026-07-10",
+        "mid": "m3"
+      },
+      "2026-07_mrgkzsjqftgag4": {
+        "ts": 1783533119677,
+        "note": "",
+        "qty": 1,
+        "act": "culto_dom",
+        "d": "2026-07-05",
+        "mid": "m10",
+        "gid": "g1",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqaz22ge": {
+        "leader": "Mayara (corr. Mayara)",
+        "gid": "g2",
+        "mid": "m8",
+        "d": "2026-07-10",
+        "act": "oferta",
+        "note": "",
+        "qty": 15,
+        "ts": 1783643091378
+      },
+      "2026-07_mrgkzsjqrg7qv5": {
+        "leader": "Mayara",
+        "gid": "g2",
+        "act": "culto_sem",
+        "mid": "m15",
+        "d": "2026-07-10",
+        "ts": 1783642520503,
+        "note": "",
+        "qty": 1
+      },
+      "2026-07_mrgkzsjq9ytce4": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783533482654,
+        "mid": "m3",
+        "d": "2026-07-05",
+        "act": "biblia_culto",
+        "gid": "g1",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqm2qv7s": {
+        "gid": "g2",
+        "leader": "Mayara",
+        "ts": 1783642510177,
+        "note": "",
+        "qty": 1,
+        "act": "biblia_culto",
+        "mid": "m8",
+        "d": "2026-07-10"
+      },
+      "2026-07_mrgkzsjqowx7ah": {
+        "act": "biblia_culto",
+        "d": "2026-07-02",
+        "mid": "m8",
+        "ts": 1783181099435,
+        "qty": 1,
+        "note": "",
+        "leader": "Daniel",
+        "gid": "g2"
+      },
+      "2026-07_mrgkzsjqzdgb2q": {
+        "gid": "g2",
+        "leader": "Mayara",
+        "note": "",
+        "qty": 1,
+        "ts": 1783533401682,
+        "d": "2026-07-05",
+        "mid": "m16",
+        "act": "culto_dom"
+      },
+      "2026-07_mrgkzsjqf88k0n": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783642636125,
+        "mid": "m9",
+        "d": "2026-07-10",
+        "act": "vis_nc",
+        "gid": "g2",
+        "leader": "Mayara (corr. Mayara)"
+      },
+      "2026-07_mrgkzsjqz4va31": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783642579851,
+        "d": "2026-07-10",
+        "mid": "m18",
+        "act": "biblia_culto",
+        "gid": "g2",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqkzl3wg": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783642570565,
+        "d": "2026-07-10",
+        "mid": "m18",
+        "act": "culto_sem",
+        "gid": "g2",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqonjkxo": {
+        "gid": "g2",
+        "leader": "Mayara",
+        "note": "",
+        "qty": 1,
+        "ts": 1783533143798,
+        "d": "2026-07-05",
+        "mid": "m9",
+        "act": "culto_dom"
+      },
+      "2026-07_mrgkzsjqyv53y5": {
+        "act": "biblia_culto",
+        "d": "2026-07-10",
+        "mid": "m1",
+        "ts": 1783642549102,
+        "note": "",
+        "qty": 1,
+        "leader": "Mayara",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjqap4ocw": {
+        "act": "culto_sem",
+        "d": "2026-07-08",
+        "mid": "m11",
+        "ts": 1783510461593,
+        "note": "",
+        "qty": 1,
+        "leader": "Daniel",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjql43mad": {
+        "ts": 1783510444476,
+        "note": "",
+        "qty": 1,
+        "act": "culto_sem",
+        "mid": "m2",
+        "d": "2026-07-08",
+        "gid": "g1",
+        "leader": "Daniel"
+      },
+      "2026-07_mrgkzsjqzn8jxz": {
+        "act": "biblia_culto",
+        "d": "2026-07-08",
+        "mid": "m2",
+        "ts": 1783510451207,
+        "note": "",
+        "qty": 1,
+        "leader": "Daniel",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjqczl6cv": {
+        "act": "culto_dom",
+        "d": "2026-07-05",
+        "mid": "m18",
+        "ts": 1783536658952,
+        "note": "",
+        "qty": 1,
+        "leader": "Mayara",
+        "gid": "g2"
+      },
+      "2026-07_mrgkzsjqw95goc": {
+        "act": "biblia_culto",
+        "d": "2026-07-05",
+        "mid": "m18",
+        "ts": 1783536669219,
+        "qty": 1,
+        "note": "",
+        "leader": "Mayara",
+        "gid": "g2"
+      },
+      "2026-07_mrgkzsjqxmvcs8": {
+        "d": "2026-07-10",
+        "mid": "m1",
+        "act": "vis_nc",
+        "note": "",
+        "qty": 1,
+        "ts": 1783642462135,
+        "leader": "Mayara",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjq8m0kvy": {
+        "leader": "Mayara",
+        "gid": "g2",
+        "mid": "m17",
+        "d": "2026-07-05",
+        "act": "culto_dom",
+        "note": "",
+        "qty": 1,
+        "ts": 1783533447586
+      },
+      "2026-07_mrgkzsjqm62vwp": {
+        "gid": "g1",
+        "leader": "Mayara",
+        "note": "",
+        "qty": 1,
+        "ts": 1783536040530,
+        "d": "2026-07-05",
+        "mid": "m11",
+        "act": "biblia_culto"
+      },
+      "2026-07_mrgkzsjq0a63kx": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "act": "biblia_culto",
+        "d": "2026-07-10",
+        "mid": "m1",
+        "ts": 1783642437554,
+        "note": "",
+        "qty": 1
+      },
+      "2026-07_mrgkzsjqb5ok84": {
+        "leader": "Daniel",
+        "gid": "g1",
+        "mid": "m11",
+        "d": "2026-07-08",
+        "act": "biblia_culto",
+        "note": "",
+        "qty": 1,
+        "ts": 1783510487636
+      },
+      "2026-07_mrgkzsjqbat9s2": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "d": "2026-07-05",
+        "mid": "m3",
+        "act": "culto_dom",
+        "note": "",
+        "qty": 1,
+        "ts": 1783533170645
+      },
+      "2026-07_mrgkzsjqhcpkk0": {
+        "leader": "Daniel",
+        "gid": "g2",
+        "act": "biblia_culto",
+        "d": "2026-07-02",
+        "mid": "m6",
+        "ts": 1783181223667,
+        "note": "",
+        "qty": 1
+      },
+      "2026-07_mrgkzsjq5kgpjs": {
+        "ts": 1783533470237,
+        "note": "",
+        "qty": 1,
+        "act": "biblia_culto",
+        "d": "2026-07-05",
+        "mid": "m8",
+        "gid": "g2",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqimp2n4": {
+        "gid": "g2",
+        "leader": "Daniel",
+        "note": "",
+        "qty": 1,
+        "ts": 1783181047565,
+        "d": "2026-07-02",
+        "mid": "m15",
+        "act": "culto_sem"
+      },
+      "2026-07_mrgkzsjq712tm2": {
+        "gid": "g2",
+        "leader": "Mayara",
+        "note": "",
+        "qty": 1,
+        "ts": 1783642480038,
+        "d": "2026-07-10",
+        "mid": "m8",
+        "act": "culto_sem"
+      },
+      "2026-07_mrgkzsjqxmvt6q": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "act": "culto_dom",
+        "d": "2026-07-05",
+        "mid": "m4",
+        "ts": 1783536910429,
+        "note": "",
+        "qty": 1
+      },
+      "2026-07_mrgkzsjq3jkxoy": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783533427981,
+        "d": "2026-07-05",
+        "mid": "m5",
+        "act": "culto_dom",
+        "gid": "g1",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqje3dfs": {
+        "gid": "g2",
+        "leader": "Daniel",
+        "note": "",
+        "qty": 1,
+        "ts": 1783510426238,
+        "d": "2026-07-08",
+        "mid": "m8",
+        "act": "culto_sem"
+      },
+      "2026-07_mrgkzsjqloydp7": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783181083697,
+        "d": "2026-07-02",
+        "mid": "m8",
+        "act": "culto_sem",
+        "gid": "g2",
+        "leader": "Daniel"
+      },
+      "2026-07_mrgkzsjql2d7nf": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783180984989,
+        "d": "2026-07-02",
+        "mid": "m2",
+        "act": "culto_sem",
+        "gid": "g1",
+        "leader": "Daniel"
+      },
+      "2026-07_mrgkzsjqkq5l3c": {
+        "note": "",
+        "qty": 1,
+        "ts": 1783642533608,
+        "d": "2026-07-10",
+        "mid": "m5",
+        "act": "culto_sem",
+        "gid": "g1",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqvenvwd": {
+        "ts": 1783533106506,
+        "note": "",
+        "qty": 1,
+        "act": "culto_dom",
+        "d": "2026-07-05",
+        "mid": "m8",
+        "gid": "g2",
+        "leader": "Mayara"
+      },
+      "2026-07_mrgkzsjqxmto3j": {
+        "leader": "Daniel",
+        "gid": "g2",
+        "d": "2026-07-02",
+        "mid": "m6",
+        "act": "culto_sem",
+        "qty": 1,
+        "note": "",
+        "ts": 1783181206061
+      },
+      "2026-07_mrgkzsjqyjsftu": {
+        "act": "sinalizar",
+        "mid": "m11",
+        "d": "2026-07-05",
+        "ts": 1783533567278,
+        "note": "Citou a parábola dos Talentos (cap 25:16 de algum evangelho)",
+        "qty": 1,
+        "leader": "Mayara",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjq1aw2gm": {
+        "act": "biblia_culto",
+        "d": "2026-07-10",
+        "mid": "m5",
+        "ts": 1783643639259,
+        "note": "",
+        "qty": 1,
+        "leader": "Mayara",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjqxcidkz": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "mid": "m1",
+        "d": "2026-07-05",
+        "act": "culto_dom",
+        "note": "",
+        "qty": 1,
+        "ts": 1783533416839
+      },
+      "2026-07_mrgkzsjqr0c07j": {
+        "gid": "g2",
+        "leader": "Mayara",
+        "ts": 1783533495023,
+        "note": "",
+        "qty": 1,
+        "act": "biblia_culto",
+        "mid": "m6",
+        "d": "2026-07-05"
+      },
+      "2026-07_mrgkzsjqxvb501": {
+        "gid": "g1",
+        "leader": "Daniel",
+        "ts": 1783181168454,
+        "note": "",
+        "qty": 1,
+        "act": "biblia_culto",
+        "d": "2026-07-02",
+        "mid": "m11"
+      },
+      "2026-07_mrgkzsjq8a5m5s": {
+        "gid": "g1",
+        "leader": "Daniel",
+        "note": "",
+        "qty": 1,
+        "ts": 1783181016082,
+        "d": "2026-07-02",
+        "mid": "m2",
+        "act": "biblia_culto"
+      },
+      "2026-07_mrgkzsjq1oqfo0": {
+        "gid": "g2",
+        "leader": "Daniel",
+        "ts": 1783510435965,
+        "note": "",
+        "qty": 1,
+        "act": "biblia_culto",
+        "d": "2026-07-08",
+        "mid": "m8"
+      },
+      "2026-07_mrgkzsjqkgweg7": {
+        "leader": "Mayara",
+        "gid": "g2",
+        "act": "culto_dom",
+        "mid": "m6",
+        "d": "2026-07-05",
+        "ts": 1783533373575,
+        "note": "",
+        "qty": 1
+      },
+      "2026-07_mrgkzsjqm62nbj": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "d": "2026-07-10",
+        "mid": "m11",
+        "act": "culto_sem",
+        "note": "",
+        "qty": 1,
+        "ts": 1783642539594
+      },
+      "2026-07_mrgkzsjqz5qjjj": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "mid": "m1",
+        "d": "2026-07-10",
+        "act": "culto_sem",
+        "note": "",
+        "qty": 1,
+        "ts": 1783642430855
+      },
+      "2026-07_mrgkzsjqrd5jpf": {
+        "d": "2026-07-10",
+        "mid": "m2",
+        "act": "vis_nc",
+        "qty": 1,
+        "note": "",
+        "ts": 1783642627400,
+        "leader": "Mayara",
+        "gid": "g1"
+      },
+      "2026-07_mrgkzsjqxdlisl": {
+        "gid": "g1",
+        "leader": "Daniel",
+        "note": "",
+        "qty": 1,
+        "ts": 1783181145495,
+        "mid": "m11",
+        "d": "2026-07-02",
+        "act": "culto_sem"
+      },
+      "2026-07_mrgkzsjqsaldef": {
+        "leader": "Mayara",
+        "gid": "g1",
+        "act": "biblia_culto",
+        "d": "2026-07-05",
+        "mid": "m5",
+        "ts": 1783535961704,
+        "qty": 1,
+        "note": ""
+      }
+    }
+  }
+}
