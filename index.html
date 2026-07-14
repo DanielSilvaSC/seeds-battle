@@ -430,16 +430,16 @@ const CATS = [
  {id:'perg_sem', name:'Perguntas da semana (grupo)', acts:[
    {id:'psem_tent', n:'Tentativa de resposta', v:100, s:'group'},
    {id:'psem_ok', n:'Resposta correta', v:400, s:'group'}]},
- {id:'alim', name:'Arrecadação de alimentos (teto 1000/grupo)', acts:[
-   {id:'alim_r', n:'Raro · meio kg (Pó de Café)', v:150, s:'group', cap:'alim'},
-   {id:'alim_me', n:'Muito escasso · 1 un (Óleo, Leite)', v:60, s:'group', cap:'alim'},
-   {id:'alim_e', n:'Escasso · 1 un (Arroz, Feijão, Papel Higiênico, Detergente)', v:40, s:'group', cap:'alim'},
-   {id:'alim_n', n:'Necessário · 1 un (Molho de Tomate, Macarrão, Açúcar, Sabonete, Pasta de Dente)', v:20, s:'group', cap:'alim'},
-   {id:'alim_s', n:'Supérfluos · 1 un (Bolachas diversas, Suco em Pó, Miojo)', v:10, s:'group', cap:'alim'}]},
- {id:'agas', name:'Arrecadação de agasalhos (teto 1000/grupo)', acts:[
-   {id:'ag_bom', n:'Agasalho em bom estado (peça)', v:30, s:'group', cap:'agas'},
-   {id:'ag_casaco', n:'Casaco grosso (peça)', v:50, s:'group', cap:'agas'},
-   {id:'ag_cob', n:'Cobertor (peça)', v:100, s:'group', cap:'agas'}]},
+ {id:'alim', name:'Arrecadação de alimentos', acts:[
+   {id:'alim_r', n:'Raro · meio kg (Pó de Café)', v:150, s:'group'},
+   {id:'alim_me', n:'Muito escasso · 1 un (Óleo, Leite)', v:60, s:'group'},
+   {id:'alim_e', n:'Escasso · 1 un (Arroz, Feijão, Papel Higiênico, Detergente)', v:40, s:'group'},
+   {id:'alim_n', n:'Necessário · 1 un (Molho de Tomate, Macarrão, Açúcar, Sabonete, Pasta de Dente)', v:20, s:'group'},
+   {id:'alim_s', n:'Supérfluos · 1 un (Bolachas diversas, Suco em Pó, Miojo)', v:10, s:'group'}]},
+ {id:'agas', name:'Arrecadação de agasalhos', acts:[
+   {id:'ag_bom', n:'Agasalho em bom estado (peça)', v:30, s:'group'},
+   {id:'ag_casaco', n:'Casaco grosso (peça)', v:50, s:'group'},
+   {id:'ag_cob', n:'Cobertor (peça)', v:100, s:'group'}]},
  {id:'oficial', name:'⭐ Dia oficial', acts:[
    {id:'pf', n:'Pergunta fácil correta', v:250, s:'both'},
    {id:'pm', n:'Pergunta média correta', v:350, s:'both'},
@@ -471,7 +471,7 @@ function rebuildCatalog(){
   } else { CATS_ALL = CATS.slice(); }
 }
 rebuildCatalog();
-const CAPS = {oferta:500, alim:1000, agas:1000};
+const CAPS = {oferta:500};
 const LEVELS = [
   {min:0,    e:'🌰', n:'Semente'},
   {min:300,  e:'🌱', n:'Broto'},
@@ -679,9 +679,9 @@ function load(){ initFirebase(); }
 
 /* ============ CÁLCULO (com tetos do regulamento) ============ */
 function calc(){
-  const ind={}, grp={}, capUse={}, stats={}, mstats={};
+  const ind={}, grp={}, stats={}, mstats={};
   S.members.forEach(m=>{ind[m.id]=0; mstats[m.id]={oficialCount:0,ebd:0,vis:0,pen:0};});
-  S.groups.forEach(g=>{grp[g.id]=0; capUse[g.id]={alim:0,agas:0};
+  S.groups.forEach(g=>{grp[g.id]=0;
     stats[g.id]={oficial:0,ebd:0,visnc:0,pen:0};});
   const ofertaRaw={}; S.members.forEach(m=>ofertaRaw[m.id]=0);
   const ofertaMemG={};
@@ -689,7 +689,6 @@ function calc(){
     const a=ACT[e.act]; if(!a) continue;
     const pts=a.v*e.qty;
     if(a.cap==='oferta'){ ofertaRaw[e.mid]=(ofertaRaw[e.mid]||0)+pts; ofertaMemG[e.mid]=e.gid; continue; }
-    if(a.cap==='alim'||a.cap==='agas'){ if(capUse[e.gid]) capUse[e.gid][a.cap]+=pts; continue; }
     if((a.s==='both'||a.s==='ind') && e.mid && ind[e.mid]!==undefined) ind[e.mid]+=pts;
     if((a.s==='both'||a.s==='group') && grp[e.gid]!==undefined) grp[e.gid]+=pts;
     const st=stats[e.gid];
@@ -712,13 +711,6 @@ function calc(){
     const raw=ofertaRaw[m.id]||0, eff=Math.min(raw,CAPS.oferta);
     if(eff>0){ ind[m.id]+=eff; const g=ofertaMemG[m.id]||m.g; if(grp[g]!==undefined) grp[g]+=eff; }
     if(raw>CAPS.oferta) capNotes.push(m.n+': ofertas '+raw+' → limitado a '+CAPS.oferta);
-  }
-  for(const g of S.groups){
-    const u=capUse[g.id];
-    const alim=Math.min(u.alim,CAPS.alim), agas=Math.min(u.agas,CAPS.agas);
-    grp[g.id]+=alim+agas;
-    if(u.alim>CAPS.alim) capNotes.push(g.name+': alimentos '+u.alim+' → teto '+CAPS.alim);
-    if(u.agas>CAPS.agas) capNotes.push(g.name+': agasalhos '+u.agas+' → teto '+CAPS.agas);
   }
   return {ind,grp,stats,mstats,capNotes};
 }
@@ -1226,7 +1218,7 @@ function vTable(){
     }
     h+='</table></details>';
   });
-  h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Tetos: ofertas até 500 por Seed · alimentos até 1000 por grupo · agasalhos até 1000 por grupo.</p></div>';
+  h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Teto: ofertas até 500 por Seed.</p></div>';
   return h;
 }
 
