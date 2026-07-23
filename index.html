@@ -1051,7 +1051,7 @@ function vGroups(R){
     const garden=S.members.filter(m=>m.g===g.id)
       .sort((a,b)=>(R.ind[b.id]||0)-(R.ind[a.id]||0))
       .map(m=>'<span title="'+esc(m.n)+' · '+lvlOf(R.ind[m.id]||0).n+'">'+lvlOf(R.ind[m.id]||0).e+'</span>').join('');
-    h+='<div class="gcard'+leadCls+'" data-gid="'+g.id+'"><div class="gseed">'+g.seed+'</div>'+
+    h+='<div class="gcard'+leadCls+'" data-gid="'+g.id+'" data-ghist="'+g.id+'" style="cursor:pointer" role="button" tabindex="0" title="Ver histórico de pontos de '+esc(g.name)+'"><div class="gseed">'+g.seed+'</div>'+
        '<div class="gname" style="color:'+g.color+'">'+esc(g.name)+'</div>'+
        '<div class="gpts display" data-gid="'+g.id+'">'+fmt(R.grp[g.id])+'</div>'+
        '<div class="gsub">'+mem+' seeds</div>'+
@@ -1063,6 +1063,7 @@ function vGroups(R){
   h+='<div class="duel" style="--w1:'+w1+'%"><div class="d1" style="width:'+w1+'%"></div><div class="d2" style="width:'+(100-w1)+'%"></div><span class="seam"></span></div>';
   h+='<div class="legend"><span><span class="gdot" style="background:'+g1.color+'"></span>'+esc(g1.name)+'</span>'+
      '<span>'+esc(g2.name)+'<span class="gdot" style="background:'+g2.color+';margin:0 0 0 5px"></span></span></div>';
+  h+='<p class="hint" style="text-align:center;margin:8px 0 0">👆 Toque num grupo para ver o histórico de pontos.</p>';
   h+='<div class="row2" style="margin-top:12px"><button class="btn gold" id="btnTelao" style="margin-top:0">📺 Modo Telão</button>'+
      '<button class="btn ghost" id="btnShare" style="margin-top:0">📤 Compartilhar</button></div>';
   h+=vFeed();
@@ -1797,6 +1798,46 @@ function showMemberHistory(mid){
   ov.onclick=e=>{ if(e.target===ov) close(); };
 }
 
+/* Histórico de pontos de um Grupo — visível para todos (sem login), aberto
+   ao tocar num card de grupo. Lista tudo que soma pro grupo: atividades
+   coletivas + as individuais dos integrantes (mesma regra do calc()). */
+function showGroupHistory(gid){
+  const g=S.groups.find(x=>x.id===gid); if(!g) return;
+  const R=calc();
+  const nSeeds=S.members.filter(m=>m.g===gid).length;
+  const list=[...S.entries].filter(en=>{
+    const a=ACT[en.act];
+    return a && en.gid===gid && (a.cap==='oferta'||a.s==='both'||a.s==='group');
+  }).sort((x,y)=>(y.ts||0)-(x.ts||0));
+  let rows;
+  if(!list.length){
+    rows='<p class="hint" style="margin-top:12px">Nenhum ponto lançado para '+esc(g.name)+' ainda. O primeiro ponto planta a primeira semente! 🌱</p>';
+  } else {
+    rows='<div class="histscroll" style="margin-top:12px">';
+    list.forEach(en=>{
+      const ac=ACT[en.act], pts=ac.v*en.qty;
+      const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):'Atividade coletiva';
+      rows+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
+        '<div><div class="t1">'+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+        '<div class="t2">'+esc(who)+' · '+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
+        '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div></div>';
+    });
+    rows+='</div>';
+  }
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(10,8,5,.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:420px;width:100%;padding:20px;max-height:82vh;overflow:auto">'+
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'+
+      '<div><div style="font-weight:800;font-size:16px;color:var(--cream)"><span class="gdot" style="background:'+g.color+'"></span> '+g.seed+' '+esc(g.name)+'</div>'+
+      '<div class="t2" style="margin-top:2px">'+fmt(R.grp[gid]||0)+' pts · '+list.length+' lançamento(s) · '+nSeeds+' seeds</div></div>'+
+      '<button class="btn ghost sm" data-close="1" style="margin-top:0">Fechar</button>'+
+    '</div>'+rows+'</div>';
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('[data-close="1"]').onclick=close;
+  ov.onclick=e=>{ if(e.target===ov) close(); };
+}
+
 /* ============ EXPORTAÇÃO / BACKUP ============ */
 const gName=id=>{const g=S.groups.find(x=>x.id===id);return g?g.name:'';};
 function stamp(){return new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');}
@@ -2054,6 +2095,10 @@ function bind(){
   document.querySelectorAll('[data-hist]').forEach(el=>{
     el.onclick=()=>{ SFX.tick(); showMemberHistory(el.dataset.hist); };
     el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); SFX.tick(); showMemberHistory(el.dataset.hist); } };
+  });
+  document.querySelectorAll('[data-ghist]').forEach(el=>{
+    el.onclick=()=>{ SFX.tick(); showGroupHistory(el.dataset.ghist); };
+    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); SFX.tick(); showGroupHistory(el.dataset.ghist); } };
   });
   document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editingId=b.dataset.edit;render();window.scrollTo({top:0,behavior:'smooth'});});
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
