@@ -247,6 +247,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-of
 .hrow .hp.plus{color:var(--leaf)} .hrow .hp.minus{color:var(--danger)}
 .hact{display:flex;gap:8px;margin-top:8px}
 .capnote{margin-top:8px;font-size:12px;font-weight:800;color:var(--gold)}
+.bonusbanner{background:linear-gradient(90deg,rgba(245,197,66,.16),rgba(245,197,66,.05));border:1px solid var(--gold);
+  border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:800;color:var(--gold);
+  line-height:1.5;animation:bonusPulse 2.4s ease-in-out infinite}
+@keyframes bonusPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,197,66,.0)}50%{box-shadow:0 0 14px -2px rgba(245,197,66,.5)}}
 .pill{display:inline-block;background:var(--soil2);border:1px solid var(--line);border-radius:99px;
   padding:3px 10px;font-size:11px;font-weight:800;color:var(--muted);margin:3px 3px 0 0}
 .who{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -595,13 +599,14 @@ function defaultConfig(){return {
   leaders:[{id:'l1',name:'Coordenação'}],
   customActs:[],
   usedQuestions:[],
+  bonusRules:[],
   rosterSeeded:'ed1-18',
   edition:{...DEFAULT_EDITION}
 };}
 function defaultData(){ const c=defaultConfig(); c.entries=[]; return c; } /* usado no export/backup */
 
 function ensureLeaderIds(){ let ch=false; (S.leaders||[]).forEach(l=>{ if(!l.id){ l.id='l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); ch=true; } }); return ch; }
-function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
+function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
 
 /* Monta S a partir de config + entradas vindas do Firebase */
 function rebuildS(){
@@ -611,6 +616,7 @@ function rebuildS(){
   S = { groups:c.groups||[], members:c.members||[], leaders:c.leaders||[],
         customActs:Array.isArray(c.customActs)?c.customActs:[],
         usedQuestions:Array.isArray(c.usedQuestions)?c.usedQuestions:[],
+        bonusRules:Array.isArray(c.bonusRules)?c.bonusRules:[],
         rosterSeeded:c.rosterSeeded||null, entries };
 }
 
@@ -687,7 +693,7 @@ function calc(){
   const ofertaMemG={};
   for(const e of S.entries){
     const a=ACT[e.act]; if(!a) continue;
-    const pts=a.v*e.qty;
+    const pts=ePts(a,e);
     if(a.cap==='oferta'){ ofertaRaw[e.mid]=(ofertaRaw[e.mid]||0)+pts; ofertaMemG[e.mid]=e.gid; continue; }
     if((a.s==='both'||a.s==='ind') && e.mid && ind[e.mid]!==undefined) ind[e.mid]+=pts;
     if((a.s==='both'||a.s==='group') && grp[e.gid]!==undefined) grp[e.gid]+=pts;
@@ -739,6 +745,75 @@ function lvlOf(p){let L=LEVELS[0];for(const l of LEVELS)if(p>=l.min)L=l;return L
 function nextLvl(p){for(const l of LEVELS)if(p<l.min)return l;return null;}
 const fmt=n=>n.toLocaleString('pt-BR');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ===== BÔNUS: multiplicador efetivo de um lançamento (só vale p/ pontos positivos) ===== */
+function eMult(en){ const m=en&&+en.mult; return (m&&m>1)?m:1; }        /* 1 quando não há bônus */
+function ePts(a,en){ const b=a.v*(en.qty||1); return b>0 ? Math.round(b*eMult(en)) : b; } /* pontos já com bônus (arredondado p/ ×1.5) */
+const bonusTag=en=>eMult(en)>1?' <span style="color:var(--gold);font-weight:800;font-size:.85em">⚡×'+eMult(en)+'</span>':'';
+const MULTS=[1,1.5,2,3]; /* multiplicadores oferecidos */
+function multField(cur){ return '<div class="field"><label>⚡ Bônus (multiplica os pontos)</label><select id="fMult">'+
+  MULTS.map(x=>'<option value="'+x+'"'+(+cur===x?' selected':'')+'>'+(x===1?'Sem bônus':'×'+x)+'</option>').join('')+'</select></div>'; }
+
+/* ===== MOTOR DE REGRAS DE BÔNUS =====
+   Regra: {id, label, target:{type:'all'|'cat'|'act', id}, mult, active?, from?, until?}
+   Vigência: manual (campo active) OU janela (from/until em ms). Só afeta pontos positivos. */
+function bonusStatus(r){                       /* 'active' | 'scheduled' | 'ended' | 'off' */
+  if(!r||!(+r.mult>1)) return 'off';
+  if(r.from||r.until){
+    const now=Date.now();
+    if(r.from&&now<r.from) return 'scheduled';
+    if(r.until&&now>r.until) return 'ended';
+    return 'active';
+  }
+  return r.active?'active':'off';
+}
+function isBonusActive(r){ return bonusStatus(r)==='active'; }
+function activeBonusRules(){ return (S.bonusRules||[]).filter(isBonusActive); }
+function ruleMatches(r,a,actId){
+  const t=r.target||{};
+  if(t.type==='all') return true;
+  if(t.type==='cat') return a.cat===t.id;
+  if(t.type==='act') return actId===t.id;
+  return false;
+}
+/* melhor regra ativa p/ a atividade: mais específica vence (act>cat>all); empate → maior mult */
+function bonusForAct(actId){
+  const a=ACT[actId]; if(!a||!(a.v>0)) return null;
+  const rank=t=>t==='act'?3:t==='cat'?2:1;
+  let best=null;
+  for(const r of activeBonusRules()){
+    if(!ruleMatches(r,a,actId)) continue;
+    if(!best){ best=r; continue; }
+    const rr=rank(r.target.type), rb=rank(best.target.type);
+    if(rr>rb || (rr===rb && +r.mult>+best.mult)) best=r;
+  }
+  return best;
+}
+function autoMult(actId){ const r=bonusForAct(actId); return r?+r.mult:1; }
+function bonusTargetLabel(t){
+  t=t||{};
+  if(t.type==='all') return 'todas as atividades';
+  if(t.type==='cat'){ const c=CATS_ALL.find(x=>x.id===t.id); return c?c.name:t.id; }
+  if(t.type==='act'){ const a=ACT[t.id]; return a?a.n:t.id; }
+  return '?';
+}
+function fmtWhen(ms){ const d=new Date(ms); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function localInputToMs(v){ if(!v)return 0; const t=new Date(v).getTime(); return Number.isFinite(t)?t:0; } /* datetime-local → ms */
+/* opções do seletor de alvo (só atividades positivas; penalidades fora) */
+function bonusTargetOptions(sel){
+  let o='<option value="all:"'+(sel==='all:'?' selected':'')+'>Todas as atividades</option>';
+  o+='<optgroup label="Por categoria">';
+  CATS_ALL.forEach(c=>{ if(c.id==='pen'||!c.acts.some(a=>a.v>0)) return;
+    o+='<option value="cat:'+c.id+'"'+(sel==='cat:'+c.id?' selected':'')+'>'+esc(c.name)+'</option>'; });
+  o+='</optgroup><optgroup label="Por atividade">';
+  CATS_ALL.forEach(c=>{ if(c.id==='pen') return; c.acts.forEach(a=>{ if(a.v>0)
+    o+='<option value="act:'+a.id+'"'+(sel==='act:'+a.id?' selected':'')+'>'+esc(a.n)+'</option>'; }); });
+  return o+'</optgroup>';
+}
+/* banner das regras ativas — mostrado em todas as abas */
+function vBonusBanner(){
+  const act=activeBonusRules(); if(!act.length) return '';
+  return '<div class="bonusbanner">'+act.map(r=>'⚡ <b>'+esc(r.label||'Bônus')+'</b> ×'+(+r.mult)+' · '+esc(bonusTargetLabel(r.target))+(r.until?' · até '+fmtWhen(r.until):'')).join('<br>')+'</div>';
+}
 
 /* ============ RENDER ============ */
 /* ============ SONS (WebAudio, sem arquivos externos) ============ */
@@ -844,10 +919,11 @@ function render(){
   rebuildCatalog();
   const app=document.getElementById('app');
   const R=calc();
-  if(view==='groups'){ app.innerHTML=vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
-  else if(view==='ind'){ app.innerHTML=vInd(R); animateInd(R, renderPrevView!=='ind'); }
-  else if(view==='table'){ app.innerHTML='<div class="twrap">'+TABLE_BG+vTable()+'</div>'; animateSimple('.twrap','tEnter', renderPrevView!=='table'); }
-  else { app.innerHTML='<div class="lwrap">'+LEADER_BG+(currentUser?vPanel(R):vLogin())+'</div>'; animateSimple('.lwrap','lEnter', renderPrevView!=='leader'); }
+  const bb=vBonusBanner();
+  if(view==='groups'){ app.innerHTML=bb+vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
+  else if(view==='ind'){ app.innerHTML=bb+vInd(R); animateInd(R, renderPrevView!=='ind'); }
+  else if(view==='table'){ app.innerHTML=bb+'<div class="twrap">'+TABLE_BG+vTable()+'</div>'; animateSimple('.twrap','tEnter', renderPrevView!=='table'); }
+  else { app.innerHTML=bb+'<div class="lwrap">'+LEADER_BG+(currentUser?vPanel(R):vLogin())+'</div>'; animateSimple('.lwrap','lEnter', renderPrevView!=='leader'); }
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
   renderPrevView=view;
   bind();
@@ -1103,10 +1179,10 @@ function vFeed(){
   let h='<div class="card"><h2>⚡ Últimos pontos</h2>';
   list.forEach((en,i)=>{
     const a=ACT[en.act]; if(!a) return;
-    const pts=a.v*en.qty;
+    const pts=ePts(a,en);
     const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):(S.groups.find(g=>g.id===en.gid)?.name||'?');
     h+='<div class="feedrow" style="animation-delay:'+(i*60)+'ms">'+
-       '<div><span class="fw">'+esc(who)+'</span> · '+esc(a.n)+(en.qty>1?' ×'+en.qty:'')+
+       '<div><span class="fw">'+esc(who)+'</span> · '+esc(a.n)+(en.qty>1?' ×'+en.qty:'')+bonusTag(en)+
        '<div class="ft">'+en.d.split('-').reverse().join('/')+'</div></div>'+
        '<div class="fp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div>';
   });
@@ -1125,7 +1201,7 @@ function vRace(){
   const acc={}, series={};
   S.groups.forEach(g=>{acc[g.id]=0;series[g.id]=[];});
   dates.forEach(d=>{
-    byDate[d].forEach(x=>{ if(acc[x.e.gid]!==undefined) acc[x.e.gid]+=x.a.v*x.e.qty; });
+    byDate[d].forEach(x=>{ if(acc[x.e.gid]!==undefined) acc[x.e.gid]+=ePts(x.a,x.e); });
     S.groups.forEach(g=>series[g.id].push(acc[g.id]));
   });
   const W=360,H=150,P=10;
@@ -1219,7 +1295,8 @@ function vTable(){
     }
     h+='</table></details>';
   });
-  h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Teto: ofertas até 500 por Seed.</p></div>';
+  h+='<p class="hint" style="margin-top:12px">Atividade individual pontua para o Seed e para o grupo dele. Atividade coletiva pontua só para o grupo. Teto: ofertas até 500 por Seed.</p>';
+  h+='<p class="hint" style="margin-top:8px;color:var(--gold);font-weight:800">⚡ Em campanhas especiais alguns pontos valem em dobro (ou mais). Quando um bônus estiver valendo, um aviso ⚡ aparece no topo do app.</p></div>';
   return h;
 }
 
@@ -1365,10 +1442,11 @@ function bindTelao(){
   const launch=async(actId,mid,gid)=>{
     const a=ACT[actId]; if(!a) return;
     const item=TQ.item;
+    const mult=autoMult(actId);
     const key=await fbAddEntry({ts:Date.now(),act:actId,qty:1,d:new Date().toISOString().slice(0,10),
-      note:'Quiz'+(item?' '+item.c:''),mid:mid||null,gid,leader:logged||'Telão'});
+      note:'Quiz'+(item?' '+item.c:''),mid:mid||null,gid,leader:logged||'Telão',...(mult>1?{mult}:{})});
     TQ={phase:'idle'};
-    if(key){ SFX.coin(); toast('+'+fmt(a.v)+' pts lançados 🌱'); }
+    if(key){ SFX.coin(); if(mult>1){ SFX.success(); confetti(); } toast('+'+fmt(ePts(a,{qty:1,mult}))+' pts lançados'+(mult>1?' ⚡×'+mult:'')+' 🌱'); }
     if(item) await markUsed(item.id);
     renderTelao();
   };
@@ -1581,6 +1659,12 @@ function vPanel(R){
   h+='<div class="row2"><div class="field"><label>'+(a.unit?(a.unit==='R$'?'Valor (R$)':'Quantidade ('+esc(a.unit)+')'):'Quantidade')+'</label>'+
      '<input id="fQty" type="number" min="1" value="'+(e?e.qty:1)+'"></div>'+
      '<div class="field"><label>Data</label><input id="fDate" type="date" value="'+(e?e.d:new Date().toISOString().slice(0,10))+'"></div></div>';
+  if(a.v>0){
+    const autoM=e?eMult(e):autoMult(selAct);
+    h+=multField(autoM);
+    if(!e&&autoM>1){ const br=bonusForAct(selAct);
+      h+='<p class="hint" style="margin:-6px 0 8px;color:var(--gold);font-weight:800">⚡ Bônus ativo aplicado: '+esc(br&&br.label||'')+' ×'+autoM+' — pode ajustar acima.</p>'; }
+  }
   h+='<div class="field"><label>Observação (opcional)</label><input id="fNote" maxlength="120" value="'+(e?esc(e.note||''):'')+'" placeholder="Ex.: nome do visitante, motivo da penalidade..."></div>';
   h+='<div class="preview" id="fPrev"></div>';
   h+='<button class="btn go" id="btnSave">'+(e?'Salvar correção':'Confirmar pontos')+'</button>';
@@ -1606,10 +1690,10 @@ function vPanel(R){
     h+='<div class="histscroll">';
     list.slice(0,lim).forEach(en=>{
       const ac=ACT[en.act]; if(!ac)return;
-      const pts=ac.v*en.qty;
+      const pts=ePts(ac,en);
       const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):(S.groups.find(g=>g.id===en.gid)?.name||'?');
       h+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
-      '<div><div class="t1">'+esc(who)+' · '+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+      '<div><div class="t1">'+esc(who)+' · '+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+bonusTag(en)+'</div>'+
       '<div class="t2">'+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
       '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div>'+
       '<div class="hact"><button class="btn ghost sm" data-edit="'+en.id+'">✏️ Corrigir</button>'+
@@ -1640,6 +1724,29 @@ function vPanel(R){
     '<div class="field"><label>Unidade (opcional)</label><input id="naUnit" maxlength="10" placeholder="Ex.: kg, peça, R$"></div>'+
     '<button class="btn gold" id="btnAddAct">Cadastrar atividade</button>'+
     '<p class="hint" style="margin-top:8px">Pontos negativos viram penalidade. Ao definir uma unidade, o líder informa a quantidade no lançamento. Remover uma atividade que já tem lançamentos faz esses pontos deixarem de contar.</p></details>';
+  h+='<details><summary>⚡ Bônus / Multiplicadores ('+(S.bonusRules||[]).length+')</summary>';
+  h+='<p class="hint" style="margin-top:6px">Regras que multiplicam os pontos de uma categoria, de uma atividade ou de tudo — para incentivar, por ex., oportunidades no culto. Deixe as datas em branco para ligar/desligar na hora; ou agende um início e fim.</p>';
+  if(!(S.bonusRules||[]).length) h+='<p class="hint" style="margin-top:6px">Nenhuma regra de bônus ainda.</p>';
+  h+=(S.bonusRules||[]).map(r=>{
+    const st=bonusStatus(r), isManual=!(r.from||r.until);
+    const stTxt={active:'🟢 Ativa',scheduled:'🕒 Agendada',ended:'⚪ Encerrada',off:'⚪ Pausada'}[st]||'';
+    const win=isManual?'manual':((r.from?fmtWhen(r.from):'…')+' → '+(r.until?fmtWhen(r.until):'…'));
+    return '<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+      '<div><span class="t1">'+esc(r.label||'Bônus')+' ×'+(+r.mult)+'</span>'+
+      '<div class="t2">'+esc(bonusTargetLabel(r.target))+' · '+stTxt+' · '+esc(win)+'</div></div>'+
+      '<div style="display:flex;gap:6px">'+
+      (isManual?'<button class="btn '+(r.active?'ghost':'gold')+' sm" data-bontoggle="'+r.id+'">'+(r.active?'Pausar':'Ativar')+'</button>':'')+
+      '<button class="btn red sm" data-bondel="'+r.id+'">Remover</button></div></div></div>';
+  }).join('');
+  h+='<div class="field" style="margin-top:10px"><label>Nome do bônus</label><input id="brLabel" maxlength="40" placeholder="Ex.: Domingo do Louvor"></div>'+
+    '<div class="row2"><div class="field"><label>Aplicar em</label><select id="brTarget">'+bonusTargetOptions('cat:oport')+'</select></div>'+
+    '<div class="field"><label>Multiplicador</label><select id="brMult">'+[1.5,2,3].map(x=>'<option value="'+x+'"'+(x===2?' selected':'')+'>×'+x+'</option>').join('')+'</select></div></div>'+
+    '<details style="margin-top:8px"><summary>🕒 Agendar janela (opcional)</summary>'+
+    '<p class="hint" style="margin-top:6px">Se preencher, o bônus liga e desliga sozinho nesse intervalo. Em branco = ligar/desligar na mão.</p>'+
+    '<div class="row2"><div class="field"><label>Início</label><input id="brFrom" type="datetime-local"></div>'+
+    '<div class="field"><label>Fim</label><input id="brUntil" type="datetime-local"></div></div></details>'+
+    '<button class="btn gold" id="btnAddBonus">Criar regra de bônus</button>'+
+    '<p class="hint" style="margin-top:8px">O bônus só multiplica pontos positivos — penalidades nunca. Em sobreposição vale a regra mais específica; empate, o maior multiplicador.</p></details>';
   h+='<details><summary>💾 Backup / Migração</summary>'+
     '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
     '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
@@ -1776,9 +1883,9 @@ function showMemberHistory(mid){
   } else {
     rows='<div class="histscroll" style="margin-top:12px">';
     list.forEach(en=>{
-      const ac=ACT[en.act], pts=ac.v*en.qty;
+      const ac=ACT[en.act], pts=ePts(ac,en);
       rows+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
-        '<div><div class="t1">'+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+        '<div><div class="t1">'+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+bonusTag(en)+'</div>'+
         '<div class="t2">'+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
         '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div></div>';
     });
@@ -1815,10 +1922,10 @@ function showGroupHistory(gid){
   } else {
     rows='<div class="histscroll" style="margin-top:12px">';
     list.forEach(en=>{
-      const ac=ACT[en.act], pts=ac.v*en.qty;
+      const ac=ACT[en.act], pts=ePts(ac,en);
       const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||'?'):'Atividade coletiva';
       rows+='<div class="hrow"><div style="display:flex;justify-content:space-between;gap:8px">'+
-        '<div><div class="t1">'+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+'</div>'+
+        '<div><div class="t1">'+esc(ac.n)+(en.qty>1?' ×'+en.qty:'')+bonusTag(en)+'</div>'+
         '<div class="t2">'+esc(who)+' · '+en.d.split('-').reverse().join('/')+' · por '+esc(en.leader)+(en.note?' · “'+esc(en.note)+'”':'')+'</div></div>'+
         '<div class="hp '+(pts<0?'minus':'plus')+'">'+(pts<0?'−':'+')+fmt(Math.abs(pts))+'</div></div></div>';
     });
@@ -1888,7 +1995,7 @@ function buildSheets(){
     const a=ACT[en.act]; if(!a) return null;
     const who=en.mid?(S.members.find(m=>m.id===en.mid)?.n||''):'';
     const scope=a.s==='both'?'Individual+Grupo':(a.s==='group'?'Grupo':'Individual');
-    return [en.d, en.leader||'', a.n, who, gName(en.gid), en.qty, scope, a.v, a.v*en.qty, en.note||''];
+    return [en.d, en.leader||'', a.n, who, gName(en.gid), en.qty, scope, a.v, eMult(en)>1?'×'+eMult(en):'', ePts(a,en), en.note||''];
   }).filter(Boolean);
   const parts=[...S.members].sort((a,b)=>a.g.localeCompare(b.g)||a.n.localeCompare(b.n))
     .map(m=>[m.n, gName(m.g), R.ind[m.id]]);
@@ -1897,7 +2004,7 @@ function buildSheets(){
   return {
     ind:[['Posição','Participante','Grupo','TOTAL','Desempate'], ...ind],
     grp:[['Posição','Grupo','TOTAL','Seeds','Desempate'], ...grp],
-    lanc:[['Data','Líder','Atividade','Participante','Grupo','Qtd','Escopo','Pts base','Pts (base×qtd)','Observação'], ...lanc],
+    lanc:[['Data','Líder','Atividade','Participante','Grupo','Qtd','Escopo','Pts base','Bônus','Pts (total)','Observação'], ...lanc],
     parts:[['Participante','Grupo','TOTAL'], ...parts],
     ats:[['Atividade','Categoria','Escopo','Pontos','Unidade'], ...ats]
   };
@@ -1942,6 +2049,7 @@ function backupObject(){
     leaders:S.leaders,               /* nome + PIN de cada líder */
     customActs:S.customActs||[],     /* atividades personalizadas */
     usedQuestions:S.usedQuestions||[], /* perguntas já usadas/enviadas */
+    bonusRules:S.bonusRules||[],     /* regras de bônus (multiplicadores) */
     entries:S.entries,
     rosterSeeded:S.rosterSeeded||null
   };
@@ -1967,6 +2075,7 @@ async function importJson(text){
   const newCfg={ groups:data.groups, members:data.members, leaders,
     customActs:Array.isArray(data.customActs)?data.customActs:[],
     usedQuestions:Array.isArray(data.usedQuestions)?data.usedQuestions:[],
+    bonusRules:Array.isArray(data.bonusRules)?data.bonusRules:[],
     rosterSeeded:data.rosterSeeded||'ed1-18' };
   const shards={};
   for(const e of data.entries){
@@ -2020,12 +2129,13 @@ async function startNewEdition(name,theme,start,end){
   const cur=edInfo(), res=editionResult();
   const nextKey='ed'+((parseInt(String(cur.key).replace(/\D/g,''),10)||0)+1);
   const n=S.entries.length;
-  if(!(await askConfirm('Iniciar "'+name+'"?\n\n1. Grava o resultado de "'+cur.name+'" no Hall da Fama\n2. APAGA os '+n+' lançamentos atuais (o placar zera)\n3. Limpa as perguntas marcadas como usadas\n\nParticipantes, grupos e atividades são mantidos.'))) return;
+  if(!(await askConfirm('Iniciar "'+name+'"?\n\n1. Grava o resultado de "'+cur.name+'" no Hall da Fama\n2. APAGA os '+n+' lançamentos atuais (o placar zera)\n3. Limpa as perguntas marcadas e as regras de bônus\n\nParticipantes, grupos e atividades são mantidos.'))) return;
   if(!(await askConfirm('Tem certeza? Os '+n+' lançamentos serão apagados de vez.\n(O resultado fica no Hall da Fama; o backup semanal guarda o histórico.)'))) return;
   try{
     const c=currentConfig();
     c.edition={key:nextKey,name,theme:theme||'',start,end};
     c.usedQuestions=[];
+    c.bonusRules=[];
     const batch=DB.batch();
     if(res) batch.set(DB.doc('app/hall'),{[cur.key]:res},{merge:true});
     (await DB.collection('entries').get()).forEach(d=>batch.delete(d.ref));
@@ -2045,9 +2155,10 @@ async function initDefaults(){
 function updatePrev(){
   const sel=document.getElementById('fAct'); if(!sel)return;
   const a=ACT[sel.value], q=Math.max(1,parseInt(document.getElementById('fQty').value||'1',10));
-  const pts=a.v*q;
+  const mEl=document.getElementById('fMult'); const mult=(mEl&&a.v>0)?+mEl.value:1;
+  const pts=ePts(a,{qty:q,mult});
   const scope=a.s==='both'?'Seed + grupo recebem':(a.s==='group'?'Só o grupo recebe':'Só o Seed recebe');
-  document.getElementById('fPrev').textContent=(pts<0?'−':'+')+fmt(Math.abs(pts))+' pts · '+scope+
+  document.getElementById('fPrev').textContent=(pts<0?'−':'+')+fmt(Math.abs(pts))+' pts'+(mult>1?' (⚡×'+mult+')':'')+' · '+scope+
     (a.cap?' · sujeito a teto':'');
 }
 
@@ -2066,7 +2177,7 @@ function bind(){
   if(q('fAct')){
     q('fAct').onchange=()=>{const keep=q('fAct').value;render();
       const s=document.getElementById('fAct');if(s){s.value=keep;updatePrev();}};
-    q('fQty').oninput=updatePrev; updatePrev();
+    q('fQty').oninput=updatePrev; if(q('fMult'))q('fMult').onchange=updatePrev; updatePrev();
     if(editingId){const e=S.entries.find(x=>x.id===editingId);
       if(e){q('fAct').value=e.act;
         if(q('fMem')&&e.mid)q('fMem').value=e.mid;
@@ -2080,14 +2191,16 @@ function bind(){
     let mid=null,gid;
     if(a.s!=='group'){mid=q('fMem').value;gid=S.members.find(m=>m.id===mid).g;}
     else gid=q('fGrp').value;
+    const mEl=q('fMult'); const mult=(mEl&&a.v>0)?+mEl.value:1;
     if(editingId){
       const e=S.entries.find(x=>x.id===editingId);
-      const obj={ts:e.ts||Date.now(),act,qty,d,note,mid,gid,leader:(e.leader||'')+' (corr. '+logged+')'};
+      const obj={ts:e.ts||Date.now(),act,qty,d,note,mid,gid,leader:(e.leader||'')+' (corr. '+logged+')',...(mult>1?{mult}:{})};
       const key=editingId; editingId=null; await fbSetEntry(key,obj); toast('Lançamento corrigido ✏️'); SFX.tick();
     }else{
-      const key=await fbAddEntry({ts:Date.now(),act,qty,d,note,mid,gid,leader:logged});
+      const key=await fbAddEntry({ts:Date.now(),act,qty,d,note,mid,gid,leader:logged,...(mult>1?{mult}:{})});
       a.v<0?SFX.penalty():SFX.coin();
-      if(key) toastAction((a.v<0?'Penalidade registrada':'+'+fmt(a.v*qty)+' pts lançados! 🌱'),'Desfazer',
+      if(key&&mult>1){ SFX.success(); confetti(); }
+      if(key) toastAction((a.v<0?'Penalidade registrada':'+'+fmt(ePts(a,{qty,mult}))+' pts lançados!'+(mult>1?' ⚡×'+mult:'')+' 🌱'),'Desfazer',
         async()=>{ await fbDelEntry(key); toast('Lançamento desfeito ↩️'); });
     }
   };
@@ -2145,6 +2258,26 @@ function bind(){
     if(unit)act.unit=unit;
     const c=currentConfig(); c.customActs=[...(c.customActs||[]),act];
     await fbSaveConfig(c); toast('Atividade "'+n+'" cadastrada 🎯');};
+  if(q('btnAddBonus'))q('btnAddBonus').onclick=async()=>{
+    const label=q('brLabel').value.trim();
+    const [ttype,tid]=(q('brTarget').value||'all:').split(':');
+    const mult=+q('brMult').value;
+    const from=localInputToMs(q('brFrom').value), until=localInputToMs(q('brUntil').value);
+    if(label.length<2) return toast('Dê um nome ao bônus');
+    if(!(mult>1)) return toast('Escolha um multiplicador');
+    if(from&&until&&until<=from) return toast('O fim precisa vir depois do início');
+    const rule={id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), label, target:{type:ttype, id:tid||''}, mult};
+    if(from||until){ if(from)rule.from=from; if(until)rule.until=until; } else { rule.active=true; }
+    const c=currentConfig(); c.bonusRules=[...(c.bonusRules||[]), rule];
+    await fbSaveConfig(c); SFX.success(); toast('Bônus "'+label+'" criado ⚡');};
+  document.querySelectorAll('[data-bontoggle]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.bontoggle;
+    const c=currentConfig(); c.bonusRules=(c.bonusRules||[]).map(r=>r.id===id?{...r,active:!r.active}:r);
+    await fbSaveConfig(c); SFX.tick();});
+  document.querySelectorAll('[data-bondel]').forEach(b=>b.onclick=async()=>{
+    if(!(await askConfirm('Remover esta regra de bônus? Os pontos já lançados com ela continuam valendo.')))return;
+    const id=b.dataset.bondel; const c=currentConfig(); c.bonusRules=(c.bonusRules||[]).filter(r=>r.id!==id);
+    await fbSaveConfig(c); toast('Regra removida');});
   document.querySelectorAll('[data-qtoggle]').forEach(b=>b.onclick=async()=>{
     const id=b.dataset.qtoggle;
     const set=new Set(S.usedQuestions||[]);
