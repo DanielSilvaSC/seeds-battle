@@ -251,6 +251,46 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-of
   border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:800;color:var(--gold);
   line-height:1.5;animation:bonusPulse 2.4s ease-in-out infinite}
 @keyframes bonusPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,197,66,.0)}50%{box-shadow:0 0 14px -2px rgba(245,197,66,.5)}}
+.mvpcard{background:linear-gradient(90deg,rgba(139,212,80,.18),rgba(139,212,80,.04));border:1px solid var(--leaf);
+  border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13.5px;color:var(--cream);font-weight:700}
+.mvpcard b{color:var(--leaf)} .mvpcard span{color:var(--muted);font-weight:800;font-size:12px}
+.streak{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:900;color:#ff8a3d;vertical-align:middle}
+.nm .ttl{font-size:11.5px;font-weight:800;color:var(--gold);letter-spacing:.2px;white-space:nowrap}
+#overtakefx{position:fixed;inset:0;z-index:190;pointer-events:none;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .25s}
+#overtakefx.show{opacity:1}
+#overtakefx .otmsg{font-family:'Bungee',system-ui;font-size:clamp(22px,7vw,40px);color:var(--gold);text-align:center;
+  text-shadow:0 4px 24px rgba(0,0,0,.6);animation:otPop .5s cubic-bezier(.2,1.4,.4,1) both}
+#overtakefx .otmsg span{display:block;font-family:'Nunito',sans-serif;font-size:clamp(13px,3.5vw,18px);color:var(--cream);margin-top:8px;font-weight:900}
+@keyframes otPop{0%{transform:scale(.4) rotate(-6deg);opacity:0}60%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.mission{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:10px}
+.mission.on{border-color:var(--leaf);box-shadow:0 0 0 1px rgba(139,212,80,.3)}
+.mission .mtop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13.5px;color:var(--cream)}
+.mission .mend{font-size:11px;font-weight:800;color:var(--muted)}
+.mission .mdone{font-size:11px;font-weight:900;color:var(--leaf)}
+.mbar{height:9px;background:var(--soil2);border-radius:99px;overflow:hidden;margin:7px 0 4px}
+.mbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--leaf-dim),var(--leaf));border-radius:99px;transition:width .6s ease}
+.mission .mmeta{font-size:11.5px;font-weight:700;color:var(--muted)}
+.mission .mgrp{display:flex;align-items:center;gap:6px;margin-top:6px}
+.mission .mgrp .mgn{font-size:12px;font-weight:800;min-width:64px}
+.mission .mgrp .mbar{flex:1;margin:0}
+.mission .mreward{margin-top:7px;font-size:12.5px;font-weight:800;color:var(--gold)}
+.passrow{margin-top:6px}.passrow+.passrow{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.passlbl{font-size:12.5px;font-weight:900;margin-bottom:8px}
+.passtrack{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.ptier{flex:0 0 auto;width:88px;text-align:center;opacity:.5;transition:.3s}
+.ptier.on{opacity:1}
+.ptier .pnode{display:flex;align-items:center;justify-content:center;width:30px;height:30px;margin:0 auto 4px;border-radius:50%;
+  background:var(--soil2);border:2px solid var(--line);font-weight:900;font-size:13px;color:var(--muted)}
+.ptier.on .pnode{background:var(--gold);border-color:var(--gold);color:var(--soil)}
+.ptier .plbl{display:block;font-size:11px;font-weight:900;color:var(--cream)}
+.ptier .prw{display:block;font-size:10.5px;font-weight:700;color:var(--muted);line-height:1.25;margin-top:2px}
+.ptier.on .prw{color:var(--gold)}
+.bosscard{border-color:#c0603c}
+.bosscard.beat{border-color:var(--leaf);box-shadow:0 0 0 1px rgba(139,212,80,.35)}
+.bosscard .bosslbl{font-size:15px;font-weight:900;color:var(--cream);margin-bottom:8px}
+.tl-roulette{margin:8px auto;font-family:'Bungee',system-ui;font-size:clamp(16px,4vw,26px);color:var(--gold);text-align:center}
+.tl-roulette.hot{color:var(--leaf);animation:bonusPulse 1.2s ease-in-out infinite}
 .pill{display:inline-block;background:var(--soil2);border:1px solid var(--line);border-radius:99px;
   padding:3px 10px;font-size:11px;font-weight:800;color:var(--muted);margin:3px 3px 0 0}
 .who{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -535,6 +575,48 @@ function badgeTallies(){
 }
 function badgesFor(mid,T){ const t=(T||badgeTallies())[mid]||{}; return BADGES.filter(b=>b.test(t)); }
 
+/* ============ ENGAJAMENTO ESTILO GAME (tudo derivado dos lançamentos) ============ */
+/* ----- MVP da semana: Seed com mais pontos individuais nos últimos 7 dias ----- */
+function daysAgoISO(days){ const d=new Date(); d.setDate(d.getDate()-days); return d.toISOString().slice(0,10); }
+function mvpWeek(){
+  const since=daysAgoISO(7), acc={};
+  for(const e of S.entries){
+    if(!e.mid||!e.d||e.d<since) continue;
+    const a=ACT[e.act]; if(!a) continue;
+    if(a.s==='both'||a.s==='ind'||a.cap==='oferta') acc[e.mid]=(acc[e.mid]||0)+ePts(a,e);
+  }
+  let best=null,bp=0;
+  for(const id in acc){ if(acc[id]>bp){ bp=acc[id]; best=id; } }
+  if(!best||bp<=0) return null;
+  const m=S.members.find(x=>x.id===best);
+  return m?{member:m,pts:bp}:null;
+}
+/* ----- Ofensiva de presença (streak): semanas 7-dias consecutivas com presença ----- */
+const STREAK_ACTS=['culto_sem','culto_dom','ebd'];
+function weekBucket(dateStr){ return Math.floor(Date.parse(dateStr+'T12:00:00')/(7*86400000)); }
+function presenceStreak(mid){
+  const buckets=new Set();
+  for(const e of S.entries){
+    if(e.mid!==mid||!e.d||!STREAK_ACTS.includes(e.act)) continue;
+    buckets.add(weekBucket(e.d));
+  }
+  if(!buckets.size) return 0;
+  const cur=weekBucket(new Date().toISOString().slice(0,10));
+  let b = buckets.has(cur)?cur : (buckets.has(cur-1)?cur-1:null);
+  if(b===null) return 0;               /* ofensiva "esfriou" (>1 semana sem presença) */
+  let n=0; while(buckets.has(b)){ n++; b--; }
+  return n;
+}
+function streakTag(mid){ const n=presenceStreak(mid); return n>=2?'<span class="streak" title="'+n+' semanas seguidas de presença">🔥'+n+'</span>':''; }
+/* ----- Títulos exibidos ao lado do nome (do emblema mais prestigioso conquistado) ----- */
+const TITLE_BY_BADGE={fiel:'Fiel na Palavra',pescador:'Pescador de Gente',constante:'Chama Constante',teologo:'Teólogo(a)',generoso:'Coração Generoso',estrela:'Estrela do Louvor'};
+const TITLE_PRESTIGE=['constante','fiel','estrela','pescador','teologo','generoso']; /* asc: último = mais raro */
+function topTitle(mid,T){
+  let best=null,bi=-1;
+  badgesFor(mid,T).forEach(b=>{ const i=TITLE_PRESTIGE.indexOf(b.id); if(i>bi){ bi=i; best=b.id; } });
+  return best?TITLE_BY_BADGE[best]:null;
+}
+
 /* ============ BANCO DE PERGUNTAS — carregado do Firebase ============ */
 /* As perguntas e respostas NÃO ficam mais no HTML. Elas moram no nó
    protegido /questions do Firebase, que só líderes autenticados conseguem
@@ -600,13 +682,16 @@ function defaultConfig(){return {
   customActs:[],
   usedQuestions:[],
   bonusRules:[],
+  missions:[],
+  pass:{basis:'combined',tiers:[]},
+  boss:null,
   rosterSeeded:'ed1-18',
   edition:{...DEFAULT_EDITION}
 };}
 function defaultData(){ const c=defaultConfig(); c.entries=[]; return c; } /* usado no export/backup */
 
 function ensureLeaderIds(){ let ch=false; (S.leaders||[]).forEach(l=>{ if(!l.id){ l.id='l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); ch=true; } }); return ch; }
-function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
+function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], missions:S.missions||[], pass:S.pass||{basis:'combined',tiers:[]}, boss:S.boss||null, rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
 
 /* Monta S a partir de config + entradas vindas do Firebase */
 function rebuildS(){
@@ -617,6 +702,9 @@ function rebuildS(){
         customActs:Array.isArray(c.customActs)?c.customActs:[],
         usedQuestions:Array.isArray(c.usedQuestions)?c.usedQuestions:[],
         bonusRules:Array.isArray(c.bonusRules)?c.bonusRules:[],
+        missions:Array.isArray(c.missions)?c.missions:[],
+        pass:(c.pass&&Array.isArray(c.pass.tiers))?c.pass:{basis:'combined',tiers:[]},
+        boss:c.boss||null,
         rosterSeeded:c.rosterSeeded||null, entries };
 }
 
@@ -815,6 +903,115 @@ function vBonusBanner(){
   return '<div class="bonusbanner">'+act.map(r=>'⚡ <b>'+esc(r.label||'Bônus')+'</b> ×'+(+r.mult)+' · '+esc(bonusTargetLabel(r.target))+(r.until?' · até '+fmtWhen(r.until):'')).join('<br>')+'</div>';
 }
 
+/* ============ MISSÕES DA SEMANA ============
+   Missão: {id, label, target:{type,id}, goal, scope:'seed'|'group'|'all', reward, from?, until?, active?}
+   Janela por data (YYYY-MM-DD). Progresso é contado dos lançamentos (qty). Reutiliza ruleMatches. */
+function missionStatus(ms){
+  const today=new Date().toISOString().slice(0,10);
+  if(ms.from||ms.until){
+    if(ms.from&&today<ms.from) return 'scheduled';
+    if(ms.until&&today>ms.until) return 'ended';
+    return 'active';
+  }
+  return ms.active?'active':'off';
+}
+function inMissionWindow(ms,e){
+  if(!e.d) return false;
+  if(ms.from&&e.d<ms.from) return false;
+  if(ms.until&&e.d>ms.until) return false;
+  return true;
+}
+function missionProgress(ms){
+  const goal=Math.max(1,+ms.goal||1);
+  if(ms.scope==='seed'){
+    const per={};
+    for(const e of S.entries){ const a=ACT[e.act]; if(!a||!e.mid) continue; if(!ruleMatches(ms,a,e.act)||!inMissionWindow(ms,e)) continue; per[e.mid]=(per[e.mid]||0)+(e.qty||1); }
+    const total=S.members.length, done=S.members.filter(m=>(per[m.id]||0)>=goal).length;
+    return {scope:'seed', goal, done, total, pct:total?Math.round(done/total*100):0, completed:total>0&&done>=total};
+  }
+  if(ms.scope==='group'){
+    const per={};
+    for(const e of S.entries){ const a=ACT[e.act]; if(!a||!e.gid) continue; if(!ruleMatches(ms,a,e.act)||!inMissionWindow(ms,e)) continue; per[e.gid]=(per[e.gid]||0)+(e.qty||1); }
+    return {scope:'group', goal, groups:S.groups.map(g=>({g,n:per[g.id]||0,pct:Math.min(100,Math.round((per[g.id]||0)/goal*100)),done:(per[g.id]||0)>=goal})), completed:S.groups.some(g=>(per[g.id]||0)>=goal)};
+  }
+  let n=0;
+  for(const e of S.entries){ const a=ACT[e.act]; if(!a) continue; if(!ruleMatches(ms,a,e.act)||!inMissionWindow(ms,e)) continue; n+=(e.qty||1); }
+  return {scope:'all', goal, n, pct:Math.min(100,Math.round(n/goal*100)), completed:n>=goal};
+}
+function mBar(pct){ pct=Math.min(100,Math.max(0,pct||0)); return '<div class="mbar"><i style="width:'+pct+'%"></i></div>'; }
+function missionScopeLabel(sc){ return sc==='seed'?'cada Seed':sc==='group'?'por grupo':'todos juntos'; }
+/* card público das missões (aba Grupos) */
+function vMissions(){
+  const list=(S.missions||[]).filter(ms=>missionStatus(ms)!=='off');
+  if(!list.length) return '';
+  let h='<div class="card"><h2>🎯 Missões</h2>';
+  list.forEach(ms=>{
+    const st=missionStatus(ms), pr=missionProgress(ms);
+    const tag=st==='ended'?'<span class="mend">⏳ encerrada</span>':st==='scheduled'?'<span class="mend">🕒 em breve</span>':(pr.completed?'<span class="mdone">✅ concluída!</span>':'');
+    h+='<div class="mission'+(pr.completed?' on':'')+'"><div class="mtop"><b>'+esc(ms.label||'Missão')+'</b>'+tag+'</div>';
+    if(pr.scope==='all'){
+      h+=mBar(pr.pct)+'<div class="mmeta">'+fmt(pr.n)+' / '+fmt(pr.goal)+' · todos juntos</div>';
+    }else if(pr.scope==='seed'){
+      h+=mBar(pr.pct)+'<div class="mmeta">'+pr.done+' de '+pr.total+' Seeds concluíram</div>';
+    }else{
+      pr.groups.forEach(gp=>{ h+='<div class="mgrp"><span class="gdot" style="background:'+gp.g.color+'"></span><span class="mgn">'+esc(gp.g.name)+'</span>'+mBar(gp.pct)+'<span class="mmeta">'+gp.n+'/'+pr.goal+(gp.done?' ✅':'')+'</span></div>'; });
+    }
+    if(ms.reward) h+='<div class="mreward">🎁 '+esc(ms.reward)+'</div>';
+    if(ms.until) h+='<div class="mmeta">prazo: '+ms.until.split('-').reverse().join('/')+'</div>';
+    h+='</div>';
+  });
+  return h+'</div>';
+}
+
+/* ============ PASSE DA EDIÇÃO (trilha de marcos com recompensas) ============
+   pass = {basis:'combined'|'group', tiers:[{id, pts, reward}]} */
+function passTrackHtml(pts, tiers, label, color){
+  const unlocked=tiers.filter(t=>pts>=(+t.pts||0)).length;
+  const next=tiers.find(t=>pts<(+t.pts||0));
+  const prevPts=unlocked>0?(+tiers[unlocked-1].pts||0):0;
+  const pct=next?Math.round((pts-prevPts)/(((+next.pts||0)-prevPts)||1)*100):100;
+  let h='<div class="passrow"><div class="passlbl" style="color:'+color+'">'+esc(label)+' · '+fmt(pts)+' pts · nível '+unlocked+'/'+tiers.length+'</div>';
+  h+='<div class="passtrack">';
+  tiers.forEach((t,i)=>{ const on=pts>=(+t.pts||0);
+    h+='<div class="ptier'+(on?' on':'')+'"><span class="pnode">'+(on?'★':(i+1))+'</span><span class="plbl">'+fmt(+t.pts||0)+'</span>'+(t.reward?'<span class="prw">'+esc(t.reward)+'</span>':'')+'</div>'; });
+  h+='</div>';
+  if(next) h+=mBar(pct)+'<div class="mmeta">faltam '+fmt((+next.pts||0)-pts)+' pts p/ desbloquear'+(next.reward?': '+esc(next.reward):'')+'</div>';
+  else h+='<div class="mmeta">🏆 Passe completo!</div>';
+  return h+'</div>';
+}
+function vPass(R){
+  const pass=S.pass;
+  if(!pass||!Array.isArray(pass.tiers)||!pass.tiers.length) return '';
+  const tiers=[...pass.tiers].sort((a,b)=>(+a.pts||0)-(+b.pts||0));
+  let h='<div class="card"><h2>🎟️ Passe da Edição</h2>';
+  if((pass.basis||'combined')==='group'){
+    S.groups.forEach(g=>{ h+=passTrackHtml(R.grp[g.id]||0, tiers, g.name, g.color); });
+  }else{
+    const total=S.groups.reduce((s,g)=>s+(R.grp[g.id]||0),0);
+    h+=passTrackHtml(total, tiers, 'Temporada', 'var(--gold)');
+  }
+  return h+'</div>';
+}
+
+/* ============ BOSS COLETIVO (meta cooperativa dos 2 grupos) ============
+   boss = {label, target:{type,id}, goal, reward, unit?, active} */
+function bossProgress(){
+  const b=S.boss; if(!b||!b.active) return null;
+  let n=0;
+  for(const e of S.entries){ const a=ACT[e.act]; if(!a) continue; if(!ruleMatches(b,a,e.act)) continue; n+=(e.qty||1); }
+  const goal=Math.max(1,+b.goal||1);
+  return {n, goal, pct:Math.min(100,Math.round(n/goal*100)), defeated:n>=goal, label:b.label, reward:b.reward, unit:b.unit};
+}
+function vBoss(){
+  const p=bossProgress(); if(!p) return '';
+  return '<div class="card bosscard'+(p.defeated?' beat':'')+'"><h2>👹 Desafio coletivo</h2>'+
+    '<div class="bosslbl">'+esc(p.label||'Boss')+'</div>'+
+    mBar(p.pct)+
+    '<div class="mmeta">'+fmt(p.n)+' / '+fmt(p.goal)+(p.unit?' '+esc(p.unit):'')+(p.defeated?' · 🎉 DERROTADO!':'')+'</div>'+
+    (p.reward?'<div class="mreward">🎁 '+esc(p.reward)+'</div>':'')+
+    '<p class="hint" style="margin-top:6px">Os dois grupos somam forças. Vencendo, todos ganham! 🤝</p></div>';
+}
+
 /* ============ RENDER ============ */
 /* ============ SONS (WebAudio, sem arquivos externos) ============ */
 const SFX = (()=>{
@@ -958,6 +1155,14 @@ function spawnLeadFx(card){
   card.appendChild(box);
   setTimeout(()=>box.remove(),900);
 }
+/* overlay dramático quando um grupo assume a liderança (estilo evento de game) */
+function overtakeFx(name){
+  let host=document.getElementById('overtakefx');
+  if(!host){ host=document.createElement('div'); host.id='overtakefx'; document.body.appendChild(host); }
+  host.innerHTML='<div class="otmsg">🚀 ULTRAPASSAGEM!<span>'+esc(name)+' assumiu a liderança!</span></div>';
+  host.classList.remove('show'); void host.offsetWidth; host.classList.add('show'); confetti();
+  clearTimeout(host._x); host._x=setTimeout(()=>host.classList.remove('show'),2800);
+}
 function animateGroups(R, isEntry){
   const RM=prefersReduced();
   const wrap=document.querySelector('.gwrap');
@@ -995,6 +1200,8 @@ function animateGroups(R, isEntry){
     const card=document.querySelector('.gcard[data-gid="'+leadId+'"]');
     if(card) spawnLeadFx(card);
     SFX.fanfare();
+    const lg=S.groups.find(g=>g.id===leadId);
+    overtakeFx(lg?lg.name:'');
   }
   gAnim.lastLead=leadId;
 }
@@ -1142,6 +1349,9 @@ function vGroups(R){
   h+='<p class="hint" style="text-align:center;margin:8px 0 0">👆 Toque num grupo para ver o histórico de pontos.</p>';
   h+='<div class="row2" style="margin-top:12px"><button class="btn gold" id="btnTelao" style="margin-top:0">📺 Modo Telão</button>'+
      '<button class="btn ghost" id="btnShare" style="margin-top:0">📤 Compartilhar</button></div>';
+  h+=vPass(R);
+  h+=vBoss();
+  h+=vMissions();
   h+=vFeed();
   if(tie01.by!==null){
     const leadG=gs[0], msg = tie01.by==='EXTRA'
@@ -1246,6 +1456,8 @@ function vInd(R){
   const T=badgeTallies();
   const med=['🥇','🥈','🥉'];
   let h='<div class="iwrap">'+SEEDS_BG;
+  const mvp=mvpWeek();
+  if(mvp) h+='<div class="mvpcard">🌟 <b>Seed da semana</b> · '+esc(mvp.member.n)+' <span>+'+fmt(mvp.pts)+' pts em 7 dias</span></div>';
   if(ms.length>=3){
     const order=[ms[1],ms[0],ms[2]];
     h+='<div class="podium">';
@@ -1266,11 +1478,12 @@ function vInd(R){
         ? '<div class="lvl" style="color:var(--gold)">🟰 Empate com '+esc(ms[i-1].n)+' — pergunta bíblica extra</div>'
         : (t.by ? '<div class="lvl" style="color:var(--gold)">⚖️ Atrás de '+esc(ms[i-1].n)+' por: '+t.by+'</div>' : '');
     }
-    const bds=badgesFor(m.id,T);
+    const bds=badgesFor(m.id,T), title=topTitle(m.id,T);
     const li=LEVELS.indexOf(L), near=N&&pct>=80;
     h+='<div class="rrow" style="--i:'+i+';cursor:pointer" data-hist="'+m.id+'" role="button" tabindex="0" title="Ver histórico de '+esc(m.n)+'"><div class="pos">'+(i+1)+'º</div><div class="plant lv'+li+'"><span>'+L.e+'</span></div>'+
     '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+
-    bds.map(b=>'<span class="bdg" title="'+esc(b.n)+'">'+b.e+'</span>').join('')+'</div>'+
+    (title?'<span class="ttl"> · '+esc(title)+'</span>':'')+
+    bds.map(b=>'<span class="bdg" title="'+esc(b.n)+'">'+b.e+'</span>').join('')+streakTag(m.id)+'</div>'+
     '<div class="lvl">'+L.n+(N?' · faltam '+fmt(N.min-p)+' p/ '+N.e+(near?' <b style="color:var(--gold)">🔥 quase lá!</b>':''):' · nível máximo!')+'</div>'+
     '<div class="xp'+(near?' near':'')+'"><i data-xpmid="'+m.id+'" data-pct="'+pct+'" style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
     '<div class="pts" data-ptsmid="'+m.id+'" data-k="row'+m.id+'">'+fmt(p)+'</div></div>';
@@ -1371,16 +1584,20 @@ function tlQuiz(){
     h+='<div class="tl-ans">'+esc(it.a)+'</div><div class="tl-ref">'+esc(it.r||'')+'</div>';
     const actId=QUIZ_ACT[sec.id], a=actId?ACT[actId]:null;
     if(currentUser && a){
+      const em=Math.max(autoMult(actId), TQ.rmult||1);          /* bônus efetivo (regra ativa ou roleta) */
+      const val=v=>fmt(ePts({v},{qty:1,mult:em}));
+      if(TQ.rmult===undefined) h+='<div class="tl-btns"><button class="btn gold sm" id="tlSpin"><span id="tlRoulette">🎡 Girar roleta de bônus</span></button></div>';
+      else h+='<div class="tl-roulette'+(TQ.rmult>1?' hot':'')+'">🎡 Roleta: ×'+TQ.rmult+(TQ.rmult>1?' — bônus nesta resposta! 🔥':' (sem bônus desta vez)')+'</div>';
       if(a.s!=='group'){ /* dia oficial: quem acertou foi um Seed */
         h+='<div class="tl-btns"><select id="tlSeed">'+S.members.map(m=>{const g=S.groups.find(x=>x.id===m.g);
              return '<option value="'+m.id+'">'+esc(m.n)+' · '+esc(g?g.name:'')+'</option>';}).join('')+'</select>'+
-           '<button class="btn go sm" id="tlHit">✅ Acertou (+'+a.v+')</button></div>';
+           '<button class="btn go sm" id="tlHit">✅ Acertou (+'+val(a.v)+(em>1?' ⚡':'')+')</button></div>';
         h+='<div class="tl-btns"><select id="tlGrpT">'+S.groups.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select>'+
-           '<button class="btn ghost sm" id="tlTry">🤏 Tentativa c/ raciocínio (+'+ACT['prac'].v+')</button></div>';
+           '<button class="btn ghost sm" id="tlTry">🤏 Tentativa c/ raciocínio (+'+val(ACT['prac'].v)+')</button></div>';
       } else { /* pergunta da semana: pontua o grupo */
         h+='<div class="tl-btns"><select id="tlGrp">'+S.groups.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select>'+
-           '<button class="btn go sm" id="tlHitG">✅ Grupo acertou (+'+a.v+')</button>'+
-           '<button class="btn ghost sm" id="tlTryG">🤏 Tentativa (+'+ACT['psem_tent'].v+')</button></div>';
+           '<button class="btn go sm" id="tlHitG">✅ Grupo acertou (+'+val(a.v)+(em>1?' ⚡':'')+')</button>'+
+           '<button class="btn ghost sm" id="tlTryG">🤏 Tentativa (+'+val(ACT['psem_tent'].v)+')</button></div>';
       }
     }
     h+='<div class="tl-btns"><button class="btn gold sm" id="tlUsed">✓ Marcar usada e fechar</button>'+
@@ -1425,6 +1642,28 @@ function startQuiz(secId){
   },1000);
   renderTelao();
 }
+/* roleta de bônus ao vivo: sorteia ×1/×2/×3 (×1 comum, ×3 raro) para a resposta atual */
+function spinRoulette(){
+  if(TQ.phase==='idle') return;
+  const btn=document.getElementById('tlSpin'), el=document.getElementById('tlRoulette');
+  if(!el) return;
+  if(btn) btn.disabled=true;
+  const faces=[1,1,1,2,2,3];
+  let ticks=0; const total=16+Math.floor(Math.random()*8);
+  clearInterval(TQ._rspin);
+  TQ._rspin=setInterval(()=>{
+    ticks++;
+    el.textContent='🎡 ×'+faces[Math.floor(Math.random()*faces.length)];
+    SFX.tick();
+    if(ticks>=total){
+      clearInterval(TQ._rspin);
+      TQ.rmult=faces[Math.floor(Math.random()*faces.length)];
+      el.textContent='🎡 ×'+TQ.rmult;
+      if(TQ.rmult>1){ SFX.fanfare(); confetti(); } else SFX.coin();
+      setTimeout(()=>renderTelao(),750);
+    }
+  },90);
+}
 function bindTelao(){
   const q=id=>document.getElementById(id);
   if(q('tlClose'))q('tlClose').onclick=closeTelao;
@@ -1435,6 +1674,7 @@ function bindTelao(){
     renderTelao();
   };
   if(q('tlQuizBtn'))q('tlQuizBtn').onclick=tlPickSection;
+  if(q('tlSpin'))q('tlSpin').onclick=spinRoulette;
   if(q('tlReveal'))q('tlReveal').onclick=()=>{ stopQuizTimer(); TQ.phase='rev'; SFX.success(); renderTelao(); };
   if(q('tlQCancel'))q('tlQCancel').onclick=()=>{ stopQuizTimer(); TQ={phase:'idle'}; renderTelao(); };
   if(q('tlQClose'))q('tlQClose').onclick=()=>{ TQ={phase:'idle'}; renderTelao(); };
@@ -1442,7 +1682,7 @@ function bindTelao(){
   const launch=async(actId,mid,gid)=>{
     const a=ACT[actId]; if(!a) return;
     const item=TQ.item;
-    const mult=autoMult(actId);
+    const mult=Math.max(autoMult(actId), TQ.rmult||1);   /* bônus ativo OU roleta (o maior) */
     const key=await fbAddEntry({ts:Date.now(),act:actId,qty:1,d:new Date().toISOString().slice(0,10),
       note:'Quiz'+(item?' '+item.c:''),mid:mid||null,gid,leader:logged||'Telão',...(mult>1?{mult}:{})});
     TQ={phase:'idle'};
@@ -1747,6 +1987,54 @@ function vPanel(R){
     '<div class="field"><label>Fim</label><input id="brUntil" type="datetime-local"></div></div></details>'+
     '<button class="btn gold" id="btnAddBonus">Criar regra de bônus</button>'+
     '<p class="hint" style="margin-top:8px">O bônus só multiplica pontos positivos — penalidades nunca. Em sobreposição vale a regra mais específica; empate, o maior multiplicador.</p></details>';
+  h+='<details><summary>🎯 Missões da semana ('+(S.missions||[]).length+')</summary>';
+  h+='<p class="hint" style="margin-top:6px">Desafios com meta e prazo que aparecem para todos na aba Grupos, com barra de progresso. Ex.: "Trazer a Bíblia 2× esta semana". A recompensa é entregue por você (não lança pontos sozinha).</p>';
+  if(!(S.missions||[]).length) h+='<p class="hint" style="margin-top:6px">Nenhuma missão ainda.</p>';
+  h+=(S.missions||[]).map(ms=>{
+    const st=missionStatus(ms), isManual=!(ms.from||ms.until);
+    const stTxt={active:'🟢 Ativa',scheduled:'🕒 Agendada',ended:'⏳ Encerrada',off:'⚪ Pausada'}[st]||'';
+    const win=isManual?'sem prazo':((ms.from?ms.from.split('-').reverse().join('/'):'…')+' → '+(ms.until?ms.until.split('-').reverse().join('/'):'…'));
+    return '<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+      '<div><span class="t1">'+esc(ms.label||'Missão')+'</span>'+
+      '<div class="t2">'+esc(bonusTargetLabel(ms.target))+' · meta '+(+ms.goal||1)+' ('+missionScopeLabel(ms.scope)+') · '+stTxt+' · '+esc(win)+'</div></div>'+
+      '<div style="display:flex;gap:6px">'+
+      (isManual?'<button class="btn '+(ms.active?'ghost':'gold')+' sm" data-mtoggle="'+ms.id+'">'+(ms.active?'Pausar':'Ativar')+'</button>':'')+
+      '<button class="btn red sm" data-mdel="'+ms.id+'">Remover</button></div></div></div>';
+  }).join('');
+  h+='<div class="field" style="margin-top:10px"><label>Nome da missão</label><input id="msLabel" maxlength="60" placeholder="Ex.: Trazer a Bíblia 2× esta semana"></div>'+
+    '<div class="row2"><div class="field"><label>Conta lançamentos de</label><select id="msTarget">'+bonusTargetOptions('all:')+'</select></div>'+
+    '<div class="field"><label>Meta (quantidade)</label><input id="msGoal" type="number" min="1" value="2"></div></div>'+
+    '<div class="row2"><div class="field"><label>Quem completa</label><select id="msScope">'+
+    '<option value="seed">Cada Seed</option><option value="group">Cada grupo</option><option value="all">Todos juntos</option></select></div>'+
+    '<div class="field"><label>Recompensa (texto)</label><input id="msReward" maxlength="60" placeholder="Ex.: escolher o louvor"></div></div>'+
+    '<details style="margin-top:8px"><summary>🕒 Prazo (opcional)</summary>'+
+    '<p class="hint" style="margin-top:6px">Se preencher, só conta lançamentos no intervalo e a missão encerra sozinha. Em branco = ligar/desligar na mão.</p>'+
+    '<div class="row2"><div class="field"><label>Início</label><input id="msFrom" type="date"></div>'+
+    '<div class="field"><label>Fim</label><input id="msUntil" type="date"></div></div></details>'+
+    '<button class="btn gold" id="btnAddMission">Criar missão</button></details>';
+  h+='<details><summary>🎟️ Passe da Edição ('+((S.pass&&S.pass.tiers||[]).length)+' níveis)</summary>';
+  h+='<p class="hint" style="margin-top:6px">Trilha de marcos por pontos — a cada nível, uma recompensa real que você entrega. Aparece na aba Grupos para todos.</p>';
+  const _pb=(S.pass&&S.pass.basis)||'combined';
+  h+='<div class="field"><label>Base do progresso</label><select id="passBasis">'+
+    '<option value="combined"'+(_pb==='combined'?' selected':'')+'>Temporada (soma dos 2 grupos)</option>'+
+    '<option value="group"'+(_pb==='group'?' selected':'')+'>Cada grupo na mesma trilha</option></select></div>';
+  const _tiers=[...((S.pass&&S.pass.tiers)||[])].sort((a,b)=>(+a.pts||0)-(+b.pts||0));
+  h+=_tiers.map(t=>'<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+    '<div><span class="t1">'+fmt(+t.pts||0)+' pts</span><div class="t2">🎁 '+esc(t.reward||'—')+'</div></div>'+
+    '<button class="btn red sm" data-tierdel="'+t.id+'">Remover</button></div></div>').join('');
+  h+='<div class="row2" style="margin-top:10px"><div class="field"><label>Pontos do nível</label><input id="ptPts" type="number" min="1" placeholder="Ex.: 3000"></div>'+
+    '<div class="field"><label>Recompensa</label><input id="ptReward" maxlength="50" placeholder="Ex.: escolher o lanche"></div></div>'+
+    '<button class="btn gold" id="btnAddTier">Adicionar nível</button></details>';
+  h+='<details><summary>👹 Desafio coletivo / Boss'+(S.boss&&S.boss.active?' 🟢':'')+'</summary>';
+  h+='<p class="hint" style="margin-top:6px">Uma meta que os 2 grupos batem <b>juntos</b> (ex.: 200 kg de alimentos = derrotar o "Boss da Fome"). Vencendo, todos ganham a recompensa que você entrega.</p>';
+  const _bs=S.boss||{}, _bt=_bs.target?(_bs.target.type+':'+(_bs.target.id||'')):'cat:alim';
+  h+='<div class="field"><label>Nome do desafio</label><input id="boLabel" maxlength="50" value="'+esc(_bs.label||'')+'" placeholder="Ex.: Boss da Fome"></div>'+
+    '<div class="row2"><div class="field"><label>Conta lançamentos de</label><select id="boTarget">'+bonusTargetOptions(_bt)+'</select></div>'+
+    '<div class="field"><label>Meta (quantidade)</label><input id="boGoal" type="number" min="1" value="'+(+_bs.goal||100)+'"></div></div>'+
+    '<div class="row2"><div class="field"><label>Unidade (opcional)</label><input id="boUnit" maxlength="10" value="'+esc(_bs.unit||'')+'" placeholder="Ex.: kg, itens"></div>'+
+    '<div class="field"><label>Recompensa</label><input id="boReward" maxlength="50" value="'+esc(_bs.reward||'')+'" placeholder="Ex.: sorvete pra todos"></div></div>'+
+    '<div class="row2"><button class="btn gold" id="btnSaveBoss" style="margin-top:0">'+(S.boss&&S.boss.active?'Salvar desafio':'Ativar desafio')+'</button>'+
+    (S.boss?'<button class="btn red" id="btnDelBoss" style="margin-top:0">Remover</button>':'<span></span>')+'</div></details>';
   h+='<details><summary>💾 Backup / Migração</summary>'+
     '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
     '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
@@ -2050,6 +2338,9 @@ function backupObject(){
     customActs:S.customActs||[],     /* atividades personalizadas */
     usedQuestions:S.usedQuestions||[], /* perguntas já usadas/enviadas */
     bonusRules:S.bonusRules||[],     /* regras de bônus (multiplicadores) */
+    missions:S.missions||[],         /* missões da semana */
+    pass:S.pass||{basis:'combined',tiers:[]}, /* passe da edição */
+    boss:S.boss||null,               /* desafio coletivo */
     entries:S.entries,
     rosterSeeded:S.rosterSeeded||null
   };
@@ -2076,6 +2367,9 @@ async function importJson(text){
     customActs:Array.isArray(data.customActs)?data.customActs:[],
     usedQuestions:Array.isArray(data.usedQuestions)?data.usedQuestions:[],
     bonusRules:Array.isArray(data.bonusRules)?data.bonusRules:[],
+    missions:Array.isArray(data.missions)?data.missions:[],
+    pass:(data.pass&&Array.isArray(data.pass.tiers))?data.pass:{basis:'combined',tiers:[]},
+    boss:data.boss||null,
     rosterSeeded:data.rosterSeeded||'ed1-18' };
   const shards={};
   for(const e of data.entries){
@@ -2136,6 +2430,9 @@ async function startNewEdition(name,theme,start,end){
     c.edition={key:nextKey,name,theme:theme||'',start,end};
     c.usedQuestions=[];
     c.bonusRules=[];
+    c.missions=[];
+    c.pass={basis:'combined',tiers:[]};
+    c.boss=null;
     const batch=DB.batch();
     if(res) batch.set(DB.doc('app/hall'),{[cur.key]:res},{merge:true});
     (await DB.collection('entries').get()).forEach(d=>batch.delete(d.ref));
@@ -2278,6 +2575,57 @@ function bind(){
     if(!(await askConfirm('Remover esta regra de bônus? Os pontos já lançados com ela continuam valendo.')))return;
     const id=b.dataset.bondel; const c=currentConfig(); c.bonusRules=(c.bonusRules||[]).filter(r=>r.id!==id);
     await fbSaveConfig(c); toast('Regra removida');});
+  if(q('btnAddMission'))q('btnAddMission').onclick=async()=>{
+    const label=q('msLabel').value.trim();
+    const [ttype,tid]=(q('msTarget').value||'all:').split(':');
+    const goal=Math.max(1,parseInt(q('msGoal').value||'1',10));
+    const scope=q('msScope').value, reward=q('msReward').value.trim();
+    const from=q('msFrom').value, until=q('msUntil').value;
+    if(label.length<2) return toast('Dê um nome à missão');
+    if(from&&until&&until<from) return toast('O fim vem antes do início');
+    const ms={id:'ms'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), label, target:{type:ttype,id:tid||''}, goal, scope};
+    if(reward) ms.reward=reward;
+    if(from||until){ if(from)ms.from=from; if(until)ms.until=until; } else { ms.active=true; }
+    const c=currentConfig(); c.missions=[...(c.missions||[]), ms];
+    await fbSaveConfig(c); SFX.success(); toast('Missão "'+label+'" criada 🎯');};
+  document.querySelectorAll('[data-mtoggle]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.mtoggle;
+    const c=currentConfig(); c.missions=(c.missions||[]).map(ms=>ms.id===id?{...ms,active:!ms.active}:ms);
+    await fbSaveConfig(c); SFX.tick();});
+  document.querySelectorAll('[data-mdel]').forEach(b=>b.onclick=async()=>{
+    if(!(await askConfirm('Remover esta missão?')))return;
+    const id=b.dataset.mdel; const c=currentConfig(); c.missions=(c.missions||[]).filter(ms=>ms.id!==id);
+    await fbSaveConfig(c); toast('Missão removida');});
+  /* ===== Passe da Edição ===== */
+  if(q('passBasis'))q('passBasis').onchange=async()=>{
+    const c=currentConfig(); c.pass={basis:q('passBasis').value, tiers:(c.pass&&c.pass.tiers)||[]};
+    await fbSaveConfig(c); SFX.tick(); toast('Base do passe atualizada');};
+  if(q('btnAddTier'))q('btnAddTier').onclick=async()=>{
+    const pts=parseInt(q('ptPts').value,10), reward=q('ptReward').value.trim();
+    if(!Number.isFinite(pts)||pts<1) return toast('Informe os pontos do nível');
+    const tier={id:'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), pts, reward};
+    const c=currentConfig(); const pass=c.pass||{basis:'combined',tiers:[]};
+    pass.tiers=[...(pass.tiers||[]), tier]; c.pass=pass;
+    await fbSaveConfig(c); SFX.success(); toast('Nível de '+fmt(pts)+' pts adicionado 🎟️');};
+  document.querySelectorAll('[data-tierdel]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.tierdel; const c=currentConfig(); const pass=c.pass||{basis:'combined',tiers:[]};
+    pass.tiers=(pass.tiers||[]).filter(t=>t.id!==id); c.pass=pass;
+    await fbSaveConfig(c); toast('Nível removido');});
+  /* ===== Boss coletivo ===== */
+  if(q('btnSaveBoss'))q('btnSaveBoss').onclick=async()=>{
+    const label=q('boLabel').value.trim();
+    const [ttype,tid]=(q('boTarget').value||'all:').split(':');
+    const goal=Math.max(1,parseInt(q('boGoal').value||'1',10));
+    const unit=q('boUnit').value.trim(), reward=q('boReward').value.trim();
+    if(label.length<2) return toast('Dê um nome ao desafio');
+    const boss={label, target:{type:ttype,id:tid||''}, goal, active:true};
+    if(unit)boss.unit=unit; if(reward)boss.reward=reward;
+    const c=currentConfig(); c.boss=boss;
+    await fbSaveConfig(c); SFX.success(); toast('Desafio "'+label+'" no ar 👹');};
+  if(q('btnDelBoss'))q('btnDelBoss').onclick=async()=>{
+    if(!(await askConfirm('Remover o desafio coletivo?')))return;
+    const c=currentConfig(); c.boss=null;
+    await fbSaveConfig(c); toast('Desafio removido');};
   document.querySelectorAll('[data-qtoggle]').forEach(b=>b.onclick=async()=>{
     const id=b.dataset.qtoggle;
     const set=new Set(S.usedQuestions||[]);
