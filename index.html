@@ -259,6 +259,14 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-of
 .mvpcard b{color:var(--leaf)} .mvpcard span{color:var(--muted);font-weight:800;font-size:12px}
 .rrow.mvpseed{box-shadow:inset 4px 0 0 var(--leaf)}
 .mvptag{margin-left:5px;font-size:12.5px;vertical-align:middle;filter:drop-shadow(0 0 4px rgba(245,197,66,.6))}
+.ptabs{display:flex;gap:6px;margin:12px 0}
+.ptab{flex:1;padding:11px 6px;border:1px solid var(--line);background:var(--card2);color:var(--muted);
+  border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;transition:.18s;font-family:inherit}
+.ptab:hover{border-color:var(--leaf-dim)}
+.ptab.on{background:var(--leaf);color:var(--soil);border-color:var(--leaf)}
+.ptc{display:inline-block;min-width:16px;padding:0 4px;margin-left:3px;border-radius:99px;background:var(--gold);
+  color:var(--soil);font-size:10.5px;font-weight:900;line-height:16px;text-align:center;vertical-align:middle}
+.ptab.on .ptc{background:var(--soil);color:var(--leaf)}
 .streak{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:900;color:#ff8a3d;vertical-align:middle}
 .nm .ttl{font-size:11.5px;font-weight:800;color:var(--gold);letter-spacing:.2px;white-space:nowrap}
 #overtakefx{position:fixed;inset:0;z-index:190;pointer-events:none;display:flex;align-items:center;justify-content:center;
@@ -655,7 +663,7 @@ const FIREBASE_CONFIG =  {
 /* ↑↑↑ Enquanto estiver "COLE_AQUI", o app roda em modo demonstração (sem salvar). ↑↑↑ */
 
 /* ============ ESTADO ============ */
-let S=null, view='groups', editingId=null, logged=null;
+let S=null, view='groups', editingId=null, logged=null, panelTab='lancar';
 let DB=null, AUTH=null, currentUser=null, fbError=null;
 let cfg=null, entriesMap={};
 let hallMap=null;                      /* /hall — edições passadas (leitura pública) */
@@ -1880,24 +1888,41 @@ function vQuestionsJson(){
 }
 
 function vPanel(R){
+  const leaderNames=(S.leaders||[]).map(l=>l.name).filter(Boolean);
+  const mappedLeader = leaderForEmail(currentUser&&currentUser.email);
+  if(mappedLeader) logged = mappedLeader;
+  else if(!logged || !leaderNames.includes(logged)) logged = leaderNames[0] || (currentUser&&currentUser.email) || 'Líder';
+  /* cabeçalho de identidade — sempre visível */
+  let h='<div class="card"><div class="who"><span class="wn">🛡️ '+esc(currentUser?currentUser.email:'líder')+'</span>'+
+    '<button class="btn ghost sm" id="btnLogout">Sair</button></div>';
+  if(mappedLeader){
+    h+='<div class="field" style="margin-bottom:0"><label>Lançando como</label><div class="preview" style="color:var(--leaf)">🛡️ '+esc(mappedLeader)+'</div></div>';
+  } else if(leaderNames.length){
+    h+='<div class="field" style="margin-bottom:0"><label>Lançando como (aparece no histórico)</label><select id="fWho">'+
+      leaderNames.map(n=>'<option'+(n===logged?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></div>';
+  }
+  h+='</div>';
+  const _ptabs=[['lancar','➕ Lançar'],['jogo','🎮 Jogo'],['gerenciar','⚙️ Gerenciar']];
+  h+='<div class="ptabs">'+_ptabs.map(t=>{
+    let c=0;
+    if(t[0]==='jogo') c=(S.bonusRules||[]).filter(r=>['active','scheduled'].includes(bonusStatus(r))).length
+      +(S.missions||[]).filter(m=>['active','scheduled'].includes(missionStatus(m))).length
+      +((S.boss&&S.boss.active)?1:0);
+    return '<button class="ptab'+(panelTab===t[0]?' on':'')+'" data-ptab="'+t[0]+'">'+t[1]+(c?' <span class="ptc">'+c+'</span>':'')+'</button>';
+  }).join('')+'</div>';
+  if(panelTab==='jogo') h+=vPanelJogo();
+  else if(panelTab==='gerenciar') h+=vPanelGerenciar(R);
+  else h+=vPanelLancar(R);
+  return h;
+}
+function vPanelLancar(R){
   const e=editingId?S.entries.find(x=>x.id===editingId):null;
   let selAct=e?e.act:(document.getElementById('fAct')?.value||'culto_sem');
   let a=ACT[selAct];
   if(!a){ selAct='culto_sem'; a=ACT[selAct]; }
   const needMember = a.s!=='group';
-  const leaderNames=(S.leaders||[]).map(l=>l.name).filter(Boolean);
-  const mappedLeader = leaderForEmail(currentUser&&currentUser.email);
-  if(mappedLeader) logged = mappedLeader;
-  else if(!logged || !leaderNames.includes(logged)) logged = leaderNames[0] || (currentUser&&currentUser.email) || 'Líder';
-  let h='<div class="card"><div class="who"><span class="wn">🛡️ '+esc(currentUser?currentUser.email:'líder')+'</span>'+
-    '<button class="btn ghost sm" id="btnLogout">Sair</button></div>';
-  if(mappedLeader){
-    h+='<div class="field"><label>Lançando como</label><div class="preview" style="color:var(--leaf)">🛡️ '+esc(mappedLeader)+'</div></div>';
-  } else if(leaderNames.length){
-    h+='<div class="field"><label>Lançando como (aparece no histórico)</label><select id="fWho">'+
-      leaderNames.map(n=>'<option'+(n===logged?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></div>';
-  }
-  h+='<h2>'+(e?'Corrigir lançamento':'Lançar pontos')+'</h2>';
+  let h='<div class="card"><h2>'+(e?'Corrigir lançamento':'Lançar pontos')+'</h2>';
+  if(!e) h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Registre pontos aqui; a chamada em lote e o histórico ficam logo abaixo.</p>';
   h+='<div class="field"><label>Atividade</label><select id="fAct">'+actOptions()+'</select></div>';
   if(needMember){
     h+='<div class="field"><label>Seed (adolescente)</label><select id="fMem">'+
@@ -1955,26 +1980,11 @@ function vPanel(R){
     else if(S.entries.length>40) h+='<p class="hint" style="margin-top:8px">Mostrando os 40 mais recentes. Use a busca para achar os demais.</p>';
   }
   h+='</div>';
-
-  /* banco de perguntas (restrito à liderança) */
-  h+=vQuestions();
-
-  /* gestão */
-  h+='<div class="card"><h2>Gerenciar</h2>';
-  h+='<details><summary>📖 Banco de perguntas</summary><div style="margin-top:8px">'+vQuestionsPublish()+'</div></details>';
-  h+='<details><summary>🎯 Atividades personalizadas ('+S.customActs.length+')</summary>';
-  if(!S.customActs.length) h+='<p class="hint" style="margin-top:6px">As atividades do regulamento já estão no catálogo. Aqui você cria as extras — elas entram no seletor de lançamento e na Tabela na hora.</p>';
-  h+=S.customActs.map(a=>{const cnt=S.entries.filter(en=>en.act===a.id).length;
-    const sc=a.s==='both'?'Seed + grupo':a.s==='group'?'Só grupo':'Só Seed';
-    return '<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
-      '<div><span class="t1">'+esc(a.n)+'</span><div class="t2">'+sc+' · '+(a.v<0?'−':'+')+fmt(Math.abs(a.v))+(a.unit?'/'+esc(a.unit):'')+(cnt?' · '+cnt+' lançamento(s)':'')+'</div></div>'+
-      '<button class="btn red sm" data-delact="'+a.id+'">Remover</button></div></div>';}).join('');
-  h+='<div class="field" style="margin-top:10px"><label>Nome da atividade</label><input id="naName" maxlength="60" placeholder="Ex.: Decorar o versículo da semana"></div>'+
-    '<div class="row2"><div class="field"><label>Pontos</label><input id="naVal" type="number" placeholder="Ex.: 50 (ou -30)"></div>'+
-    '<div class="field"><label>Quem recebe</label><select id="naScope"><option value="both">Seed + grupo</option><option value="group">Só grupo</option><option value="ind">Só o Seed</option></select></div></div>'+
-    '<div class="field"><label>Unidade (opcional)</label><input id="naUnit" maxlength="10" placeholder="Ex.: kg, peça, R$"></div>'+
-    '<button class="btn gold" id="btnAddAct">Cadastrar atividade</button>'+
-    '<p class="hint" style="margin-top:8px">Pontos negativos viram penalidade. Ao definir uma unidade, o líder informa a quantidade no lançamento. Remover uma atividade que já tem lançamentos faz esses pontos deixarem de contar.</p></details>';
+  return h;
+}
+function vPanelJogo(){
+  let h='<div class="card"><h2>🎮 Jogo</h2>';
+  h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Eventos e campanhas que aparecem para os Seeds na aba Grupos: bônus, missões, passe e desafio coletivo.</p>';
   h+='<details><summary>⚡ Bônus / Multiplicadores ('+(S.bonusRules||[]).length+')</summary>';
   h+='<p class="hint" style="margin-top:6px">Regras que multiplicam os pontos de uma categoria, de uma atividade ou de tudo — para incentivar, por ex., oportunidades no culto. Deixe as datas em branco para ligar/desligar na hora; ou agende um início e fim.</p>';
   if(!(S.bonusRules||[]).length) h+='<p class="hint" style="margin-top:6px">Nenhuma regra de bônus ainda.</p>';
@@ -2046,18 +2056,13 @@ function vPanel(R){
     '<div class="field"><label>Recompensa</label><input id="boReward" maxlength="50" value="'+esc(_bs.reward||'')+'" placeholder="Ex.: sorvete pra todos"></div></div>'+
     '<div class="row2"><button class="btn gold" id="btnSaveBoss" style="margin-top:0">'+(S.boss&&S.boss.active?'Salvar desafio':'Ativar desafio')+'</button>'+
     (S.boss?'<button class="btn red" id="btnDelBoss" style="margin-top:0">Remover</button>':'<span></span>')+'</div></details>';
-  h+='<details><summary>💾 Backup / Migração</summary>'+
-    '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
-    '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
-    '<button class="btn gold" id="btnJson" style="margin-top:0">⬇️ Backup (.json)</button></div>'+
-    '<details style="margin-top:10px"><summary>⬆️ Importar backup para o Firebase</summary>'+
-    '<p class="hint" style="margin-top:6px">Cole o conteúdo de um backup .json (o do app antigo serve). Isso <b>substitui</b> os dados no Firebase — use na migração inicial ou em recuperação.</p>'+
-    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:16px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
-    '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
-
-    '<button class="btn ghost" id="btnInit" style="margin-top:10px">Inicializar com os 18 participantes padrão</button>'+
-    '<p class="hint" style="margin-top:8px">💡 Como os dados ficam no Firebase, o ranking já é público e ao vivo — os Seeds veem sem login.</p></details>';
+  h+='</div>';
+  return h;
+}
+function vPanelGerenciar(R){
   const _ed=edInfo();
+  let h='<div class="card"><h2>⚙️ Gerenciar</h2>';
+  h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Estrutura da gincana e dados. O uso do dia a dia fica em Lançar e Jogo.</p>';
   h+='<details><summary>🎪 Edição ('+esc(_ed.name)+')</summary>'+
     '<p class="hint" style="margin-top:6px">Nome, tema e datas aparecem no cabeçalho, na contagem regressiva e no Hall da Fama.</p>'+
     '<div class="field"><label>Nome</label><input id="edName" value="'+esc(_ed.name)+'" placeholder="Ex.: Edição 2"></div>'+
@@ -2068,16 +2073,20 @@ function vPanel(R){
     '<details style="margin-top:10px"><summary>🚀 Iniciar nova edição</summary>'+
     '<p class="hint" style="margin-top:6px">Preencha acima o nome/tema/datas da <b>nova</b> edição e toque abaixo. A atual é arquivada no Hall da Fama, os lançamentos são <b>apagados</b> (placar zera) e as perguntas marcadas são limpas. Participantes, grupos e atividades continuam.</p>'+
     '<button class="btn red" id="btnNewEd">Arquivar atual e iniciar nova edição</button></details></details>';
-  h+='<details><summary>🏛️ Hall da Fama / Encerrar edição</summary>'+
-    '<p class="hint" style="margin-top:6px">Ao final da edição, registre o resultado no <b>Hall da Fama</b> — ele aparece na aba Grupos para todos, e fica guardado para as próximas edições. Isso <b>não apaga</b> nenhum dado.</p>'+
-    '<button class="btn gold" id="btnCloseEd">🏁 Registrar resultado da edição</button></details>';
-  h+='<details><summary>👥 Líderes ('+S.leaders.length+')</summary>'+
-    '<p class="hint" style="margin-top:6px">Estes nomes aparecem no histórico (quem lançou). O <b>acesso</b> em si é controlado pelo e-mail/senha do Firebase — para dar ou tirar acesso, use a aba Authentication no console do Firebase.</p>'+
-    S.leaders.map((l,i)=>'<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center">'+
-      '<span class="t1">'+esc(l.name)+'</span>'+
-      (S.leaders.length>1?'<button class="btn red sm" data-delleader="'+l.id+'">Remover</button>':'')+'</div></div>').join('')+
-    '<div class="field" style="margin-top:10px"><input id="nlName" placeholder="Nome do líder (para o histórico)"></div>'+
-    '<button class="btn gold" id="btnAddLeader">Adicionar nome de líder</button></details>';
+  h+='<details><summary>📖 Banco de perguntas</summary><div style="margin-top:8px">'+vQuestionsPublish()+'</div></details>';
+  h+='<details><summary>🎯 Atividades personalizadas ('+S.customActs.length+')</summary>';
+  if(!S.customActs.length) h+='<p class="hint" style="margin-top:6px">As atividades do regulamento já estão no catálogo. Aqui você cria as extras — elas entram no seletor de lançamento e na Tabela na hora.</p>';
+  h+=S.customActs.map(a=>{const cnt=S.entries.filter(en=>en.act===a.id).length;
+    const sc=a.s==='both'?'Seed + grupo':a.s==='group'?'Só grupo':'Só Seed';
+    return '<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+      '<div><span class="t1">'+esc(a.n)+'</span><div class="t2">'+sc+' · '+(a.v<0?'−':'+')+fmt(Math.abs(a.v))+(a.unit?'/'+esc(a.unit):'')+(cnt?' · '+cnt+' lançamento(s)':'')+'</div></div>'+
+      '<button class="btn red sm" data-delact="'+a.id+'">Remover</button></div></div>';}).join('');
+  h+='<div class="field" style="margin-top:10px"><label>Nome da atividade</label><input id="naName" maxlength="60" placeholder="Ex.: Decorar o versículo da semana"></div>'+
+    '<div class="row2"><div class="field"><label>Pontos</label><input id="naVal" type="number" placeholder="Ex.: 50 (ou -30)"></div>'+
+    '<div class="field"><label>Quem recebe</label><select id="naScope"><option value="both">Seed + grupo</option><option value="group">Só grupo</option><option value="ind">Só o Seed</option></select></div></div>'+
+    '<div class="field"><label>Unidade (opcional)</label><input id="naUnit" maxlength="10" placeholder="Ex.: kg, peça, R$"></div>'+
+    '<button class="btn gold" id="btnAddAct">Cadastrar atividade</button>'+
+    '<p class="hint" style="margin-top:8px">Pontos negativos viram penalidade. Ao definir uma unidade, o líder informa a quantidade no lançamento. Remover uma atividade que já tem lançamentos faz esses pontos deixarem de contar.</p></details>';
   h+='<details><summary>🌱 Seeds e grupos</summary>'+
     S.groups.map(g=>'<div style="margin-top:8px"><b style="color:'+g.color+'">'+esc(g.name)+'</b> '+
       S.members.filter(m=>m.g===g.id).map(m=>'<span class="pill">'+esc(m.n)+' <a href="#" data-delmem="'+m.id+'" style="color:var(--danger);text-decoration:none">✕</a></span>').join('')+'</div>').join('')+
@@ -2086,7 +2095,28 @@ function vPanel(R){
     '<button class="btn gold" id="btnAddMem">Adicionar Seed</button>'+
     '<div class="row2" style="margin-top:14px"><input id="rg1" value="'+esc(S.groups[0]?S.groups[0].name:'')+'"><input id="rg2" value="'+esc(S.groups[1]?S.groups[1].name:'')+'"></div>'+
     '<button class="btn ghost" id="btnRenameG">Renomear grupos</button></details>';
+  h+='<details><summary>👥 Líderes ('+S.leaders.length+')</summary>'+
+    '<p class="hint" style="margin-top:6px">Estes nomes aparecem no histórico (quem lançou). O <b>acesso</b> em si é controlado pelo e-mail/senha do Firebase — para dar ou tirar acesso, use a aba Authentication no console do Firebase.</p>'+
+    S.leaders.map((l,i)=>'<div class="hrow"><div style="display:flex;justify-content:space-between;align-items:center">'+
+      '<span class="t1">'+esc(l.name)+'</span>'+
+      (S.leaders.length>1?'<button class="btn red sm" data-delleader="'+l.id+'">Remover</button>':'')+'</div></div>').join('')+
+    '<div class="field" style="margin-top:10px"><input id="nlName" placeholder="Nome do líder (para o histórico)"></div>'+
+    '<button class="btn gold" id="btnAddLeader">Adicionar nome de líder</button></details>';
+  h+='<details><summary>🏛️ Hall da Fama / Encerrar edição</summary>'+
+    '<p class="hint" style="margin-top:6px">Ao final da edição, registre o resultado no <b>Hall da Fama</b> — ele aparece na aba Grupos para todos, e fica guardado para as próximas edições. Isso <b>não apaga</b> nenhum dado.</p>'+
+    '<button class="btn gold" id="btnCloseEd">🏁 Registrar resultado da edição</button></details>';
+  h+='<details><summary>💾 Backup / Migração</summary>'+
+    '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
+    '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
+    '<button class="btn gold" id="btnJson" style="margin-top:0">⬇️ Backup (.json)</button></div>'+
+    '<details style="margin-top:10px"><summary>⬆️ Importar backup para o Firebase</summary>'+
+    '<p class="hint" style="margin-top:6px">Cole o conteúdo de um backup .json (o do app antigo serve). Isso <b>substitui</b> os dados no Firebase — use na migração inicial ou em recuperação.</p>'+
+    '<textarea id="restoreTxt" style="height:110px;font-family:monospace;font-size:16px;margin-top:6px" placeholder="Cole o conteúdo do arquivo .json aqui"></textarea>'+
+    '<button class="btn red" id="btnRestore">Importar (substituir tudo)</button></details>'+
+    '<button class="btn ghost" id="btnInit" style="margin-top:10px">Inicializar com os 18 participantes padrão</button>'+
+    '<p class="hint" style="margin-top:8px">💡 Como os dados ficam no Firebase, o ranking já é público e ao vivo — os Seeds veem sem login.</p></details>';
   h+='<p class="hint" style="margin-top:12px">⚠️ Os dados são públicos para leitura: todos que abrirem o link veem o ranking ao vivo. Só quem está logado consegue lançar e corrigir. Excluir um lançamento não pode ser desfeito.</p></div>';
+  h+=vQuestions();
   return h;
 }
 
@@ -2472,6 +2502,7 @@ function updatePrev(){
 
 function bind(){
   document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{SFX.tick();view=t.dataset.v;editingId=null;render();});
+  document.querySelectorAll('[data-ptab]').forEach(b=>b.onclick=()=>{SFX.tick();panelTab=b.dataset.ptab;editingId=null;render();});
   const q=id=>document.getElementById(id);
   if(q('btnLogin'))q('btnLogin').onclick=async()=>{
     if(!AUTH) return toast('Firebase não configurado');
