@@ -257,6 +257,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--leaf);outline-of
 .mvpcard{background:linear-gradient(90deg,rgba(139,212,80,.18),rgba(139,212,80,.04));border:1px solid var(--leaf);
   border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13.5px;color:var(--cream);font-weight:700}
 .mvpcard b{color:var(--leaf)} .mvpcard span{color:var(--muted);font-weight:800;font-size:12px}
+.rrow.mvpseed{box-shadow:inset 4px 0 0 var(--leaf)}
+.mvptag{margin-left:5px;font-size:12.5px;vertical-align:middle;filter:drop-shadow(0 0 4px rgba(245,197,66,.6))}
 .streak{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:900;color:#ff8a3d;vertical-align:middle}
 .nm .ttl{font-size:11.5px;font-weight:800;color:var(--gold);letter-spacing:.2px;white-space:nowrap}
 #overtakefx{position:fixed;inset:0;z-index:190;pointer-events:none;display:flex;align-items:center;justify-content:center;
@@ -1487,12 +1489,12 @@ function vInd(R){
         ? '<div class="lvl" style="color:var(--gold)">🟰 Empate com '+esc(ms[i-1].n)+' — pergunta bíblica extra</div>'
         : (t.by ? '<div class="lvl" style="color:var(--gold)">⚖️ Atrás de '+esc(ms[i-1].n)+' por: '+t.by+'</div>' : '');
     }
-    const bds=badgesFor(m.id,T), title=topTitle(m.id,T);
+    const bds=badgesFor(m.id,T), title=topTitle(m.id,T), isMvp=mvp&&m.id===mvp.member.id;
     const li=LEVELS.indexOf(L), near=N&&pct>=80;
-    h+='<div class="rrow" style="--i:'+i+';cursor:pointer" data-hist="'+m.id+'" role="button" tabindex="0" title="Ver histórico de '+esc(m.n)+'"><div class="pos">'+(i+1)+'º</div><div class="plant lv'+li+'"><span>'+L.e+'</span></div>'+
+    h+='<div class="rrow'+(isMvp?' mvpseed':'')+'" style="--i:'+i+';cursor:pointer" data-hist="'+m.id+'" role="button" tabindex="0" title="Ver histórico de '+esc(m.n)+'"><div class="pos">'+(i+1)+'º</div><div class="plant lv'+li+'"><span>'+L.e+'</span></div>'+
     '<div><div class="nm"><span class="gdot" style="background:'+(g?g.color:'#888')+'"></span>'+esc(m.n)+
     (title?'<span class="ttl"> · '+esc(title)+'</span>':'')+
-    bds.map(b=>'<span class="bdg" title="'+esc(b.n)+'">'+b.e+'</span>').join('')+streakTag(m.id)+'</div>'+
+    bds.map(b=>'<span class="bdg" title="'+esc(b.n)+'">'+b.e+'</span>').join('')+streakTag(m.id)+(isMvp?'<span class="mvptag" title="Seed da semana">🌟</span>':'')+'</div>'+
     '<div class="lvl">'+L.n+(N?' · faltam '+fmt(N.min-p)+' p/ '+N.e+(near?' <b style="color:var(--gold)">🔥 quase lá!</b>':''):' · nível máximo!')+'</div>'+
     '<div class="xp'+(near?' near':'')+'"><i data-xpmid="'+m.id+'" data-pct="'+pct+'" style="width:'+pct+'%"></i></div>'+tieNote+'</div>'+
     '<div class="pts" data-ptsmid="'+m.id+'" data-k="row'+m.id+'">'+fmt(p)+'</div></div>';
