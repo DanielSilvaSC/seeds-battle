@@ -563,16 +563,22 @@ function edLabel(){
   const e=edInfo(), f=d=>d?d.slice(8,10)+'/'+d.slice(5,7):'';
   return e.name+(e.theme?' · '+e.theme:'')+(e.start&&e.end?' · '+f(e.start)+' → '+f(e.end):'');
 }
+/* dias de calendário até uma data YYYY-MM-DD (hoje=0, amanhã=1). Evita o erro de
+   arredondar pra cima por causa da hora do dia (ex.: mostrar "2 dias" na véspera). */
+function daysUntil(dateStr){
+  const t=new Date(); t.setHours(0,0,0,0);
+  return Math.round((new Date(dateStr+'T00:00:00')-t)/86400000);
+}
 function countdownText(){
-  const end=new Date(edInfo().end+'T23:59:59');
-  const days=Math.ceil((end-Date.now())/86400000);
+  const days=daysUntil(edInfo().end);
   if(days<0) return '🏁 Edição encerrada';
   if(days===0) return '⏰ ÚLTIMO DIA!';
-  return '⏰ Faltam '+days+' dia'+(days>1?'s':'')+' de batalha';
+  if(days===1) return '⏰ Falta 1 dia de batalha';
+  return '⏰ Faltam '+days+' dias de batalha';
 }
 function updCountdown(){
   const el=document.getElementById('countdown'); if(!el) return;
-  const days=Math.ceil((new Date(edInfo().end+'T23:59:59')-Date.now())/86400000);
+  const days=daysUntil(edInfo().end);
   el.textContent=countdownText();
   el.classList.toggle('urgent',days>=0&&days<=7);
   el.classList.toggle('over',days<0);
@@ -947,10 +953,7 @@ function vBonusBanner(){
    hoje → "É HOJEEEE", amanhã → "Amanhã o grande dia", antes → contagem; some depois. */
 const FINALE_ON = true;
 const FINALE_DATE = '2026-08-22';
-function finaleDaysLeft(){
-  const t=new Date(); t.setHours(0,0,0,0);
-  return Math.round((new Date(FINALE_DATE+'T00:00:00')-t)/86400000);
-}
+function finaleDaysLeft(){ return daysUntil(FINALE_DATE); }
 function vFinaleBanner(){
   if(!FINALE_ON) return '';
   const n=finaleDaysLeft();
