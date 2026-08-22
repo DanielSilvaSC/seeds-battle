@@ -765,7 +765,7 @@ function ensureLeaderIds(){ let ch=false; (S.leaders||[]).forEach(l=>{ if(!l.id)
 function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], missions:S.missions||[], pass:S.pass||{basis:'combined',tiers:[]}, boss:S.boss||null, live:S.live||null, rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
 /* Gincana ao vivo: quando ligado, o público para de ver o placar (🔒 em segredo).
    Auto-desliga após 3h por segurança (o público reavalia pelo próprio relógio). */
-const LIVE_MAX_MS=3*60*60*1000;
+const LIVE_MAX_MS=6*60*60*1000;
 let _liveOffPending=false;
 function liveInfo(){ return (S&&S.live)||null; }
 function isLive(){ const l=liveInfo(); return !!(l&&l.on&&(!l.since||(Date.now()-l.since)<LIVE_MAX_MS)); }
@@ -2153,7 +2153,7 @@ function vPanelLancar(R){
 function vPanelJogo(){
   const live=isLive(), l=liveInfo();
   let h='<div class="card" style="border-color:'+(live?'var(--danger)':'var(--line)')+'"><h2>🔴 Gincana ao vivo</h2>';
-  h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Quando ligado, o público (Seeds e visitantes) para de ver o placar — aparece "🔒 Resultados em segredo". A liderança continua com tudo. Desliga sozinho após 3h por segurança.</p>';
+  h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Quando ligado, o público (Seeds e visitantes) para de ver o placar — aparece "🔒 Resultados em segredo". A liderança continua com tudo. Desliga sozinho após 6h por segurança.</p>';
   if(live){ const mins=l&&l.since?Math.floor((Date.now()-l.since)/60000):0;
     h+='<div class="preview" style="color:var(--danger);font-weight:800;margin-bottom:8px">🔴 No ar'+(mins?' há '+mins+' min':'')+' — público bloqueado</div>'; }
   h+='<button class="btn '+(live?'red':'go')+'" id="btnLiveToggle" style="margin-top:0">'+(live?'⏹️ Encerrar e liberar resultados':'🔴 Iniciar gincana ao vivo')+'</button>';
