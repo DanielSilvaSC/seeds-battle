@@ -436,6 +436,15 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 .tl-timer.low{color:var(--danger);animation:cdPulse .8s ease-in-out infinite}
 .tl-ans{margin-top:16px;font-size:clamp(15px,2.6vw,22px);color:var(--leaf);font-weight:800;line-height:1.5}
 .tl-ref{color:var(--muted);font-size:13px;font-weight:700;margin-top:6px}
+.tl-opts{margin-top:16px;display:grid;gap:10px;text-align:left}
+.tl-opt{display:flex;gap:12px;align-items:center;background:var(--soil);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;font-size:clamp(14px,2.4vw,20px);font-weight:800;line-height:1.35;transition:.3s}
+.tl-opt .ol{flex:none;width:32px;height:32px;border-radius:50%;background:var(--gold);color:#241c06;font-family:'Bungee';
+  display:flex;align-items:center;justify-content:center;font-size:15px}
+.tl-opt.correct{border-color:var(--leaf);background:rgba(139,212,80,.16);box-shadow:0 0 14px -3px rgba(139,212,80,.5)}
+.tl-opt.correct .ol{background:var(--leaf);color:#0e1c07}
+.tl-opt.correct::after{content:'✅';margin-left:auto;font-size:20px}
+.qopts{font-size:13px;line-height:1.7;color:var(--cream);margin-bottom:6px}
 .tl-pod{margin-top:26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}
 .tl-pd{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 10px;opacity:.15;transition:.5s}
 .tl-pd.show{opacity:1}
@@ -563,33 +572,22 @@ function edLabel(){
   const e=edInfo(), f=d=>d?d.slice(8,10)+'/'+d.slice(5,7):'';
   return e.name+(e.theme?' · '+e.theme:'')+(e.start&&e.end?' · '+f(e.start)+' → '+f(e.end):'');
 }
-/* dias de calendário até uma data YYYY-MM-DD (hoje=0, amanhã=1). Evita o erro de
-   arredondar pra cima por causa da hora do dia (ex.: mostrar "2 dias" na véspera). */
-function daysUntil(dateStr){
-  const t=new Date(); t.setHours(0,0,0,0);
-  return Math.round((new Date(dateStr+'T00:00:00')-t)/86400000);
-}
 function countdownText(){
-  const days=daysUntil(edInfo().end);
+  const end=new Date(edInfo().end+'T23:59:59');
+  const days=Math.ceil((end-Date.now())/86400000);
   if(days<0) return '🏁 Edição encerrada';
   if(days===0) return '⏰ ÚLTIMO DIA!';
-  if(days===1) return '⏰ Falta 1 dia de batalha';
-  return '⏰ Faltam '+days+' dias de batalha';
+  return '⏰ Faltam '+days+' dia'+(days>1?'s':'')+' de batalha';
 }
 function updCountdown(){
   const el=document.getElementById('countdown'); if(!el) return;
-  const days=daysUntil(edInfo().end);
+  const days=Math.ceil((new Date(edInfo().end+'T23:59:59')-Date.now())/86400000);
   el.textContent=countdownText();
   el.classList.toggle('urgent',days>=0&&days<=7);
   el.classList.toggle('over',days<0);
   const dt=document.querySelector('header .dates'); if(dt) dt.textContent=edLabel();
   document.title='Seeds Battle · '+edInfo().name;
-  /* virada de dia: re-renderiza pra o banner de encerramento trocar sozinho (amanhã→hoje) */
-  const fd=finaleDaysLeft();
-  if(_lastFinaleDays!==null && _lastFinaleDays!==fd && typeof render==='function') render();
-  _lastFinaleDays=fd;
 }
-let _lastFinaleDays=null;
 
 /* ============ CONQUISTAS (badges) — calculadas dos lançamentos ============ */
 const BADGES=[
@@ -953,7 +951,10 @@ function vBonusBanner(){
    hoje → "É HOJEEEE", amanhã → "Amanhã o grande dia", antes → contagem; some depois. */
 const FINALE_ON = true;
 const FINALE_DATE = '2026-08-22';
-function finaleDaysLeft(){ return daysUntil(FINALE_DATE); }
+function finaleDaysLeft(){
+  const t=new Date(); t.setHours(0,0,0,0);
+  return Math.round((new Date(FINALE_DATE+'T00:00:00')-t)/86400000);
+}
 function vFinaleBanner(){
   if(!FINALE_ON) return '';
   const n=finaleDaysLeft();
@@ -1646,6 +1647,14 @@ function tlQuiz(){
   const it=TQ.item, sec=TQ.sec;
   let h='<div class="tl-quiz"><span class="tl-qtag">'+esc(sec.name)+(sec.pts?' · '+esc(sec.pts):'')+'</span>';
   h+='<div class="tl-qq">'+esc(it.q)+'</div>';
+  /* alternativas (múltipla escolha): ordem embaralhada em TQ.order; a correta só destaca ao revelar */
+  if(Array.isArray(it.opts)&&it.opts.length&&Array.isArray(TQ.order)){
+    const L=['A','B','C','D','E','F'];
+    h+='<div class="tl-opts">'+TQ.order.map((oi,pos)=>{
+      const isC=TQ.phase!=='q'&&oi===it.correct;
+      return '<div class="tl-opt'+(isC?' correct':'')+'"><span class="ol">'+L[pos]+'</span><span>'+esc(it.opts[oi])+'</span></div>';
+    }).join('')+'</div>';
+  }
   if(TQ.phase==='q'){
     h+='<div class="tl-timer'+(TQ.tleft<=5?' low':'')+'" id="tlTimer">'+(TQ.tleft>0?TQ.tleft:'⏰')+'</div>';
     h+='<div class="tl-btns"><button class="btn gold sm" id="tlReveal">👁️ Revelar resposta</button>'+
@@ -1699,7 +1708,14 @@ function startQuiz(secId){
   const used=new Set(S.usedQuestions||[]);
   const pool=(sec.items||[]).filter(it=>it&&!used.has(it.id));
   if(!pool.length) return toast('Sem perguntas restantes nessa seção');
-  TQ={phase:'q', sec, item:pool[Math.floor(Math.random()*pool.length)], tleft:30};
+  const it=pool[Math.floor(Math.random()*pool.length)];
+  /* se tiver alternativas, embaralha a ordem de exibição (a correta some no meio) */
+  let order=null;
+  if(Array.isArray(it.opts)&&it.opts.length){
+    order=it.opts.map((_,i)=>i);
+    for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=order[i]; order[i]=order[j]; order[j]=t; }
+  }
+  TQ={phase:'q', sec, item:it, tleft:30, order};
   SFX.success();
   stopQuizTimer();
   quizTimerH=setInterval(()=>{
@@ -1898,6 +1914,7 @@ function vQuestions(){
           '<button class="btn '+(on?'gold':'ghost')+' sm" data-qtoggle="'+it.id+'" style="white-space:nowrap">'+(on?'Desmarcar':'Marcar')+'</button>'+
         '</div>'+
         '<details class="qansd"><summary>Ver resposta</summary>'+
+          (Array.isArray(it.opts)&&it.opts.length?'<div class="qopts">'+it.opts.map((o,i)=>(i===it.correct?'✅ ':'▫️ ')+esc(o)).join('<br>')+'</div>':'')+
           '<div class="qans">Resposta: '+esc(it.a)+'</div>'+
           '<div class="qref">'+esc(it.r)+'</div>'+
         '</details>'+
@@ -1925,7 +1942,14 @@ function vQuestionsForm(){
     '<div class="field"><label>Seção</label><select id="qfSec">'+opts+'</select></div>'+
     '<div class="field"><label>Código (opcional, ex.: S9, F19)</label><input id="qfCod" placeholder="Em branco = gera automático"></div>'+
     '<div class="field"><label>Pergunta</label><textarea id="qfQ" rows="2" style="width:100%;box-sizing:border-box"></textarea></div>'+
-    '<div class="field"><label>Resposta</label><textarea id="qfA" rows="3" style="width:100%;box-sizing:border-box"></textarea></div>'+
+    '<div class="field"><label>Resposta / justificativa</label><textarea id="qfA" rows="3" style="width:100%;box-sizing:border-box"></textarea></div>'+
+    '<div class="field"><label>Alternativas (opcional — preencha de A p/ baixo; em branco = pergunta aberta)</label>'+
+      '<input id="qfO1" placeholder="Alternativa A">'+
+      '<input id="qfO2" placeholder="Alternativa B" style="margin-top:6px">'+
+      '<input id="qfO3" placeholder="Alternativa C" style="margin-top:6px">'+
+      '<input id="qfO4" placeholder="Alternativa D" style="margin-top:6px"></div>'+
+    '<div class="field"><label>Qual alternativa é a correta?</label><select id="qfCorrect">'+
+      '<option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>'+
     '<div class="field"><label>Referência (ex.: Lição 3, Mt 13.8)</label><input id="qfR"></div>'+
     '<button class="btn go" id="btnQAdd" style="margin-top:4px">Adicionar e publicar</button>'+
     '</details>';
@@ -2755,6 +2779,12 @@ function bind(){
     const meta=QSECTIONS_META.find(m=>m.id===secId);
     const pref=(meta&&meta.pref)||(secId[0]||'Q').toUpperCase();
     const item={ id:nid, c:cod||(pref+(sec.items.length+1)), q:perg, a:resp, r:ref };
+    const opts=['qfO1','qfO2','qfO3','qfO4'].map(id=>(q(id)&&q(id).value||'').trim()).filter(Boolean);
+    if(opts.length>=2){
+      let correct=parseInt((q('qfCorrect')&&q('qfCorrect').value)||'0',10);
+      if(!(correct>=0&&correct<opts.length)) correct=0;
+      item.opts=opts; item.correct=correct;
+    }
     if(!(await askConfirm('Adicionar a pergunta na seção "'+(sec.name||sec.id)+'" e publicar no Firebase?')))return;
     sec.items.push(item);
     await fbPublishQuestions(bank);};
