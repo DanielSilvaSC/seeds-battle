@@ -450,6 +450,25 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 .tl-opt.tv .ol{background:var(--leaf);color:#0e1c07}
 .tl-opt.tf .ol{background:var(--danger);color:#2a0d08}
 @media(max-width:460px){.tl-opts.vf{grid-template-columns:1fr}}
+/* ===== animações do telão ===== */
+@keyframes tlIn{0%{opacity:0;transform:translateY(22px) scale(.95)}100%{opacity:1;transform:none}}
+@keyframes tlGlow{0%,100%{box-shadow:0 0 0 0 rgba(245,197,66,0)}50%{box-shadow:0 0 34px -6px rgba(245,197,66,.55)}}
+@keyframes tlPop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes tlOptIn{0%{opacity:0;transform:translateX(-14px)}100%{opacity:1;transform:none}}
+@keyframes tlCorrect{0%{transform:scale(1)}30%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes tlBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.tl-quiz{animation:tlIn .5s cubic-bezier(.2,.9,.25,1)}
+.tl-quiz.asking{animation:tlIn .5s cubic-bezier(.2,.9,.25,1), tlGlow 2.2s ease-in-out .5s infinite}
+.tl-quiz .tl-qtag{animation:tlPop .5s ease}
+.tl-quiz .tl-qq{animation:tlIn .5s ease .08s backwards}
+.tl-quiz .tl-timer{animation:tlBeat 1s ease-in-out infinite}
+.tl-quiz .tl-timer.low{animation:cdPulse .8s ease-in-out infinite}
+.tl-opts .tl-opt{animation:tlOptIn .45s ease backwards}
+.tl-opts .tl-opt:nth-child(1){animation-delay:.10s}
+.tl-opts .tl-opt:nth-child(2){animation-delay:.18s}
+.tl-opts .tl-opt:nth-child(3){animation-delay:.26s}
+.tl-opts .tl-opt:nth-child(4){animation-delay:.34s}
+.tl-opt.correct{animation:tlCorrect .55s ease}
 .qopts{font-size:13px;line-height:1.7;color:var(--cream);margin-bottom:6px}
 .tl-pod{margin-top:26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}
 .tl-pd{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 10px;opacity:.15;transition:.5s}
@@ -586,11 +605,7 @@ function countdownText(){
   return '⏰ Faltam '+days+' dia'+(days>1?'s':'')+' de batalha';
 }
 function updCountdown(){
-  const el=document.getElementById('countdown'); if(!el) return;
-  const days=Math.ceil((new Date(edInfo().end+'T23:59:59')-Date.now())/86400000);
-  el.textContent=countdownText();
-  el.classList.toggle('urgent',days>=0&&days<=7);
-  el.classList.toggle('over',days<0);
+  const el=document.getElementById('countdown'); if(el) el.style.display='none'; /* contador removido a pedido */
   const dt=document.querySelector('header .dates'); if(dt) dt.textContent=edLabel();
   document.title='Seeds Battle · '+edInfo().name;
 }
@@ -1619,7 +1634,6 @@ function renderTelao(){
   const w1=Math.round((R.grp[g1.id]||0)/(((R.grp[g1.id]||0)+(R.grp[g2.id]||0))||1)*100);
   let h='<button class="btn ghost sm tl-close" id="tlClose">✕ Sair</button><div class="tl-in">';
   h+='<div class="tl-logo display">SEEDS <span class="b">BATTLE</span></div>';
-  h+='<div class="tl-count">'+countdownText()+'</div>';
   h+='<div class="tl-vs">';
   [g1,g2].forEach((g,i)=>{
     h+='<div class="tl-g'+(g.id===leadId?' lead':'')+'"><div class="e">'+g.seed+'</div>'+
@@ -1659,7 +1673,7 @@ function tlPodium(R){
 function tlQuiz(){
   if(TQ.phase==='idle'||!TQ.item) return '';
   const it=TQ.item, sec=TQ.sec;
-  let h='<div class="tl-quiz"><span class="tl-qtag">'+esc(sec.name)+(sec.pts?' · '+esc(sec.pts):'')+'</span>';
+  let h='<div class="tl-quiz'+(TQ.phase==='q'?' asking':' revealed')+'"><span class="tl-qtag">'+esc(sec.name)+(sec.pts?' · '+esc(sec.pts):'')+'</span>';
   h+='<div class="tl-qq">'+esc(it.q)+'</div>';
   /* alternativas: ordem embaralhada em TQ.order; a correta só destaca ao revelar.
      V/F tem visual próprio (V verde / F vermelho) e não embaralha. */
@@ -1740,7 +1754,7 @@ function startQuiz(secId){
       for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=order[i]; order[i]=order[j]; order[j]=t; }
     }
   }
-  TQ={phase:'q', sec, item:it, tleft:30, order};
+  TQ={phase:'q', sec, item:it, tleft:40, order};
   SFX.success();
   stopQuizTimer();
   quizTimerH=setInterval(()=>{
@@ -1752,6 +1766,8 @@ function startQuiz(secId){
     if(TQ.tleft<=0){ stopQuizTimer(); SFX.penalty(); }
   },1000);
   renderTelao();
+  /* leva a tela até a pergunta, sem o líder precisar rolar */
+  setTimeout(()=>{ const qz=document.querySelector('.tl-quiz'); if(qz) qz.scrollIntoView({behavior:'smooth',block:'center'}); },60);
 }
 /* roleta de bônus ao vivo: sorteia ×1/×2/×3 (×1 comum, ×3 raro) para a resposta atual */
 function spinRoulette(){
