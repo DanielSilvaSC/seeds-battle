@@ -444,6 +444,12 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 .tl-opt.correct{border-color:var(--leaf);background:rgba(139,212,80,.16);box-shadow:0 0 14px -3px rgba(139,212,80,.5)}
 .tl-opt.correct .ol{background:var(--leaf);color:#0e1c07}
 .tl-opt.correct::after{content:'✅';margin-left:auto;font-size:20px}
+.tl-vftag{margin-top:16px;font-family:'Bungee';color:var(--gold);font-size:clamp(15px,3vw,24px)}
+.tl-opts.vf{grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.tl-opt.tlvf{justify-content:center;font-size:clamp(16px,3vw,24px)}
+.tl-opt.tv .ol{background:var(--leaf);color:#0e1c07}
+.tl-opt.tf .ol{background:var(--danger);color:#2a0d08}
+@media(max-width:460px){.tl-opts.vf{grid-template-columns:1fr}}
 .qopts{font-size:13px;line-height:1.7;color:var(--cream);margin-bottom:6px}
 .tl-pod{margin-top:26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}
 .tl-pd{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 10px;opacity:.15;transition:.5s}
@@ -788,6 +794,14 @@ function watchQuestions(u){
   if(unsubQuestions){ unsubQuestions(); unsubQuestions=null; }
   if(!u){ QUESTIONS=[]; questionsLoaded=false; return; }
   questionsLoaded=false;
+  /* TESTE LOCAL: em localhost, carrega o banco do arquivo perguntas-parabolas.json
+     (não lê nem grava no Firebase). Em produção, ignora e usa o Firebase normalmente. */
+  if(['localhost','127.0.0.1'].includes(location.hostname)){
+    fetch('perguntas-parabolas.json?_='+Date.now()).then(r=>r.json())
+      .then(arr=>{ QUESTIONS=normalizeQuestions(arr); questionsLoaded=true; render(); })
+      .catch(()=>{ QUESTIONS=[]; questionsLoaded=true; render(); });
+    return;
+  }
   unsubQuestions=DB.doc('app/questions').onSnapshot(
     s=>{ QUESTIONS=normalizeQuestions((s.data()||{}).sections); questionsLoaded=true; render(); },
     ()=>{ QUESTIONS=[]; questionsLoaded=true; render(); });
@@ -1647,13 +1661,22 @@ function tlQuiz(){
   const it=TQ.item, sec=TQ.sec;
   let h='<div class="tl-quiz"><span class="tl-qtag">'+esc(sec.name)+(sec.pts?' · '+esc(sec.pts):'')+'</span>';
   h+='<div class="tl-qq">'+esc(it.q)+'</div>';
-  /* alternativas (múltipla escolha): ordem embaralhada em TQ.order; a correta só destaca ao revelar */
+  /* alternativas: ordem embaralhada em TQ.order; a correta só destaca ao revelar.
+     V/F tem visual próprio (V verde / F vermelho) e não embaralha. */
   if(Array.isArray(it.opts)&&it.opts.length&&Array.isArray(TQ.order)){
-    const L=['A','B','C','D','E','F'];
-    h+='<div class="tl-opts">'+TQ.order.map((oi,pos)=>{
-      const isC=TQ.phase!=='q'&&oi===it.correct;
-      return '<div class="tl-opt'+(isC?' correct':'')+'"><span class="ol">'+L[pos]+'</span><span>'+esc(it.opts[oi])+'</span></div>';
-    }).join('')+'</div>';
+    if(it.vf){
+      h+='<div class="tl-vftag">🤔 Verdadeiro ou Falso?</div>';
+      h+='<div class="tl-opts vf">'+it.opts.map((o,i)=>{
+        const isC=TQ.phase!=='q'&&i===it.correct, isV=/^v/i.test(o);
+        return '<div class="tl-opt tlvf '+(isV?'tv':'tf')+(isC?' correct':'')+'"><span class="ol">'+(isV?'V':'F')+'</span><span>'+esc(o)+'</span></div>';
+      }).join('')+'</div>';
+    } else {
+      const L=['A','B','C','D','E','F'];
+      h+='<div class="tl-opts">'+TQ.order.map((oi,pos)=>{
+        const isC=TQ.phase!=='q'&&oi===it.correct;
+        return '<div class="tl-opt'+(isC?' correct':'')+'"><span class="ol">'+L[pos]+'</span><span>'+esc(it.opts[oi])+'</span></div>';
+      }).join('')+'</div>';
+    }
   }
   if(TQ.phase==='q'){
     h+='<div class="tl-timer'+(TQ.tleft<=5?' low':'')+'" id="tlTimer">'+(TQ.tleft>0?TQ.tleft:'⏰')+'</div>';
@@ -1713,7 +1736,9 @@ function startQuiz(secId){
   let order=null;
   if(Array.isArray(it.opts)&&it.opts.length){
     order=it.opts.map((_,i)=>i);
-    for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=order[i]; order[i]=order[j]; order[j]=t; }
+    if(!it.vf){ /* V/F fica fixo (Verdadeiro antes de Falso); só embaralha múltipla escolha */
+      for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=order[i]; order[i]=order[j]; order[j]=t; }
+    }
   }
   TQ={phase:'q', sec, item:it, tleft:30, order};
   SFX.success();
@@ -1941,15 +1966,23 @@ function vQuestionsForm(){
     '<p class="hint" style="margin-top:8px">Preencha os campos para adicionar <b>uma</b> pergunta ao banco. Ao publicar, ela é <b>somada</b> às perguntas já existentes (não apaga as outras).</p>'+
     '<div class="field"><label>Seção</label><select id="qfSec">'+opts+'</select></div>'+
     '<div class="field"><label>Código (opcional, ex.: S9, F19)</label><input id="qfCod" placeholder="Em branco = gera automático"></div>'+
-    '<div class="field"><label>Pergunta</label><textarea id="qfQ" rows="2" style="width:100%;box-sizing:border-box"></textarea></div>'+
+    '<div class="field"><label>Tipo da pergunta</label><select id="qfTipo">'+
+      '<option value="aberta">Resposta ditada (aberta)</option>'+
+      '<option value="mc">Alternativas (A/B/C/D)</option>'+
+      '<option value="vf">Verdadeiro ou Falso</option></select></div>'+
+    '<div class="field"><label id="qfQLbl">Pergunta</label><textarea id="qfQ" rows="2" style="width:100%;box-sizing:border-box"></textarea></div>'+
     '<div class="field"><label>Resposta / justificativa</label><textarea id="qfA" rows="3" style="width:100%;box-sizing:border-box"></textarea></div>'+
-    '<div class="field"><label>Alternativas (opcional — preencha de A p/ baixo; em branco = pergunta aberta)</label>'+
-      '<input id="qfO1" placeholder="Alternativa A">'+
-      '<input id="qfO2" placeholder="Alternativa B" style="margin-top:6px">'+
-      '<input id="qfO3" placeholder="Alternativa C" style="margin-top:6px">'+
-      '<input id="qfO4" placeholder="Alternativa D" style="margin-top:6px"></div>'+
-    '<div class="field"><label>Qual alternativa é a correta?</label><select id="qfCorrect">'+
-      '<option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>'+
+    '<div id="qfMcBox">'+
+      '<div class="field"><label>Alternativas (preencha de A p/ baixo)</label>'+
+        '<input id="qfO1" placeholder="Alternativa A">'+
+        '<input id="qfO2" placeholder="Alternativa B" style="margin-top:6px">'+
+        '<input id="qfO3" placeholder="Alternativa C" style="margin-top:6px">'+
+        '<input id="qfO4" placeholder="Alternativa D" style="margin-top:6px"></div>'+
+      '<div class="field"><label>Qual alternativa é a correta?</label><select id="qfCorrect">'+
+        '<option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>'+
+    '</div>'+
+    '<div id="qfVfBox"><div class="field"><label>A afirmação (na pergunta) é...</label><select id="qfVfCorrect">'+
+      '<option value="0">Verdadeira</option><option value="1">Falsa</option></select></div></div>'+
     '<div class="field"><label>Referência (ex.: Lição 3, Mt 13.8)</label><input id="qfR"></div>'+
     '<button class="btn go" id="btnQAdd" style="margin-top:4px">Adicionar e publicar</button>'+
     '</details>';
@@ -2761,15 +2794,24 @@ function bind(){
     const n=arr.reduce((s,sec)=>s+sec.items.length,0);
     if(!(await askConfirm('Publicar '+arr.length+' seção(ões) e '+n+' pergunta(s)? Isso substitui o banco atual no Firebase.')))return;
     await fbPublishQuestions(arr);};
+  if(q('qfTipo')){
+    const updTipo=()=>{ const t=q('qfTipo').value;
+      if(q('qfMcBox')) q('qfMcBox').style.display = t==='mc'?'':'none';
+      if(q('qfVfBox')) q('qfVfBox').style.display = t==='vf'?'':'none';
+      if(q('qfQLbl')) q('qfQLbl').textContent = t==='vf'?'Afirmação (para julgar V ou F)':'Pergunta';
+    };
+    q('qfTipo').onchange=updTipo; updTipo();
+  }
   if(q('btnQAdd'))q('btnQAdd').onclick=async()=>{
     const secId=(q('qfSec')&&q('qfSec').value)||'';
     const cod=(q('qfCod')&&q('qfCod').value||'').trim();
+    const tipo=(q('qfTipo')&&q('qfTipo').value)||'aberta';
     const perg=(q('qfQ')&&q('qfQ').value||'').trim();
-    const resp=(q('qfA')&&q('qfA').value||'').trim();
+    let resp=(q('qfA')&&q('qfA').value||'').trim();
     const ref=(q('qfR')&&q('qfR').value||'').trim();
     if(!secId)return toast('Escolha a seção');
-    if(!perg)return toast('Digite a pergunta');
-    if(!resp)return toast('Digite a resposta');
+    if(!perg)return toast(tipo==='vf'?'Digite a afirmação':'Digite a pergunta');
+    if(tipo==='aberta'&&!resp)return toast('Digite a resposta');
     const bank=JSON.parse(JSON.stringify(Array.isArray(QUESTIONS)?QUESTIONS:[]));
     let sec=bank.find(s=>s&&s.id===secId);
     if(!sec){ const meta=QSECTIONS_META.find(m=>m.id===secId)||{id:secId,name:secId,pts:''}; sec={id:meta.id,name:meta.name,pts:meta.pts,items:[]}; bank.push(sec); }
@@ -2778,13 +2820,20 @@ function bind(){
     let nid; do{ nid='q'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }while(allIds.has(nid));
     const meta=QSECTIONS_META.find(m=>m.id===secId);
     const pref=(meta&&meta.pref)||(secId[0]||'Q').toUpperCase();
-    const item={ id:nid, c:cod||(pref+(sec.items.length+1)), q:perg, a:resp, r:ref };
-    const opts=['qfO1','qfO2','qfO3','qfO4'].map(id=>(q(id)&&q(id).value||'').trim()).filter(Boolean);
-    if(opts.length>=2){
+    const item={ id:nid, c:cod||(pref+(sec.items.length+1)), q:perg, r:ref };
+    if(tipo==='mc'){
+      const opts=['qfO1','qfO2','qfO3','qfO4'].map(id=>(q(id)&&q(id).value||'').trim()).filter(Boolean);
+      if(opts.length<2)return toast('Preencha ao menos 2 alternativas');
       let correct=parseInt((q('qfCorrect')&&q('qfCorrect').value)||'0',10);
       if(!(correct>=0&&correct<opts.length)) correct=0;
       item.opts=opts; item.correct=correct;
+      if(!resp) resp=opts[correct];
+    }else if(tipo==='vf'){
+      const correct=parseInt((q('qfVfCorrect')&&q('qfVfCorrect').value)||'0',10)===1?1:0;
+      item.opts=['Verdadeiro','Falso']; item.correct=correct; item.vf=true;
+      if(!resp) resp=(correct===0?'Verdadeiro':'Falso');
     }
+    item.a=resp;
     if(!(await askConfirm('Adicionar a pergunta na seção "'+(sec.name||sec.id)+'" e publicar no Firebase?')))return;
     sec.items.push(item);
     await fbPublishQuestions(bank);};
