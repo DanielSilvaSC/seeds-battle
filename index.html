@@ -470,6 +470,17 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 .tl-opts .tl-opt:nth-child(4){animation-delay:.34s}
 .tl-opt.correct{animation:tlCorrect .55s ease}
 .qopts{font-size:13px;line-height:1.7;color:var(--cream);margin-bottom:6px}
+/* ===== gincana ao vivo ===== */
+.livebanner{background:linear-gradient(90deg,rgba(229,96,76,.22),rgba(229,96,76,.06));border:1px solid var(--danger);
+  border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:800;color:var(--danger);
+  text-align:center;animation:bonusPulse 1.6s ease-in-out infinite}
+.livelock{background:var(--card);border:1px solid var(--gold);border-radius:22px;padding:44px 24px 40px;text-align:center;
+  margin-top:10px;animation:tlIn .5s cubic-bezier(.2,.9,.25,1)}
+.ll-seal{font-size:clamp(64px,17vw,120px);line-height:1;animation:tlBeat 2s ease-in-out infinite}
+.ll-t{font-family:'Bungee';color:var(--gold);font-size:clamp(22px,6vw,40px);margin-top:8px}
+.ll-s{color:var(--cream);font-weight:700;font-size:clamp(14px,3vw,18px);margin:12px auto 0;max-width:480px;line-height:1.5}
+.ll-tv{color:var(--leaf);font-weight:900;font-size:clamp(16px,4vw,24px);margin-top:20px}
+.ll-ed{color:var(--muted);font-weight:800;font-size:12px;margin-top:16px;text-transform:uppercase;letter-spacing:1px}
 .tl-pod{margin-top:26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}
 .tl-pd{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 10px;opacity:.15;transition:.5s}
 .tl-pd.show{opacity:1}
@@ -744,13 +755,37 @@ function defaultConfig(){return {
   missions:[],
   pass:{basis:'combined',tiers:[]},
   boss:null,
+  live:null,
   rosterSeeded:'ed1-18',
   edition:{...DEFAULT_EDITION}
 };}
 function defaultData(){ const c=defaultConfig(); c.entries=[]; return c; } /* usado no export/backup */
 
 function ensureLeaderIds(){ let ch=false; (S.leaders||[]).forEach(l=>{ if(!l.id){ l.id='l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); ch=true; } }); return ch; }
-function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], missions:S.missions||[], pass:S.pass||{basis:'combined',tiers:[]}, boss:S.boss||null, rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
+function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], missions:S.missions||[], pass:S.pass||{basis:'combined',tiers:[]}, boss:S.boss||null, live:S.live||null, rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
+/* Gincana ao vivo: quando ligado, o público para de ver o placar (🔒 em segredo).
+   Auto-desliga após 3h por segurança (o público reavalia pelo próprio relógio). */
+const LIVE_MAX_MS=3*60*60*1000;
+let _liveOffPending=false;
+function liveInfo(){ return (S&&S.live)||null; }
+function isLive(){ const l=liveInfo(); return !!(l&&l.on&&(!l.since||(Date.now()-l.since)<LIVE_MAX_MS)); }
+/* faixa vermelha de aviso — só para o líder, enquanto o modo ao vivo está ligado */
+function vLiveBanner(){
+  if(!(isLive()&&currentUser)) return '';
+  const l=liveInfo(), mins=l&&l.since?Math.floor((Date.now()-l.since)/60000):0;
+  return '<div class="livebanner">🔴 <b>GINCANA AO VIVO</b> — público com placar em segredo'+(mins?' · há '+mins+' min':'')+'</div>';
+}
+/* tela que o público vê no lugar do placar enquanto a gincana está ao vivo */
+function vLiveLock(){
+  const e=edInfo();
+  return '<div class="livelock">'+
+    '<div class="ll-seal">🔒</div>'+
+    '<div class="ll-t">Resultados em segredo</div>'+
+    '<div class="ll-s">A gincana está <b>ao vivo</b>! O placar volta assim que a liderança liberar o resultado.</div>'+
+    '<div class="ll-tv">📺 Acompanhe tudo no telão!</div>'+
+    '<div class="ll-ed">'+esc(e.name)+(e.theme?' · '+esc(e.theme):'')+'</div>'+
+    '</div>';
+}
 
 /* Monta S a partir de config + entradas vindas do Firebase */
 function rebuildS(){
@@ -764,6 +799,7 @@ function rebuildS(){
         missions:Array.isArray(c.missions)?c.missions:[],
         pass:(c.pass&&Array.isArray(c.pass.tiers))?c.pass:{basis:'combined',tiers:[]},
         boss:c.boss||null,
+        live:c.live||null,
         rosterSeeded:c.rosterSeeded||null, entries };
 }
 
@@ -1216,8 +1252,16 @@ function render(){
   rebuildCatalog();
   const app=document.getElementById('app');
   const R=calc();
-  const bb=vFinaleBanner()+vBonusBanner();
-  if(view==='groups'){ app.innerHTML=bb+vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
+  /* auto-desligar de segurança: se o líder abrir e o modo ao vivo já passou de 3h, encerra sozinho */
+  if(currentUser){ const l=liveInfo();
+    if(l&&l.on&&l.since&&(Date.now()-l.since)>=LIVE_MAX_MS&&!_liveOffPending){
+      _liveOffPending=true; const c=currentConfig(); c.live={on:false,since:l.since};
+      fbSaveConfig(c).finally(()=>{_liveOffPending=false;});
+    }
+  }
+  const bb=vLiveBanner()+vFinaleBanner()+vBonusBanner();
+  if(view!=='leader' && isLive() && !currentUser){ app.innerHTML=vLiveLock(R); }
+  else if(view==='groups'){ app.innerHTML=bb+vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
   else if(view==='ind'){ app.innerHTML=bb+vInd(R); animateInd(R, renderPrevView!=='ind'); }
   else if(view==='table'){ app.innerHTML=bb+'<div class="twrap">'+TABLE_BG+vTable()+'</div>'; animateSimple('.twrap','tEnter', renderPrevView!=='table'); }
   else { app.innerHTML=bb+'<div class="lwrap">'+LEADER_BG+(currentUser?vPanel(R):vLogin())+'</div>'; animateSimple('.lwrap','lEnter', renderPrevView!=='leader'); }
@@ -2107,7 +2151,14 @@ function vPanelLancar(R){
   return h;
 }
 function vPanelJogo(){
-  let h='<div class="card"><h2>🎮 Jogo</h2>';
+  const live=isLive(), l=liveInfo();
+  let h='<div class="card" style="border-color:'+(live?'var(--danger)':'var(--line)')+'"><h2>🔴 Gincana ao vivo</h2>';
+  h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Quando ligado, o público (Seeds e visitantes) para de ver o placar — aparece "🔒 Resultados em segredo". A liderança continua com tudo. Desliga sozinho após 3h por segurança.</p>';
+  if(live){ const mins=l&&l.since?Math.floor((Date.now()-l.since)/60000):0;
+    h+='<div class="preview" style="color:var(--danger);font-weight:800;margin-bottom:8px">🔴 No ar'+(mins?' há '+mins+' min':'')+' — público bloqueado</div>'; }
+  h+='<button class="btn '+(live?'red':'go')+'" id="btnLiveToggle" style="margin-top:0">'+(live?'⏹️ Encerrar e liberar resultados':'🔴 Iniciar gincana ao vivo')+'</button>';
+  h+='</div>';
+  h+='<div class="card"><h2>🎮 Jogo</h2>';
   h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Eventos e campanhas que aparecem para os Seeds na aba Grupos: bônus, missões, passe e desafio coletivo.</p>';
   h+='<details><summary>⚡ Bônus / Multiplicadores ('+(S.bonusRules||[]).length+')</summary>';
   h+='<p class="hint" style="margin-top:6px">Regras que multiplicam os pontos de uma categoria, de uma atividade ou de tudo — para incentivar, por ex., oportunidades no culto. Deixe as datas em branco para ligar/desligar na hora; ou agende um início e fim.</p>';
@@ -2792,6 +2843,12 @@ function bind(){
     if(!(await askConfirm('Remover o desafio coletivo?')))return;
     const c=currentConfig(); c.boss=null;
     await fbSaveConfig(c); toast('Desafio removido');};
+  if(q('btnLiveToggle'))q('btnLiveToggle').onclick=async()=>{
+    const on=!isLive();
+    if(on && !(await askConfirm('Iniciar a gincana ao vivo? O público deixa de ver o placar até você encerrar.')))return;
+    const c=currentConfig(); c.live={on, since:Date.now()};
+    await fbSaveConfig(c); SFX.success();
+    toast(on?'🔴 Gincana ao vivo — público bloqueado':'✅ Resultados liberados ao público');};
   document.querySelectorAll('[data-qtoggle]').forEach(b=>b.onclick=async()=>{
     const id=b.dataset.qtoggle;
     const set=new Set(S.usedQuestions||[]);
