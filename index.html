@@ -481,6 +481,47 @@ summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--cream);padding
 .ll-s{color:var(--cream);font-weight:700;font-size:clamp(14px,3vw,18px);margin:12px auto 0;max-width:480px;line-height:1.5}
 .ll-tv{color:var(--leaf);font-weight:900;font-size:clamp(16px,4vw,24px);margin-top:20px}
 .ll-ed{color:var(--muted);font-weight:800;font-size:12px;margin-top:16px;text-transform:uppercase;letter-spacing:1px}
+/* ===== edição encerrada + hall da fama em destaque ===== */
+.closedbanner{background:linear-gradient(90deg,rgba(245,197,66,.28),rgba(245,197,66,.08));border:1px solid var(--gold);
+  border-radius:14px;padding:12px 16px;margin-bottom:12px;text-align:center;color:var(--gold);font-weight:800;font-size:15px;
+  animation:bonusPulse 2.2s ease-in-out infinite}
+.closedbanner b{font-size:1.05em}
+.closedbanner span{display:block;color:var(--cream);font-weight:700;font-size:12.5px;margin-top:2px}
+.hallcard{border-color:var(--gold);background:linear-gradient(180deg,rgba(245,197,66,.10),transparent 60%)}
+.hall-top{text-align:center;padding:6px 0 4px}
+.hall-crown{font-size:clamp(40px,9vw,64px);line-height:1;animation:tlBeat 2.4s ease-in-out infinite}
+.hall-ed{font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-size:12px;margin-top:2px}
+.hall-champ{font-family:'Bungee';color:var(--gold);font-size:clamp(18px,4.4vw,28px);margin-top:8px;line-height:1.2}
+.hall-champ span,.hall-seed span{font-family:'Nunito',sans-serif;color:var(--cream);font-weight:800;font-size:.7em}
+.hall-seed{color:var(--leaf);font-weight:900;font-size:clamp(15px,3.4vw,20px);margin-top:6px}
+.hall-rest{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+/* painel de encerramento (topo das abas públicas) */
+.closepanel{background:radial-gradient(600px 240px at 50% -60px,rgba(245,197,66,.22),transparent 70%),var(--card);
+  border:2px solid var(--gold);border-radius:22px;padding:22px 18px 18px;margin-bottom:16px;text-align:center;
+  box-shadow:0 12px 40px -12px rgba(245,197,66,.4);animation:tlIn .55s cubic-bezier(.2,.9,.25,1)}
+.cp-crown{font-size:clamp(44px,11vw,72px);line-height:1;animation:tlBeat 2.4s ease-in-out infinite}
+.cp-top{font-family:'Bungee';color:var(--gold);font-size:clamp(20px,6vw,34px);letter-spacing:1px;margin-top:4px;
+  text-shadow:0 2px 12px rgba(245,197,66,.5)}
+.cp-ed{color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:12px;margin-top:4px}
+.cp-champ{margin-top:16px;background:rgba(245,197,66,.10);border:1px solid rgba(245,197,66,.5);border-radius:16px;padding:12px}
+.cp-lbl{color:var(--gold);font-weight:900;font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.cp-cg{font-family:'Bungee';font-size:clamp(20px,5.2vw,32px);margin-top:6px;line-height:1.15}
+.cp-cg .cp-seed{font-family:'Nunito',sans-serif}
+.cp-cpts{color:var(--cream);font-weight:900;font-size:clamp(16px,3.6vw,22px);margin-top:4px}
+.cp-podlbl{color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:1px;font-size:12px;margin:18px 0 8px}
+.cp-pod{display:flex;flex-direction:column;gap:10px}
+.cp-row{display:flex;align-items:center;gap:12px;text-align:left;background:var(--soil);border:1px solid var(--line);
+  border-radius:14px;padding:12px 14px}
+.cp-row.r0{border-color:var(--gold);box-shadow:0 0 16px -4px rgba(245,197,66,.5)}
+.cp-medal{font-size:clamp(26px,6vw,38px);flex:none}
+.cp-info{flex:1;min-width:0}
+.cp-name{font-weight:900;font-size:clamp(15px,3.4vw,20px);color:var(--cream)}
+.cp-name .cp-grp{font-size:.72em;font-weight:800}
+.cp-meta{color:var(--gold);font-weight:800;font-size:clamp(12px,2.8vw,15px);margin-top:2px}
+.cp-badges{margin-top:5px;font-size:clamp(15px,3.4vw,20px);line-height:1.2;letter-spacing:2px}
+.cp-badges.cp-nb{font-size:11px;letter-spacing:0;color:var(--muted);font-weight:700}
+.cp-share{margin-top:18px}
+.cp-foot{margin-top:14px;color:var(--gold);font-weight:800;font-size:12.5px;letter-spacing:.5px}
 .tl-pod{margin-top:26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}
 .tl-pd{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 10px;opacity:.15;transition:.5s}
 .tl-pd.show{opacity:1}
@@ -756,19 +797,63 @@ function defaultConfig(){return {
   pass:{basis:'combined',tiers:[]},
   boss:null,
   live:null,
+  editionClosed:null,
   rosterSeeded:'ed1-18',
   edition:{...DEFAULT_EDITION}
 };}
 function defaultData(){ const c=defaultConfig(); c.entries=[]; return c; } /* usado no export/backup */
 
 function ensureLeaderIds(){ let ch=false; (S.leaders||[]).forEach(l=>{ if(!l.id){ l.id='l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); ch=true; } }); return ch; }
-function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], missions:S.missions||[], pass:S.pass||{basis:'combined',tiers:[]}, boss:S.boss||null, live:S.live||null, rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
+function currentConfig(){ return { groups:S.groups, members:S.members, leaders:S.leaders, customActs:S.customActs, usedQuestions:S.usedQuestions||[], bonusRules:S.bonusRules||[], missions:S.missions||[], pass:S.pass||{basis:'combined',tiers:[]}, boss:S.boss||null, live:S.live||null, editionClosed:S.editionClosed||null, rosterSeeded:S.rosterSeeded||'ed1-18', edition:edInfo() }; }
 /* Gincana ao vivo: quando ligado, o público para de ver o placar (🔒 em segredo).
    Auto-desliga após 3h por segurança (o público reavalia pelo próprio relógio). */
 const LIVE_MAX_MS=6*60*60*1000;
 let _liveOffPending=false;
 function liveInfo(){ return (S&&S.live)||null; }
 function isLive(){ const l=liveInfo(); return !!(l&&l.on&&(!l.since||(Date.now()-l.since)<LIVE_MAX_MS)); }
+/* edição encerrada: registra na Colheita dos Campeões e bloqueia novos lançamentos (reversível) */
+function isClosed(){ return !!(S&&S.editionClosed&&S.editionClosed.at); }
+/* faixa compacta (líder) — quando a edição está encerrada */
+function vClosedBanner(){
+  if(!isClosed()) return '';
+  const e=edInfo();
+  return '<div class="closedbanner">🏆 <b>Edição encerrada</b> — '+esc(e.name)+
+    '<span>O painel de encerramento aparece nas abas do público 🌾</span></div>';
+}
+/* PAINEL DE ENCERRAMENTO — topo das abas públicas quando a edição encerra.
+   Mostra grupo campeão e pódio individual (1º/2º/3º) com pontos, nível e conquistas. */
+function vClosingPanel(R){
+  const e=edInfo();
+  const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
+  const champ=gs[0], T=badgeTallies(), med=['🥇','🥈','🥉'];
+  let h='<div class="closepanel">';
+  h+='<div class="cp-crown">👑</div>';
+  h+='<div class="cp-top">EDIÇÃO ENCERRADA</div>';
+  h+='<div class="cp-ed">'+esc(e.name)+(e.theme?' · '+esc(e.theme):'')+'</div>';
+  if(champ){
+    h+='<div class="cp-champ"><div class="cp-lbl">🏆 Grupo campeão</div>'+
+       '<div class="cp-cg" style="color:'+champ.color+'"><span class="cp-seed">'+champ.seed+'</span> '+esc(champ.name)+'</div>'+
+       '<div class="cp-cpts">'+fmt(R.grp[champ.id]||0)+' pts</div></div>';
+  }
+  const pod=ms.slice(0,3);
+  if(pod.length){
+    h+='<div class="cp-podlbl">Pódio individual</div><div class="cp-pod">';
+    pod.forEach((m,i)=>{
+      const p=R.ind[m.id]||0, L=lvlOf(p), bds=badgesFor(m.id,T), g=S.groups.find(x=>x.id===m.g);
+      h+='<div class="cp-row r'+i+'"><div class="cp-medal">'+med[i]+'</div>'+
+         '<div class="cp-info"><div class="cp-name">'+L.e+' '+esc(m.n)+
+           (g?' <span class="cp-grp" style="color:'+g.color+'">'+esc(g.name)+'</span>':'')+'</div>'+
+         '<div class="cp-meta">'+fmt(p)+' pts · '+esc(L.n)+'</div>'+
+         (bds.length?'<div class="cp-badges">'+bds.map(b=>'<span title="'+esc(b.n)+'">'+b.e+'</span>').join('')+'</div>':'<div class="cp-badges cp-nb">sem conquistas ainda</div>')+
+         '</div></div>';
+    });
+    h+='</div>';
+  }
+  h+='<button class="btn gold cp-share" id="btnShareClose">📤 Compartilhar resultado</button>';
+  h+='<div class="cp-foot">🌾 Colheita dos Campeões · resultado eternizado</div>';
+  return h+'</div>';
+}
 /* faixa vermelha de aviso — só para o líder, enquanto o modo ao vivo está ligado */
 function vLiveBanner(){
   if(!(isLive()&&currentUser)) return '';
@@ -800,6 +885,7 @@ function rebuildS(){
         pass:(c.pass&&Array.isArray(c.pass.tiers))?c.pass:{basis:'combined',tiers:[]},
         boss:c.boss||null,
         live:c.live||null,
+        editionClosed:c.editionClosed||null,
         rosterSeeded:c.rosterSeeded||null, entries };
 }
 
@@ -828,7 +914,7 @@ function initFirebase(){
     AUTH.onAuthStateChanged(u=>{ currentUser=u; if(!u) logged=null; watchQuestions(u); render(); });
     DB.doc('app/config').onSnapshot(s=>{ cfg=s.data()||null; rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
     DB.collection('entries').onSnapshot(s=>{ entriesMap={}; s.forEach(d=>Object.assign(entriesMap,d.data())); rebuildS(); render(); }, ()=>{ fbError='read'; rebuildS(); render(); });
-    /* Hall da Fama (edições passadas) — leitura pública; se a regra não existir, ignora em silêncio */
+    /* Colheita dos Campeões (edições passadas) — leitura pública; se a regra não existir, ignora em silêncio */
     DB.doc('app/hall').onSnapshot(s=>{ hallMap=s.data()||null; render(); }, ()=>{ hallMap=null; });
   }catch(e){ fbError='init'; cfg=defaultConfig(); rebuildS(); render(); }
 }
@@ -1259,11 +1345,13 @@ function render(){
       fbSaveConfig(c).finally(()=>{_liveOffPending=false;});
     }
   }
-  const bb=vLiveBanner()+vFinaleBanner()+vBonusBanner();
-  if(view!=='leader' && isLive() && !currentUser){ app.innerHTML=vLiveLock(R); }
-  else if(view==='groups'){ app.innerHTML=bb+vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
-  else if(view==='ind'){ app.innerHTML=bb+vInd(R); animateInd(R, renderPrevView!=='ind'); }
-  else if(view==='table'){ app.innerHTML=bb+'<div class="twrap">'+TABLE_BG+vTable()+'</div>'; animateSimple('.twrap','tEnter', renderPrevView!=='table'); }
+  const banners=vLiveBanner()+vFinaleBanner()+vBonusBanner();
+  const pubTop=(isClosed()?vClosingPanel(R):'')+banners;        /* público: painel de encerramento grandão no topo */
+  const bb=(isClosed()?vClosedBanner():'')+banners;             /* líder: faixa compacta (o painel fica na aba pública) */
+  if(view!=='leader' && isLive() && !currentUser && !isClosed()){ app.innerHTML=vLiveLock(R); }
+  else if(view==='groups'){ app.innerHTML=pubTop+vGroups(R); animateGroups(R, renderPrevView!=='groups'); }
+  else if(view==='ind'){ app.innerHTML=pubTop+vInd(R); animateInd(R, renderPrevView!=='ind'); }
+  else if(view==='table'){ app.innerHTML=pubTop+'<div class="twrap">'+TABLE_BG+vTable()+'</div>'; animateSimple('.twrap','tEnter', renderPrevView!=='table'); }
   else { app.innerHTML=bb+'<div class="lwrap">'+LEADER_BG+(currentUser?vPanel(R):vLogin())+'</div>'; animateSimple('.lwrap','lEnter', renderPrevView!=='leader'); }
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
   renderPrevView=view;
@@ -1340,7 +1428,7 @@ function animateGroups(R, isEntry){
   const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
   const t01=gs.length>1?tieGroup(gs[0].id,gs[1].id,R):{n:0};
   const leadId=t01.n!==0?gs[0].id:null;
-  if(!RM && leadId && gAnim.lastLead!==undefined && gAnim.lastLead!==leadId){
+  if(!RM && !isClosed() && leadId && gAnim.lastLead && gAnim.lastLead!==leadId){
     const card=document.querySelector('.gcard[data-gid="'+leadId+'"]');
     if(card) spawnLeadFx(card);
     SFX.fanfare();
@@ -1491,12 +1579,10 @@ function vGroups(R){
   h+='<div class="legend"><span><span class="gdot" style="background:'+g1.color+'"></span>'+esc(g1.name)+'</span>'+
      '<span>'+esc(g2.name)+'<span class="gdot" style="background:'+g2.color+';margin:0 0 0 5px"></span></span></div>';
   h+='<p class="hint" style="text-align:center;margin:8px 0 0">👆 Toque num grupo para ver o histórico de pontos.</p>';
-  h+='<div class="row2" style="margin-top:12px"><button class="btn gold" id="btnTelao" style="margin-top:0">📺 Modo Telão</button>'+
+  if(!isClosed()) h+='<div class="row2" style="margin-top:12px"><button class="btn gold" id="btnTelao" style="margin-top:0">📺 Modo Telão</button>'+
      '<button class="btn ghost" id="btnShare" style="margin-top:0">📤 Compartilhar</button></div>';
   h+=vPass(R);
-  h+=vBoss();
-  h+=vMissions();
-  h+=vFeed();
+  if(!isClosed()){ h+=vBoss(); h+=vMissions(); h+=vFeed(); } /* mecânicas em andamento: escondem após encerrar */
   if(tie01.by!==null){
     const leadG=gs[0], msg = tie01.by==='EXTRA'
       ? '🟰 Empate total entre os grupos, inclusive nos critérios 1 a 4 — a decisão vai para <b>pergunta bíblica extra</b> no dia oficial.'
@@ -1580,18 +1666,32 @@ function vRace(){
   return h;
 }
 
-/* ===== Hall da Fama — edições encerradas (nó /hall, leitura pública) ===== */
+/* ===== Colheita dos Campeões — edições encerradas (nó /hall, leitura pública) ===== */
 function vHall(){
   if(!hallMap) return '';
-  const eds=Object.entries(hallMap).sort((a,b)=>String(b[0]).localeCompare(String(a[0])));
+  let eds=Object.entries(hallMap).filter(([,e])=>e).sort((a,b)=>String(b[0]).localeCompare(String(a[0])));
+  /* se a edição atual está encerrada, ela já aparece no painel de topo — não repetir aqui */
+  if(isClosed()) eds=eds.filter(([k])=>k!==edInfo().key);
   if(!eds.length) return '';
-  let h='<div class="card"><h2>🏛️ Hall da Fama</h2>';
-  eds.forEach(([k,e])=>{
-    if(!e) return;
-    h+='<div class="hrow"><div class="t1">'+esc(e.name||k)+'</div>'+
-       '<div class="t2">🏆 '+esc(e.champion||'—')+(e.championPts?' · '+fmt(e.championPts)+' pts':'')+
-       ' &nbsp;·&nbsp; 🥇 '+esc(e.topSeed||'—')+(e.topSeedPts?' · '+fmt(e.topSeedPts)+' pts':'')+'</div></div>';
-  });
+  const [k0,e0]=eds[0];
+  let h='<div class="card hallcard"><h2>🌾 Colheita dos Campeões</h2>';
+  if(e0){
+    h+='<div class="hall-top">'+
+       '<div class="hall-crown">👑</div>'+
+       '<div class="hall-ed">'+esc(e0.name||k0)+'</div>'+
+       '<div class="hall-champ">🏆 '+esc(e0.champion||'—')+(e0.championPts?' <span>'+fmt(e0.championPts)+' pts</span>':'')+'</div>'+
+       '<div class="hall-seed">🥇 '+esc(e0.topSeed||'—')+(e0.topSeedPts?' <span>'+fmt(e0.topSeedPts)+' pts</span>':'')+'</div>'+
+       '</div>';
+  }
+  const rest=eds.slice(1).filter(([,e])=>e);
+  if(rest.length){
+    h+='<div class="hall-rest">';
+    rest.forEach(([k,e])=>{
+      h+='<div class="hrow"><div class="t1">'+esc(e.name||k)+'</div>'+
+         '<div class="t2">🏆 '+esc(e.champion||'—')+' &nbsp;·&nbsp; 🥇 '+esc(e.topSeed||'—')+'</div></div>';
+    });
+    h+='</div>';
+  }
   return h+'</div>';
 }
 
@@ -1600,9 +1700,9 @@ function vInd(R){
   const T=badgeTallies();
   const med=['🥇','🥈','🥉'];
   let h='<div class="iwrap">'+SEEDS_BG;
-  const mvp=mvpWeek();
+  const mvp=isClosed()?null:mvpWeek(); /* encerrada: sem "Seed da semana" nem realce semanal */
   if(mvp) h+='<div class="mvpcard">🌟 <b>Seed da semana</b> · '+esc(mvp.member.n)+' <span>+'+fmt(mvp.pts)+' pts em 7 dias</span></div>';
-  if(ms.length>=3){
+  if(!isClosed() && ms.length>=3){ /* pódio já aparece no painel de encerramento — não repetir aqui */
     const order=[ms[1],ms[0],ms[2]];
     h+='<div class="podium">';
     order.forEach((m,i)=>{const rank=i===1?0:(i===0?1:2);
@@ -1852,6 +1952,7 @@ function bindTelao(){
   if(q('tlUsed'))q('tlUsed').onclick=async()=>{ const id=TQ.item.id; TQ={phase:'idle'}; await markUsed(id); toast('Pergunta marcada como usada ✓'); renderTelao(); };
   const launch=async(actId,mid,gid)=>{
     const a=ACT[actId]; if(!a) return;
+    if(isClosed()) return toast('🔒 Edição encerrada — reabra em ⚙️ Gerenciar para lançar.');
     const item=TQ.item;
     const mult=Math.max(autoMult(actId), TQ.rmult||1);   /* bônus ativo OU roleta (o maior) */
     const key=await fbAddEntry({ts:Date.now(),act:actId,qty:1,d:new Date().toISOString().slice(0,10),
@@ -1925,6 +2026,52 @@ function shareScore(){
     }
     const ok=tryDownload('seeds-battle-placar.png',blob);
     toast(ok?'Imagem do placar baixada ✅':'Não foi possível gerar o compartilhamento');
+  },'image/png');
+}
+/* ===== compartilhar o card de ENCERRAMENTO (campeão + pódio + conquistas) ===== */
+function shareClosing(){
+  const R=calc();
+  const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
+  const ms=[...S.members].sort((a,b)=>tieInd(a.id,b.id,R).n);
+  const champ=gs[0]; if(!champ) return toast('Sem dados para compartilhar');
+  const cv=document.createElement('canvas'); cv.width=1080; cv.height=1080;
+  const x=cv.getContext('2d');
+  const grd=x.createRadialGradient(540,-80,50,540,700,1100);
+  grd.addColorStop(0,'#2a2115'); grd.addColorStop(1,'#171310');
+  x.fillStyle=grd; x.fillRect(0,0,1080,1080);
+  x.textAlign='center';
+  x.font='110px serif'; x.fillText('👑',540,150);
+  x.fillStyle='#f5c542'; x.font='60px Bungee, sans-serif'; x.fillText('EDIÇÃO ENCERRADA',540,235);
+  x.fillStyle='#a4957e'; x.font='700 28px Nunito, sans-serif'; x.fillText(edLabel(),540,285);
+  /* grupo campeão — tudo centralizado */
+  x.fillStyle='#261e15'; x.strokeStyle='#f5c542'; x.lineWidth=5;
+  x.beginPath(); x.roundRect(140,320,800,180,24); x.fill(); x.stroke();
+  x.textAlign='center';
+  x.fillStyle='#f5c542'; x.font='900 26px Nunito, sans-serif'; x.fillText('🏆 GRUPO CAMPEÃO',540,366);
+  x.fillStyle=champ.color; x.font='900 48px Nunito, sans-serif'; x.fillText(champ.seed+' '+champ.name,540,436,740);
+  x.fillStyle='#f5eedf'; x.font='38px Bungee, sans-serif'; x.fillText(fmt(R.grp[champ.id]||0)+' pts',540,490,740);
+  /* pódio individual */
+  x.fillStyle='#f5c542'; x.font='900 28px Nunito, sans-serif'; x.fillText('PÓDIO INDIVIDUAL',540,570);
+  const med=['🥇','🥈','🥉'];
+  ms.slice(0,3).forEach((m,i)=>{
+    const p=R.ind[m.id]||0, L=lvlOf(p), bds=badgesFor(m.id).slice(0,5).map(b=>b.e).join(''), y=605+i*118;
+    x.fillStyle='#211a13'; x.strokeStyle=i===0?'#f5c542':'#3d3122'; x.lineWidth=i===0?4:2;
+    x.beginPath(); x.roundRect(140,y,800,98,18); x.fill(); x.stroke();
+    x.textAlign='left';
+    x.font='46px serif'; x.fillText(med[i],175,y+62);
+    x.fillStyle='#f5eedf'; x.font='900 36px Nunito, sans-serif'; x.fillText(L.e+' '+m.n,250,y+45,660);
+    x.fillStyle='#f5c542'; x.font='700 25px Nunito, sans-serif'; x.fillText(fmt(p)+' pts · '+L.n+(bds?'   '+bds:''),250,y+80,660);
+    x.textAlign='center';
+  });
+  x.fillStyle='#8bd450'; x.font='900 30px Nunito, sans-serif'; x.fillText('🌾 Colheita dos Campeões',540,1035);
+  cv.toBlob(async blob=>{
+    if(!blob) return toast('Falha ao gerar a imagem');
+    const file=new File([blob],'seeds-battle-encerramento.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:'Seeds Battle',text:'🏆 Resultado final da Seeds Battle! 🌾'}); return; }catch(e){ if(e&&e.name==='AbortError') return; }
+    }
+    const ok=tryDownload('seeds-battle-encerramento.png',blob);
+    toast(ok?'Imagem do encerramento baixada ✅':'Não foi possível gerar o compartilhamento');
   },'image/png');
 }
 </script>
@@ -2090,7 +2237,8 @@ function vPanelLancar(R){
   if(!a){ selAct='culto_sem'; a=ACT[selAct]; }
   const needMember = a.s!=='group';
   let h='<div class="card"><h2>'+(e?'Corrigir lançamento':'Lançar pontos')+'</h2>';
-  if(!e) h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Registre pontos aqui; a chamada em lote e o histórico ficam logo abaixo.</p>';
+  if(isClosed()&&!e) h+='<div class="preview" style="color:var(--danger);font-weight:800;margin-bottom:10px">🔒 Edição encerrada — lançamentos bloqueados. Reabra em ⚙️ Gerenciar para lançar.</div>';
+  else if(!e) h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Registre pontos aqui; a chamada em lote e o histórico ficam logo abaixo.</p>';
   h+='<div class="field"><label>Atividade</label><select id="fAct">'+actOptions()+'</select></div>';
   if(needMember){
     h+='<div class="field"><label>Seed (adolescente)</label><select id="fMem">'+
@@ -2111,7 +2259,7 @@ function vPanelLancar(R){
   }
   h+='<div class="field"><label>Observação (opcional)</label><input id="fNote" maxlength="120" value="'+(e?esc(e.note||''):'')+'" placeholder="Ex.: nome do visitante, motivo da penalidade..."></div>';
   h+='<div class="preview" id="fPrev"></div>';
-  h+='<button class="btn go" id="btnSave">'+(e?'Salvar correção':'Confirmar pontos')+'</button>';
+  h+='<button class="btn go" id="btnSave"'+((isClosed()&&!e)?' disabled style="opacity:.5;cursor:not-allowed"':'')+'>'+(e?'Salvar correção':'Confirmar pontos')+'</button>';
   if(e)h+='<button class="btn ghost" id="btnCancelEdit">Cancelar edição</button>';
   h+='</div>';
 
@@ -2239,14 +2387,14 @@ function vPanelGerenciar(R){
   let h='<div class="card"><h2>⚙️ Gerenciar</h2>';
   h+='<p class="hint" style="margin-top:-4px;margin-bottom:10px">Estrutura da gincana e dados. O uso do dia a dia fica em Lançar e Jogo.</p>';
   h+='<details><summary>🎪 Edição ('+esc(_ed.name)+')</summary>'+
-    '<p class="hint" style="margin-top:6px">Nome, tema e datas aparecem no cabeçalho, na contagem regressiva e no Hall da Fama.</p>'+
+    '<p class="hint" style="margin-top:6px">Nome, tema e datas aparecem no cabeçalho, na contagem regressiva e na Colheita dos Campeões.</p>'+
     '<div class="field"><label>Nome</label><input id="edName" value="'+esc(_ed.name)+'" placeholder="Ex.: Edição 2"></div>'+
     '<div class="field"><label>Tema (opcional)</label><input id="edTheme" value="'+esc(_ed.theme||'')+'" placeholder="Ex.: Provérbios"></div>'+
     '<div class="row2"><div class="field"><label>Início</label><input id="edStart" type="date" value="'+esc(_ed.start)+'"></div>'+
     '<div class="field"><label>Fim</label><input id="edEnd" type="date" value="'+esc(_ed.end)+'"></div></div>'+
     '<button class="btn gold" id="btnEdSave">Salvar edição atual</button>'+
     '<details style="margin-top:10px"><summary>🚀 Iniciar nova edição</summary>'+
-    '<p class="hint" style="margin-top:6px">Preencha acima o nome/tema/datas da <b>nova</b> edição e toque abaixo. A atual é arquivada no Hall da Fama, os lançamentos são <b>apagados</b> (placar zera) e as perguntas marcadas são limpas. Participantes, grupos e atividades continuam.</p>'+
+    '<p class="hint" style="margin-top:6px">Preencha acima o nome/tema/datas da <b>nova</b> edição e toque abaixo. A atual é arquivada na Colheita dos Campeões, os lançamentos são <b>apagados</b> (placar zera) e as perguntas marcadas são limpas. Participantes, grupos e atividades continuam.</p>'+
     '<button class="btn red" id="btnNewEd">Arquivar atual e iniciar nova edição</button></details></details>';
   h+='<details><summary>📖 Banco de perguntas</summary><div style="margin-top:8px">'+vQuestionsPublish()+'</div></details>';
   h+='<details><summary>🎯 Atividades personalizadas ('+S.customActs.length+')</summary>';
@@ -2277,9 +2425,17 @@ function vPanelGerenciar(R){
       (S.leaders.length>1?'<button class="btn red sm" data-delleader="'+l.id+'">Remover</button>':'')+'</div></div>').join('')+
     '<div class="field" style="margin-top:10px"><input id="nlName" placeholder="Nome do líder (para o histórico)"></div>'+
     '<button class="btn gold" id="btnAddLeader">Adicionar nome de líder</button></details>';
-  h+='<details><summary>🏛️ Hall da Fama / Encerrar edição</summary>'+
-    '<p class="hint" style="margin-top:6px">Ao final da edição, registre o resultado no <b>Hall da Fama</b> — ele aparece na aba Grupos para todos, e fica guardado para as próximas edições. Isso <b>não apaga</b> nenhum dado.</p>'+
-    '<button class="btn gold" id="btnCloseEd">🏁 Registrar resultado da edição</button></details>';
+  h+='<details'+(isClosed()?' open':'')+'><summary>🌾 Colheita dos Campeões / Encerrar edição</summary>';
+  if(isClosed()){
+    const at=S.editionClosed.at?new Date(S.editionClosed.at).toLocaleString('pt-BR'):'';
+    h+='<div class="preview" style="color:var(--gold);font-weight:800;margin:6px 0 8px">🏁 Edição encerrada'+(at?' em '+esc(at):'')+' — lançamentos bloqueados.</div>'+
+      '<button class="btn gold" id="btnCloseEd" style="margin-bottom:8px">↻ Atualizar resultado na Colheita dos Campeões</button>'+
+      '<button class="btn ghost" id="btnReopenEd">🔓 Reabrir edição (liberar lançamentos)</button>';
+  }else{
+    h+='<p class="hint" style="margin-top:6px">Encerra a edição: registra o resultado na <b>Colheita dos Campeões</b> (aparece na aba Grupos) e <b>bloqueia novos lançamentos de pontos</b>. Não apaga nada — dá pra reabrir depois.</p>'+
+      '<button class="btn gold" id="btnCloseEd">🏁 Encerrar edição</button>';
+  }
+  h+='</details>';
   h+='<details><summary>💾 Backup / Migração</summary>'+
     '<p class="hint" style="margin-top:6px">O <b>Excel</b> é para ler/enviar. O <b>backup .json</b> guarda tudo — participantes, grupos, líderes, atividades personalizadas e lançamentos. Use <b>Importar</b> para trazer o backup do app antigo (migração inicial) ou recuperar.</p>'+
     '<div class="row2" style="margin-top:10px"><button class="btn gold" id="btnXlsx" style="margin-top:0">⬇️ Baixar Excel (.xlsx)</button>'+
@@ -2602,7 +2758,7 @@ async function importJson(text){
   }catch(err){ toast('Falha ao importar: '+(err.code||err.message)); }
 }
 
-/* Resultado atual da edição (campeões) — usado no Hall da Fama */
+/* Resultado atual da edição (campeões) — usado na Colheita dos Campeões */
 function editionResult(){
   const R=calc();
   const gs=[...S.groups].sort((a,b)=>tieGroup(a.id,b.id,R).n);
@@ -2618,16 +2774,28 @@ function editionResult(){
   };
 }
 
-/* Registra o resultado atual no Hall da Fama — não apaga nada */
+/* Encerra a edição: registra o resultado na Colheita dos Campeões E bloqueia novos
+   lançamentos. Não apaga nada — é reversível em "Reabrir edição". */
 async function closeEdition(){
   if(!DB) return toast('Firebase não configurado');
   const res=editionResult();
   if(!res) return toast('Sem dados suficientes');
-  if(!(await askConfirm('Registrar no Hall da Fama?\n\n🏆 '+res.champion+' ('+fmt(res.championPts)+' pts)\n🥇 '+res.topSeed+' ('+fmt(res.topSeedPts)+' pts)\n\nIsso NÃO apaga os dados — só grava o resultado da edição.'))) return;
+  if(!(await askConfirm('Encerrar a edição "'+edInfo().name+'"?\n\n🏆 '+res.champion+' ('+fmt(res.championPts)+' pts)\n🥇 '+res.topSeed+' ('+fmt(res.topSeedPts)+' pts)\n\n• Registra o resultado na Colheita dos Campeões\n• BLOQUEIA novos lançamentos de pontos\n• NÃO apaga nada (dá pra reabrir depois)'))) return;
   try{
-    await DB.doc('app/hall').set({[edInfo().key]:res},{merge:true});
-    toast('Edição registrada no Hall da Fama 🏛️'); SFX.fanfare();
+    const c=currentConfig(); c.editionClosed={at:new Date().toISOString()};
+    const batch=DB.batch();
+    batch.set(DB.doc('app/hall'),{[edInfo().key]:res},{merge:true});
+    batch.set(DB.doc('app/config'),c);
+    await batch.commit();
+    toast('🏁 Edição encerrada e registrada na Colheita dos Campeões 🏛️'); SFX.fanfare();
   }catch(e){ toast('Falha: '+(e.code||e.message)); }
+}
+/* Reabre a edição — libera os lançamentos de novo (mantém o registro no Hall) */
+async function reopenEdition(){
+  if(!DB) return toast('Firebase não configurado');
+  if(!(await askConfirm('Reabrir a edição? Os lançamentos de pontos voltam a ser permitidos.\n(O resultado continua na Colheita dos Campeões.)'))) return;
+  const c=currentConfig(); c.editionClosed=null;
+  await fbSaveConfig(c); toast('Edição reaberta ✅');
 }
 
 /* Vira a chave: arquiva a edição atual no Hall, APAGA os lançamentos e
@@ -2639,8 +2807,8 @@ async function startNewEdition(name,theme,start,end){
   const cur=edInfo(), res=editionResult();
   const nextKey='ed'+((parseInt(String(cur.key).replace(/\D/g,''),10)||0)+1);
   const n=S.entries.length;
-  if(!(await askConfirm('Iniciar "'+name+'"?\n\n1. Grava o resultado de "'+cur.name+'" no Hall da Fama\n2. APAGA os '+n+' lançamentos atuais (o placar zera)\n3. Limpa as perguntas marcadas e as regras de bônus\n\nParticipantes, grupos e atividades são mantidos.'))) return;
-  if(!(await askConfirm('Tem certeza? Os '+n+' lançamentos serão apagados de vez.\n(O resultado fica no Hall da Fama; o backup semanal guarda o histórico.)'))) return;
+  if(!(await askConfirm('Iniciar "'+name+'"?\n\n1. Grava o resultado de "'+cur.name+'" na Colheita dos Campeões\n2. APAGA os '+n+' lançamentos atuais (o placar zera)\n3. Limpa as perguntas marcadas e as regras de bônus\n\nParticipantes, grupos e atividades são mantidos.'))) return;
+  if(!(await askConfirm('Tem certeza? Os '+n+' lançamentos serão apagados de vez.\n(O resultado fica na Colheita dos Campeões; o backup semanal guarda o histórico.)'))) return;
   try{
     const c=currentConfig();
     c.edition={key:nextKey,name,theme:theme||'',start,end};
@@ -2649,6 +2817,7 @@ async function startNewEdition(name,theme,start,end){
     c.missions=[];
     c.pass={basis:'combined',tiers:[]};
     c.boss=null;
+    c.editionClosed=null;
     const batch=DB.batch();
     if(res) batch.set(DB.doc('app/hall'),{[cur.key]:res},{merge:true});
     (await DB.collection('entries').get()).forEach(d=>batch.delete(d.ref));
@@ -2711,6 +2880,7 @@ function bind(){
       const obj={ts:e.ts||Date.now(),act,qty,d,note,mid,gid,leader:(e.leader||'')+' (corr. '+logged+')',...(mult>1?{mult}:{})};
       const key=editingId; editingId=null; await fbSetEntry(key,obj); toast('Lançamento corrigido ✏️'); SFX.tick();
     }else{
+      if(isClosed()) return toast('🔒 Edição encerrada — reabra em ⚙️ Gerenciar para lançar novos pontos.');
       const key=await fbAddEntry({ts:Date.now(),act,qty,d,note,mid,gid,leader:logged,...(mult>1?{mult}:{})});
       a.v<0?SFX.penalty():SFX.coin();
       if(key&&mult>1){ SFX.success(); confetti(); }
@@ -2924,6 +3094,7 @@ function bind(){
   /* ===== modo telão + compartilhar (aba Grupos) ===== */
   if(q('btnTelao'))q('btnTelao').onclick=()=>{ SFX.tick(); openTelao(); };
   if(q('btnShare'))q('btnShare').onclick=()=>{ SFX.tick(); shareScore(); };
+  if(q('btnShareClose'))q('btnShareClose').onclick=()=>{ SFX.tick(); shareClosing(); };
   /* ===== chamada em lote ===== */
   document.querySelectorAll('[data-chall]').forEach(b=>b.onclick=()=>{
     const boxes=[...document.querySelectorAll('.chkm')].filter(c=>c.dataset.gid===b.dataset.chall);
@@ -2931,6 +3102,7 @@ function bind(){
     boxes.forEach(c=>c.checked=!all);
   });
   if(q('btnChamada'))q('btnChamada').onclick=async()=>{
+    if(isClosed()) return toast('🔒 Edição encerrada — reabra em ⚙️ Gerenciar para lançar.');
     const sel=[...document.querySelectorAll('.chkm:checked')];
     if(!sel.length) return toast('Marque ao menos 1 Seed');
     if(!DB) return toast('Firebase não configurado');
@@ -2974,6 +3146,7 @@ function bind(){
   });
   /* ===== encerrar edição ===== */
   if(q('btnCloseEd'))q('btnCloseEd').onclick=()=>closeEdition();
+  if(q('btnReopenEd'))q('btnReopenEd').onclick=()=>reopenEdition();
   /* ===== edição configurável ===== */
   if(q('btnEdSave'))q('btnEdSave').onclick=async()=>{
     const name=q('edName').value.trim(), theme=q('edTheme').value.trim(),
