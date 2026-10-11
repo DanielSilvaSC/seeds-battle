@@ -1,6 +1,7 @@
 {
   "firestore": {
-    "rules": "firestore.rules"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "database": {
     "rules": "database.rules.json"
@@ -13,6 +14,7 @@
       ".git/**",
       "**/node_modules/**",
       "firestore.rules",
+      "firestore.indexes.json",
       "database.rules.json",
       "backups/**",
       "scripts/**",

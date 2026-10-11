@@ -1,0 +1,478 @@
+[
+  {
+    "id": "easy",
+    "name": "🟢 Fácil",
+    "pts": "150 pts",
+    "items": [
+      {
+        "id": "qf1",
+        "c": "F1",
+        "q": "O que reúne o livro de Deuteronômio?",
+        "a": "O livro de Deuteronômio reúne discursos e registros históricos de Moisés.",
+        "r": "Lição 1"
+      },
+      {
+        "id": "qf2",
+        "c": "F2",
+        "q": "Qual é a mensagem central de Deuteronômio 1.8?",
+        "a": "O centro está em Deuteronômio 1.8: Deus já deu a terra; cabia a Israel possuí-la pela fé.",
+        "r": "Lição 1"
+      },
+      {
+        "id": "qf3",
+        "c": "F3",
+        "q": "Quais eram as qualidades evidentes dos homens selecionados por Moisés?",
+        "a": "Moisés, orientado por Jetro (Êx 18.13-27), seleciona homens com qualidades evidentes: sabedoria, experiência e caráter.",
+        "r": "Lição 2"
+      },
+      {
+        "id": "qf4",
+        "c": "F4",
+        "q": "Como os pais devem agir para conduzir os seus filhos no caminho do Senhor?",
+        "a": "Devem ensinar, corrigir e testemunhar, conduzindo os filhos no caminho do Senhor para que não repitam os erros do passado (Pv 22.6; Sl 78.5-8).",
+        "r": "Lição 2"
+      },
+      {
+        "id": "qf5",
+        "c": "F5",
+        "q": "O que a disciplina mostrada por Moisés revela?",
+        "a": "Revela que a disciplina divina mostra a justiça e o amor de Deus, que conduz seu povo à obediência.",
+        "r": "Lição 3"
+      },
+      {
+        "id": "qf6",
+        "c": "F6",
+        "q": "De acordo com a lição, como Deus trata o homem?",
+        "a": "Deus trata o homem conforme a sua resposta à Palavra: a obediência conduz à vida, e a desobediência, ao juízo.",
+        "r": "Lição 3"
+      },
+      {
+        "id": "qf7",
+        "c": "F7",
+        "q": "Como as Escrituras apresentam o Senhor Deus?",
+        "a": "As Escrituras revelam Deus como santo e justo, mas também misericordioso, fiel ao seu concerto.",
+        "r": "Lição 3"
+      },
+      {
+        "id": "qf8",
+        "c": "F8",
+        "q": "Como Moisés inicia o capítulo 5?",
+        "a": "Convocando o povo a ouvir, aprender e cumprir a Lei: \"Ouve, ó Israel [...]\" (Dt 5.1).",
+        "r": "Lição 4"
+      },
+      {
+        "id": "qf9",
+        "c": "F9",
+        "q": "Como Moisés encerra o seu discurso no capítulo 5?",
+        "a": "Reforçando a necessidade de perseverar na obediência: \"Andareis em todo o caminho [...]\" (Dt 5.33).",
+        "r": "Lição 4"
+      },
+      {
+        "id": "qf10",
+        "c": "F10",
+        "q": "Como Moisés orienta o ensino de Deuteronômio 6 em relação aos filhos?",
+        "a": "Que esse ensino ocorra em todo o tempo — ao assentar, andar, deitar e levantar — não sendo ocasional, mas contínuo, prático e relacional.",
+        "r": "Lição 5"
+      },
+      {
+        "id": "qf11",
+        "c": "F11",
+        "q": "Como se fundamentava a natureza da aliança divina com Israel?",
+        "a": "Fundamentava-se na eleição e na santidade.",
+        "r": "Lição 6"
+      },
+      {
+        "id": "qf12",
+        "c": "F12",
+        "q": "De acordo com a lição, como Deus declara Israel?",
+        "a": "O próprio Deus declara Israel como povo santo, separado e consagrado, pois lhe pertencia como propriedade exclusiva.",
+        "r": "Lição 6"
+      },
+      {
+        "id": "qf13",
+        "c": "F13",
+        "q": "Como a nova geração deveria agir?",
+        "a": "Deveria crer e obedecer ao Senhor (Dt 7.18-21).",
+        "r": "Lição 6"
+      },
+      {
+        "id": "qf14",
+        "c": "F14",
+        "q": "Segundo a lição, Deus é a fonte de quê? E que escolha Ele colocou diante do povo?",
+        "a": "Deus é a fonte de toda bênção e colocou diante do povo a escolha entre a bênção e a maldição (Dt 11.26).",
+        "r": "Lição 7"
+      },
+      {
+        "id": "qf15",
+        "c": "F15",
+        "q": "O que significa escolher a vida segundo Deuteronômio?",
+        "a": "Optar por uma vida em comunhão com Deus, marcada por amor e obediência (Dt 30.16).",
+        "r": "Lição 8"
+      },
+      {
+        "id": "qf16",
+        "c": "F16",
+        "q": "O que Moisés reconhece em relação ao seu ministério?",
+        "a": "Reconhece que o seu ciclo ministerial chegou ao fim — evidenciando maturidade espiritual e submissão à vontade divina.",
+        "r": "Lição 9"
+      },
+      {
+        "id": "qf17",
+        "c": "F17",
+        "q": "Como Moisés prepara o povo para a continuidade da jornada?",
+        "a": "Reconhecendo as limitações da vida humana.",
+        "r": "Lição 9"
+      },
+      {
+        "id": "qf18",
+        "c": "F18",
+        "q": "Quem Moisés escolhe como sucessor?",
+        "a": "Josué, chamado diante de todo o povo — escolha pública e legítima, não secreta.",
+        "r": "Lição 9"
+      },
+      {
+        "id": "qf19",
+        "c": "F19",
+        "q": "Como Moisés descreve o caráter de Deus no início do cântico?",
+        "a": "Exalta o caráter de Deus: seu nome, perfeição e justiça (Dt 32.1-4).",
+        "r": "Lição 10"
+      },
+      {
+        "id": "qf20",
+        "c": "F20",
+        "q": "Quais elementos da ação divina fundamentam a alegria de Israel?",
+        "a": "A alegria de Israel nasce da justiça, do perdão e da restauração.",
+        "r": "Lição 10"
+      },
+      {
+        "id": "qf21",
+        "c": "F21",
+        "q": "Como Moisés fala a Israel?",
+        "a": "Não fala por si, mas como porta-voz autorizado de Deus (Sl 90.1).",
+        "r": "Lição 11"
+      },
+      {
+        "id": "qf22",
+        "c": "F22",
+        "q": "Como Deus levanta e conduz líderes?",
+        "a": "Segundo o seu propósito, mostrando que a bênção está ligada à fidelidade e à ação divina.",
+        "r": "Lição 11"
+      },
+      {
+        "id": "qf23",
+        "c": "F23",
+        "q": "A expressão \"braços eternos\" aponta para quê?",
+        "a": "Aponta para proteção contínua e cuidado constante (Dt 33.27).",
+        "r": "Lição 11"
+      },
+      {
+        "id": "qf24",
+        "c": "F24",
+        "q": "Por que Israel é declarado bem-aventurado?",
+        "a": "Por ser o povo salvo e protegido pelo Senhor (Dt 33.29).",
+        "r": "Lição 11"
+      },
+      {
+        "id": "qf25",
+        "c": "F25",
+        "q": "Por que se pode dizer que Moisés foi honrado por Deus?",
+        "a": "Porque foi o próprio Deus que o sepultou — evidência de que o Senhor valoriza a morte dos seus santos (Sl 116.15).",
+        "r": "Lição 12"
+      },
+      {
+        "id": "qf26",
+        "c": "F26",
+        "q": "Quem substituiu Moisés como líder do povo?",
+        "a": "Josué.",
+        "r": "Lição 12"
+      },
+      {
+        "id": "qf27",
+        "c": "F27",
+        "q": "O que a expressão \"o temor ao Senhor\" expressava?",
+        "a": "Reverência, fidelidade e obediência integral à Aliança.",
+        "r": "Lição 13"
+      },
+      {
+        "id": "qf28",
+        "c": "F28",
+        "q": "Os memoriais de Deuteronômio e Lucas apontam para o quê?",
+        "a": "Ambos apontam para o cuidado e a graça divina.",
+        "r": "Lição 13"
+      }
+    ]
+  },
+  {
+    "id": "med",
+    "name": "🟡 Média",
+    "pts": "250 pts",
+    "items": [
+      {
+        "id": "qm1",
+        "c": "M1",
+        "q": "Qual é o valor de Deuteronômio para o povo de Deus?",
+        "a": "O valor de Deuteronômio é permanente para a edificação espiritual do povo de Deus, evidenciado no seu uso na reforma de Esdras e Neemias.",
+        "r": "Lição 1"
+      },
+      {
+        "id": "qm2",
+        "c": "M2",
+        "q": "A relevância doutrinária de Deuteronômio fundamenta-se em quê?",
+        "a": "Fundamenta-se na revelação do caráter de Deus: justo, santo, fiel, misericordioso, zeloso e verdadeiro (Dt 7.9; 10.17).",
+        "r": "Lição 1"
+      },
+      {
+        "id": "qm3",
+        "c": "M3",
+        "q": "De acordo com a lição, o que a Bíblia evidencia?",
+        "a": "A Bíblia evidencia que o crescimento do povo de Deus exige liderança estruturada e compartilhada.",
+        "r": "Lição 2"
+      },
+      {
+        "id": "qm4",
+        "c": "M4",
+        "q": "Embora os espias reconhecessem que a terra era boa, como foram caracterizadas as palavras deles?",
+        "a": "Embora reconhecessem a bondade da terra (Dt 1.25), a linguagem deles foi dominada pelo medo e pelo desânimo (Dt 1.28).",
+        "r": "Lição 2"
+      },
+      {
+        "id": "qm5",
+        "c": "M5",
+        "q": "O que Deuteronômio 4 evidencia e ressalta?",
+        "a": "Evidencia o coração pastoral de Moisés ao conclamar a nova geração a não repetir os erros da anterior, e ressalta um contraste: Deus permanece fiel, enquanto Israel repetidamente se mostra infiel (Dt 7.9).",
+        "r": "Lição 3"
+      },
+      {
+        "id": "qm6",
+        "c": "M6",
+        "q": "De acordo com a lição, para que aponta a exortação de Moisés?",
+        "a": "Aponta para a responsabilidade de cada israelita em aprender e cumprir os mandamentos, renovando a aliança com a nova geração.",
+        "r": "Lição 4"
+      },
+      {
+        "id": "qm7",
+        "c": "M7",
+        "q": "Do que tratam os quatro primeiros mandamentos?",
+        "a": "Em Deuteronômio 5.6-11, Moisés reafirma os quatro primeiros mandamentos e enfatiza a relação exclusiva do povo com Deus — o amor a Deus.",
+        "r": "Lição 4"
+      },
+      {
+        "id": "qm8",
+        "c": "M8",
+        "q": "Do que tratam os seis últimos mandamentos?",
+        "a": "Nos versículos 16-21, encontramos a segunda parte da Lei, voltada ao relacionamento com o próximo — a ética relacional, o amor ao próximo.",
+        "r": "Lição 4"
+      },
+      {
+        "id": "qm9",
+        "c": "M9",
+        "q": "Como Deuteronômio 6 apresenta os mandamentos?",
+        "a": "Como instrumentos divinos para formar um povo santo e exemplar entre as nações (Dt 6.1-3).",
+        "r": "Lição 5"
+      },
+      {
+        "id": "qm10",
+        "c": "M10",
+        "q": "Como a resposta de Israel aos mandamentos deveria ser marcada?",
+        "a": "Por amor exclusivo a Deus, fundamentado na sua revelação e ação redentora ao libertá-los do Egito.",
+        "r": "Lição 5"
+      },
+      {
+        "id": "qm11",
+        "c": "M11",
+        "q": "De acordo com a identidade de uma nação santa, como Israel deveria viver?",
+        "a": "Escolhido como nação santa e testemunho vivo (Ml 3.18), Israel deveria viver de modo distinto das nações ímpias (Dt 7.6).",
+        "r": "Lição 6"
+      },
+      {
+        "id": "qm12",
+        "c": "M12",
+        "q": "Como o cristão deve viver?",
+        "a": "Do mesmo modo, o cristão deve viver em vigilância e evitar contaminação com o mundo (Rm 12.2; 2 Co 6.14-17).",
+        "r": "Lição 6"
+      },
+      {
+        "id": "qm13",
+        "c": "M13",
+        "q": "O que a palavra \"obedecer\" expressa?",
+        "a": "Do hebraico shãma, expressa a união entre ouvir e acatar, sendo resposta de fé à Palavra (Dt 28.1).",
+        "r": "Lição 7"
+      },
+      {
+        "id": "qm14",
+        "c": "M14",
+        "q": "O que é necessário para compreender a Nova Aliança?",
+        "a": "É necessário entender a Antiga, pois nela se inicia o plano da salvação, cumprido em Cristo (Mt 9.17).",
+        "r": "Lição 7"
+      },
+      {
+        "id": "qm15",
+        "c": "M15",
+        "q": "Como é o momento da decisão apresentado ao povo em Deuteronômio?",
+        "a": "A Lei já havia sido exposta, e o povo é chamado a escolher entre a vida e o bem, ou a morte e o mal (Dt 30.15).",
+        "r": "Lição 8"
+      },
+      {
+        "id": "qm16",
+        "c": "M16",
+        "q": "Por que não há neutralidade diante da proposta divina?",
+        "a": "O anúncio solene de Moisés, confirmado pelos céus e pela terra (Dt 30.19), revela que toda escolha traz consequências.",
+        "r": "Lição 8"
+      },
+      {
+        "id": "qm17",
+        "c": "M17",
+        "q": "A segurança do ministério está em quê?",
+        "a": "Não está na capacidade humana, mas na presença constante do Senhor.",
+        "r": "Lição 9"
+      },
+      {
+        "id": "qm18",
+        "c": "M18",
+        "q": "O que a verdadeira liderança gera?",
+        "a": "Submissão voluntária, baseada na confiança em Deus, e não na imposição humana (1 Pe 5.2-4).",
+        "r": "Lição 9"
+      },
+      {
+        "id": "qm19",
+        "c": "M19",
+        "q": "O que a lição revela sobre a atitude de Israel diante da bondade de Deus?",
+        "a": "Israel age de forma corrupta e ingrata (Dt 32.5,6); apesar da bondade de Deus, rejeita o Senhor como Pai e despreza a aliança (Dt 32.15).",
+        "r": "Lição 10"
+      },
+      {
+        "id": "qm20",
+        "c": "M20",
+        "q": "O que a bênção significa biblicamente?",
+        "a": "Significa tanto o pedido pelo favor divino quanto o próprio bem concedido por Deus (Gn 27.4,27-29; Pv 10.22).",
+        "r": "Lição 11"
+      },
+      {
+        "id": "qm21",
+        "c": "M21",
+        "q": "O que a narrativa sobre a morte de Moisés evidencia e ensina?",
+        "a": "Evidencia a fragilidade humana e ensina que, com a morte de líderes, o povo deve prosseguir fiel à aliança e aos planos divinos.",
+        "r": "Lição 12"
+      },
+      {
+        "id": "qm22",
+        "c": "M22",
+        "q": "O que Deuteronômio 34.12 mostra sobre Moisés?",
+        "a": "Mostra que Moisés enfrentou Faraó sem recuar e foi um homem firme por liderar um povo difícil.",
+        "r": "Lição 12"
+      },
+      {
+        "id": "qm23",
+        "c": "M23",
+        "q": "Como o Senhor Jesus revelou o verdadeiro sentido da Lei?",
+        "a": "Mostrou que ela vai além da obediência exterior, alcançando a pureza do coração.",
+        "r": "Lição 13"
+      },
+      {
+        "id": "qm24",
+        "c": "M24",
+        "q": "Com qual tipo de bênçãos fomos abençoados em Jesus?",
+        "a": "Com todas as bênçãos espirituais (Ef 1.3), incluindo a adoção como filhos de Deus e a esperança da herança eterna (1 Pe 1.3-5).",
+        "r": "Lição 13"
+      }
+    ]
+  },
+  {
+    "id": "hard",
+    "name": "🔴 Difícil",
+    "pts": "400 pts",
+    "items": [
+      {
+        "id": "qd1",
+        "c": "D1",
+        "q": "O que demonstram as referências de Cristo e dos apóstolos sobre o livro de Deuteronômio?",
+        "a": "Demonstram que tanto Cristo quanto os apóstolos reconheciam Deuteronômio como Escritura inspirada, com fundamentos que apontam para o cumprimento das promessas messiânicas em Jesus Cristo.",
+        "r": "Lição 1"
+      },
+      {
+        "id": "qd2",
+        "c": "D2",
+        "q": "Com base na afirmação \"a desobediência prolonga o deserto e gera estagnação espiritual\", qual lição aprendemos claramente?",
+        "a": "Não devemos agir fora da vontade de Deus, pois isso gera fracasso.",
+        "r": "Lição 2"
+      },
+      {
+        "id": "qd3",
+        "c": "D3",
+        "q": "O que Moisés destaca por meio de perguntas retóricas?",
+        "a": "Destaca que nenhuma nação ouviu Deus falar do meio do fogo (Dt 4.33) nem foi libertada com tão grande poder.",
+        "r": "Lição 3"
+      },
+      {
+        "id": "qd4",
+        "c": "D4",
+        "q": "O que a expressão \"ouve, ó Israel\" introduz e do que se trata?",
+        "a": "Introduz um chamado profundo à escuta obediente (Dt 6.5). Não se trata apenas de ouvir com os ouvidos, mas de acolher a Palavra com atenção, refletir sobre ela e praticá-la.",
+        "r": "Lição 5"
+      },
+      {
+        "id": "qd5",
+        "c": "D5",
+        "q": "O que acontece quando ensino e ação são praticados sem amor?",
+        "a": "Tornam-se formais e não alcançam o coração. Sem afeto, forma-se uma fé fria, como a do filho mais velho na parábola do filho pródigo (Lc 15.11-32).",
+        "r": "Lição 5"
+      },
+      {
+        "id": "qd6",
+        "c": "D6",
+        "q": "Segundo a lição, o que a vivência das bênçãos espirituais requer na vida do crente e qual a abrangência dessas bênçãos?",
+        "a": "Embora a salvação seja pela graça, a vivência das bênçãos espirituais requer obediência (Jo 14.15). Elas abrangem toda a vida (Dt 28.2-6) e revelam o cuidado e a justiça de Deus (Ef 1.3; Mt 6.33).",
+        "r": "Lição 7"
+      },
+      {
+        "id": "qd7",
+        "c": "D7",
+        "q": "O que a expressão \"se não deres ouvidos\" traz como condição?",
+        "a": "Traz a condição negativa (Dt 28.15) e indica juízo pela rejeição deliberada (Êx 19.5; Lv 26.14,15) — não rigor arbitrário, mas consequência da rebeldia.",
+        "r": "Lição 7"
+      },
+      {
+        "id": "qd8",
+        "c": "D8",
+        "q": "Como as Escrituras apresentam o livre-arbítrio em contraste com a filosofia secularizada?",
+        "a": "Apresentam uma visão equilibrada: o homem possui liberdade real, porém limitada pela sua condição caída e subordinada à soberania de Deus (Is 46.10).",
+        "r": "Lição 8"
+      },
+      {
+        "id": "qd9",
+        "c": "D9",
+        "q": "De acordo com a lição, qual é a relação entre a graça divina e a resposta humana na salvação?",
+        "a": "O homem, afetado pelo pecado, depende da graça preveniente, que o capacita a responder (Jo 6.44).",
+        "r": "Lição 8"
+      },
+      {
+        "id": "qd10",
+        "c": "D10",
+        "q": "Como a sentença divina é descrita no texto da lição?",
+        "a": "É progressiva: primeiro o princípio do juízo, depois os efeitos — fome, guerras e destruição. Israel é entregue à própria insensatez por rejeitar o Senhor.",
+        "r": "Lição 10"
+      },
+      {
+        "id": "qd11",
+        "c": "D11",
+        "q": "O que a intervenção graciosa de Deus revela sobre o significado do termo hebraico nicham?",
+        "a": "Expressa compaixão, consolo, pesar, misericórdia — Deus não se engana ao julgar, mas se compadece diante da fraqueza do povo (Êx 32.14).",
+        "r": "Lição 10"
+      },
+      {
+        "id": "qd12",
+        "c": "D12",
+        "q": "Como se pode evidenciar a singularidade do ministério de Moisés?",
+        "a": "Em dois aspectos: o relacionamento pessoal com Deus, que falava com ele face a face (Êx 33.11; Dt 5.4), e a autoridade divina para realizar grandes sinais, como as pragas sobre o Egito (Êx 12.12).",
+        "r": "Lição 12"
+      },
+      {
+        "id": "qd13",
+        "c": "D13",
+        "q": "O que é necessário para compreender a relação entre Mateus 4.4 e Deuteronômio 8.3?",
+        "a": "Observar o contexto das duas passagens: Moisés relembra que Israel foi sustentado por Deus no deserto por meio do maná (Êx 16.2,3,12,14,35) e aprendeu que a vida depende da Palavra divina.",
+        "r": "Lição 13"
+      }
+    ]
+  }
+]
